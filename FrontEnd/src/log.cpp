@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "tree.h"
+#include "tokenizer.h"
+#include "parser.h"
 #include "log.h"
 #include "myassert.h"
 
@@ -16,7 +18,6 @@ static size_t NullNodes = 0;
 static FILE* GenerateImage (void);
 static void  GenerateGraph (BinaryTree_t* myTree);
 static void  WriteNode     (Node_t* CurrentNode, BinaryTree_t* myTree);
-//static void  WriteNullNode (const char* Place, Node_t* CurrentNode);
 static void  WriteHead     (BinaryTree_t* myTree);
 static void  WriteTree     (BinaryTree_t* myTree);
 static FILE* OpenFile      (const char* file_open, const char* option);
@@ -106,6 +107,14 @@ void _PrintLogTree (BinaryTree_t* myTree, const char* file,  const char* functio
     (NumImage)++;
 }
 
+void  _PrintLogText (const char* log_string, const char* file,  const char* function, const size_t line)
+{
+    fprintf(FileLog,    "\n<p>\n"
+                        "<b>## MESSAGE: in %s\t\t%s:%lu\t\t[%s]</b>\n", function, file, line, log_string);
+    fprintf(FileLog,    "</p>\n");
+}
+
+
 static void GenerateGraph (BinaryTree_t* myTree)
 {
     char buffer_file[SIZE_OF_COMMAND] = {};
@@ -186,7 +195,7 @@ static void WriteNode (Node_t* CurrentNode, BinaryTree_t* myTree)
                 CurrentNode, CurrentNode->Parent, CurrentNode, NUMBER, CurrentNode->Value.Number, CurrentNode->Left, CurrentNode->Right);                                                                                                                                              
     }
     if (CurrentNode->Type == OPERATOR) 
-    {                               
+    {
         fprintf (FileGraph, "\tnode%p [shape = Mrecord, style = filled, fillcolor = \"" COLOR_OPERATOR "\", color = \"" COLOR_FRAME "\", label = \"{ PARENT: %p | PTR: %p | TYPE: %d | DATA: " SPECIFIER_OPERATOR_STR  " | { <f0> LEFT: %p | <f1> RIGHT: %p }}\"];\n", 
                 CurrentNode, CurrentNode->Parent, CurrentNode, OPERATOR, ArrayOperators[CurrentNode->Value.Index].Name, CurrentNode->Left, CurrentNode->Right);                                                                                                                                              
     }

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
@@ -7,60 +6,57 @@
 
 #include "colors.h"
 #include "tree.h"
-#include "tree_functions.h"
+#include "tokenizer.h"
+#include "parser.h"
 #include "log.h"
 #include "myassert.h"
 #include "verificator.h"
-#include "tokenizer.h"
+
+/*
+    ======================
+    |MAKE ARRAY OF TOKENS|
+    ======================
+*/
 
 static const int    NOT_IN_OPER   = -1;
 static const size_t MULTIPLIER    = 2;
 static const size_t INIT_CAPACITY = 10;
 
-static FILE*     OpenFile           (const char* file_open, const char* option);
-static void      CloseFile          (FILE* file_text);
-static size_t    FileSize           (FILE *file_text);
-static void      InitToken          (Token_t* Token);
-static int       MemPoison          (void* memptr, size_t num);
-static Token_t*  Expand             (Tokens_t *TokensArr);
-static int       StrInOperators     (const char* str);
-static int       StrInBrackets      (const char* str);
-static char*     SkipSpaces         (char* current_ptr, char* end_ptr);
-static void      SkipComments       (char* buffer, char* end_ptr);
-static void      PutNull            (char* buffer);
-static char*     ProcessVariable    (Tokens_t* TokensArr, char* current_ptr);
-static int       InsertVariable     (Tokens_t* TokensArr, char* current_ptr);
-static char*     ProcessNumber      (Tokens_t* TokensArr, char* current_ptr, bool* token_continue);
-static char*     ProcessOperator    (Tokens_t* TokensArr, char* current_ptr, bool* token_continue);
-static char*     ProcessBracket     (Tokens_t* TokensArr, char* current_ptr, bool* token_continue);
-static EnumOperType TypeOfChar      (char unknown_char);
-static size_t       TokenSize       (const char* str);
-static bool         CheckIfVar      (const char* maybe_var);
+static FILE*        OpenFile            (const char* file_open, const char* option);
+static void         CloseFile           (FILE* file_text);
+static size_t       FileSize            (FILE *file_text);
+static void         InitToken           (Token_t* Token);
+static int          MemPoison           (void* memptr, size_t num);
+static Token_t*     Expand              (Tokens_t *TokensArr);
+static int          StrInOperators      (const char* str);
+static char*        SkipSpaces          (char* current_ptr, char* end_ptr);
+static void         SkipComments        (char* buffer, char* end_ptr);
+static void         PutNull             (char* start_ptr, char* end_ptr);
+static bool         CompareVar          (const char* str1, const char* str2, size_t num);
+static char*        ProcessVariable     (Tokens_t* TokensArr, char* current_ptr);
+static int          InsertVariable      (Tokens_t* TokensArr, char* current_ptr);
+static char*        ProcessNumber       (Tokens_t* TokensArr, char* current_ptr, bool* token_continue);
+static char*        ProcessOperator     (Tokens_t* TokensArr, char* current_ptr, bool* token_continue);
+static EnumOperType TypeOfChar          (char unknown_char);
+static size_t       TokenSize           (const char* str);
+static bool         CheckIfVar          (const char* maybe_var);
+
 //========================================================================================================
-//========================================================================================================
-//Создание текстового массива кода на ЯП
+//READ TEXT FROM FILE
 
 char* CreateDirtyBuffer (const char* file_database)
 {
     MYASSERT(file_database, ERR_WHAT_FILE_OF_DATA, return NULL)
 
     FILE* FileRead = OpenFile (file_database, "rb");
-    USER_ERROR(FileRead, ERR_NO_FILE_TO_OPEN, '\0', exit(0))
+    USER_ERROR(FileRead, ERR_NO_FILE_TO_OPEN, "", exit(0))
 
     size_t size_text = FileSize (FileRead);
-
     char* text_buffer = NULL;
     text_buffer = (char*) calloc (size_text + 1, sizeof (char));
     MYASSERT(text_buffer, ERR_BAD_CALLOC, return NULL)
     size_t result_size = fread (text_buffer, 1, size_text, FileRead);
-
-    MYASSERT(result_size == size_text, ERR_BAD_FREAD, return NULL);
-
-    if (*text_buffer == '\0') 
-    {
-        fprintf(stdout, YELLOW "Data base is empty!\n" RESET);
-        return text_buffer;
-    }
+    MYASSERT(result_size == size_text, ERR_BAD_FREAD, return NULL)
 
 	*(text_buffer + size_text) = '\0';
     CloseFile (FileRead);
@@ -71,17 +67,15 @@ char* CreateDirtyBuffer (const char* file_database)
 static FILE* OpenFile (const char* file_open, const char* option)
 {
     FILE *FileOpen = fopen (file_open, option);
-
-    MYASSERT(FileOpen, OPEN_FILE, return NULL);
-
+    MYASSERT(FileOpen, OPEN_FILE, return NULL)
     return FileOpen;
 }
 
 static void CloseFile (FILE* file_text)
 {
-	MYASSERT(file_text, BAD_POINTER_PASSED_IN_FUNC, assert(0));
+	MYASSERT(file_text, BAD_POINTER_PASSED_IN_FUNC, assert(0))
     int result = fclose(file_text);
-	MYASSERT(!result, CLOSE_FILE, assert(0));
+	MYASSERT(!result, CLOSE_FILE, assert(0))
 }
 
 static size_t FileSize (FILE *file_text)
@@ -95,13 +89,11 @@ static size_t FileSize (FILE *file_text)
 }
 
 //========================================================================================================
-//========================================================================================================
-//Создание массива токенов
+//CREATE ARRAY OF TOKENS
 
 void TokensCtor (Tokens_t *TokensArr)
 {
     MYASSERT(TokensArr, ERR_BAD_POINTER_PASSED_IN_FUNC, return)
-
     TokensArr->Capacity = 1;
     TokensArr->Data = (Token_t*) calloc (1, sizeof(Token_t));
     TokensArr->Size = 0;
@@ -110,14 +102,12 @@ void TokensCtor (Tokens_t *TokensArr)
 void TokensDtor (Tokens_t *TokensArr)
 {
     MYASSERT(TokensArr, ERR_BAD_POINTER_PASSED_IN_FUNC, return)
-
     free(TokensArr->Data);
 }
 
 EnumOfErrors CreateTokens(Tokens_t* TokensArr, char* dirty_buffer)
 {
     MYASSERT(TokensArr, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
-    MYASSERT(dirty_buffer, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
     bool token_continue = 0;
     char* current_ptr = dirty_buffer;
     size_t buffer_size = 0;
@@ -125,24 +115,30 @@ EnumOfErrors CreateTokens(Tokens_t* TokensArr, char* dirty_buffer)
     {
         buffer_size++;
     }
+    //CLEAN COMMENTS
     SkipComments(current_ptr, dirty_buffer + buffer_size);
-    PutNull(current_ptr);
+    PutNull(current_ptr, current_ptr + buffer_size);
     while (current_ptr < (dirty_buffer + buffer_size))
     {
-        current_ptr = SkipSpaces(current_ptr, dirty_buffer + buffer_size); //пропустили isspace
-        //обработка числа
+        //SKIP ZERO AND SPACES
+        current_ptr = SkipSpaces(current_ptr, dirty_buffer + buffer_size);
+        //PROCESS NUMBER
         current_ptr = ProcessNumber(TokensArr, current_ptr, &token_continue);
-        //обработка спец оператора
+        //PROCESS OPERATOR
         current_ptr = ProcessOperator(TokensArr, current_ptr, &token_continue);
-        //обработка скобок
-        current_ptr = ProcessBracket(TokensArr, current_ptr, &token_continue);
-        //потом уже переменная
+        //PROCESS VARIABLE
         if (!token_continue) 
         {
-            USER_ERROR(CheckIfVar(current_ptr), ERR_UNKNOWN_OBJ, *current_ptr, exit(0))
+            if (current_ptr == NULL) {break;}
+            USER_ERROR(CheckIfVar(current_ptr), ERR_UNKNOWN_OBJ, current_ptr, exit(0))
             current_ptr = ProcessVariable(TokensArr, current_ptr);
         }
         token_continue = 0;
+    }
+    //PUT 2 END TOKEN
+    if (TokensArr->Size == (int) TokensArr->Capacity)
+    {
+        TokensArr->Data = Expand(TokensArr);
     }
     (TokensArr->Data + TokensArr->Size)->Type        = END;
     (TokensArr->Data + TokensArr->Size)->Value.Index = 0;
@@ -152,22 +148,23 @@ EnumOfErrors CreateTokens(Tokens_t* TokensArr, char* dirty_buffer)
 
 static bool CheckIfVar(const char* maybe_var)
 {
-    if (isalpha(*maybe_var)) return true;
+    if (isalnum(*maybe_var) || (*maybe_var == '_')) return true;
     return false;    
 }
 
 static char* ProcessVariable(Tokens_t* TokensArr, char* current_ptr)
 {
     char* new_ptr = current_ptr;
+    if (new_ptr == NULL) return new_ptr;
     int index = InsertVariable (TokensArr, current_ptr);
     if (TokensArr->Size == (int) TokensArr->Capacity) //expansion
     {
         TokensArr->Data = Expand(TokensArr);
     }
-    (TokensArr->Data + TokensArr->Size)->Type         = VARIABLE;
+    (TokensArr->Data + TokensArr->Size)->Type        = VARIABLE;
     (TokensArr->Data + TokensArr->Size)->Value.Index = index;
     (TokensArr->Size)++;
-    USER_ERROR(index != -1, ERR_OVERFLOW_VARIABLES, '_', exit(0))
+    USER_ERROR(index != -1, ERR_OVERFLOW_VARIABLES, "", exit(0))
     size_t size = strlen(TokensArr->Variables[index]);
     new_ptr = new_ptr + size;
     return new_ptr;
@@ -177,13 +174,13 @@ static int InsertVariable (Tokens_t* TokensArr, char* current_ptr)
 {
     for (size_t i = 0; i < SIZE_OF_VARIABLES; i++)
     {
-        if (!strncmp(TokensArr->Variables[i], current_ptr, SIZE_OF_VAR))
+        if (CompareVar(TokensArr->Variables[i], current_ptr, SIZE_OF_VAR))
         {
             return (int) i;
         }
-        if (!(*(TokensArr->Variables[i]))) //ищем свободное место в массиве переменных
+        if (!(*(TokensArr->Variables[i]))) //finding free place in array of variables
         {
-            //копирка
+            //copy!
             size_t j = 0;
             while (isalnum(*(current_ptr + j)) || (*(current_ptr + j) == '_'))
             {
@@ -200,17 +197,22 @@ static int InsertVariable (Tokens_t* TokensArr, char* current_ptr)
 static char* ProcessNumber(Tokens_t* TokensArr, char* current_ptr, bool* token_continue)
 {
     char* new_ptr = current_ptr;
+    if (new_ptr == NULL) return new_ptr;
     double number = strtod(current_ptr, &new_ptr);
-    if (current_ptr != new_ptr) //creating token with number
+    if (isdigit(*current_ptr)) //creating token with number
     {
         if (TokensArr->Size == (int) TokensArr->Capacity) //expansion
         {
             TokensArr->Data = Expand(TokensArr);
         }
-        (TokensArr->Data + TokensArr->Size)->Type          = NUMBER;
+        (TokensArr->Data + TokensArr->Size)->Type         = NUMBER;
         (TokensArr->Data + TokensArr->Size)->Value.Number = number;
         (TokensArr->Size)++;
         *token_continue = 1;
+    }
+    else 
+    {
+        return current_ptr;
     }
     return new_ptr;
 }
@@ -218,6 +220,7 @@ static char* ProcessNumber(Tokens_t* TokensArr, char* current_ptr, bool* token_c
 static char* ProcessOperator(Tokens_t* TokensArr, char* current_ptr, bool* token_continue)
 {
     char* new_ptr = current_ptr;
+    if (new_ptr == NULL) return new_ptr;
     int index = StrInOperators(current_ptr);
     if (index != NOT_IN_OPER) //creating token with operator
     {
@@ -230,30 +233,8 @@ static char* ProcessOperator(Tokens_t* TokensArr, char* current_ptr, bool* token
         (TokensArr->Size)++;
         *token_continue = 1;
 
-        //сдвиг указателя
+        //change pointer
         size_t size = strlen(ArrayOperators[index].Name);
-        new_ptr = new_ptr + size;
-    }
-    return new_ptr;
-}
-
-static char* ProcessBracket(Tokens_t* TokensArr, char* current_ptr, bool* token_continue)
-{
-    char* new_ptr = current_ptr;
-    int index = StrInBrackets(current_ptr);
-    if (index != NOT_IN_OPER) //creating token with bracket
-    {
-        if (TokensArr->Size == (int) TokensArr->Capacity) //expansion
-        {
-            TokensArr->Data = Expand(TokensArr);
-        }
-        (TokensArr->Data + TokensArr->Size)->Type        = BRACKET;
-        (TokensArr->Data + TokensArr->Size)->Value.Index = index;
-        (TokensArr->Size)++;
-        *token_continue = 1;
-
-        //сдвиг указателя
-        size_t size = strlen(ArrayBrackets[index]);
         new_ptr = new_ptr + size;
     }
     return new_ptr;
@@ -265,7 +246,6 @@ static Token_t* Expand (Tokens_t *TokensArr)
     void* new_place = nullptr;
     TokensArr->Capacity = (TokensArr->Capacity) * MULTIPLIER;                                                                                      
     new_place = realloc((TokensArr->Data), sizeof(Token_t)*(TokensArr->Capacity));
-
     MYASSERT(new_place, BAD_REALLOC, return NULL)
                                                  
     MemPoison(new_place + sizeof(Token_t)*((size_t)(TokensArr->Size)), (TokensArr->Capacity)-((size_t)(TokensArr->Size)));                        
@@ -293,42 +273,81 @@ static char* SkipSpaces(char* current_ptr, char* end_ptr)
 {
     size_t end_position = 0;
     MYASSERT(current_ptr, ERR_BAD_POINTER_DATA, return 0)
-    while (((current_ptr + end_position) < end_ptr) && *(current_ptr + end_position) == '\0') 
+    while (((current_ptr + end_position) < end_ptr) && (*(current_ptr + end_position) == '\0')) 
     {
-        end_position++; 
+         end_position++; 
     }
+    if ((current_ptr + end_position) == end_ptr) return NULL;
     return current_ptr + end_position;
 }
 
-static void SkipComments(char* buffer, char* end_ptr)
+static void SkipComments(char* start_ptr, char* end_ptr)
 {
+    //Process one-line comment
     bool start_comment = 0;
     size_t i = 0;
-    while ((buffer + i) < end_ptr)
+    while ((start_ptr + i) < end_ptr)
     {
-        if ((*(buffer + i) == COMMENT_SYMBOL) && !start_comment) 
+        if ((*(start_ptr + i) == COMMENT_SYMBOL_UNO) && !start_comment) 
         {
-            *(buffer + i) = '\n';   
+            *(start_ptr + i) = '\0';
             start_comment = 1;
+            i++;
+            continue;
         }
-        if ((*(buffer + i) == COMMENT_SYMBOL) && start_comment) 
+        if (((*(start_ptr + i) == '\n') || (*(start_ptr + i) == '\0')) && start_comment) 
         {
-            *(buffer + i) = '\n';   
+            *(start_ptr + i) = '\0';   
             start_comment = 0;
         }
-        if (start_comment) *(buffer + i) = '\n';
+        if (start_comment) *(start_ptr + i) = '\0';
+        i++;
+    }
+    //Process multy comment
+    start_comment = 0;
+    i = 0;
+    while ((start_ptr + i) < end_ptr)
+    {
+        if ((*(start_ptr + i) == COMMENT_SYMBOL_DUO) && !start_comment) 
+        {
+            *(start_ptr + i) = '\0';   
+            start_comment = 1;
+        }
+        if ((*(start_ptr + i) == COMMENT_SYMBOL_DUO) && start_comment) 
+        {
+            *(start_ptr + i) = '\0';   
+            start_comment = 0;
+        }
+        if (start_comment) *(start_ptr + i) = '\0';
         i++;
     }
 }
 
-static void PutNull(char* buffer)
+static void PutNull(char* start_ptr, char* end_ptr)
 {
     size_t i = 0;
-    while (*(buffer + i) != '\0')
+    while ((start_ptr + i) <= end_ptr)
     {
-        if (isspace(*(buffer + i))) *(buffer + i) = '\0';
+        if (isspace(*(start_ptr + i))) *(start_ptr + i) = '\0';
         i++;
     }
+}
+
+static bool CompareVar(const char* str1, const char* str2, size_t num)
+{
+    size_t i = 0;
+    for (i = 0; (isalnum(str1[i]) || (str1[i] == '_')) && (isalnum(str2[i]) || (str2[i] == '_')) && (i < num) ; ++i)
+    {
+        if (str1[i] != str2[i]) 
+        {  
+            return 0;
+        }
+    }
+
+    if ((!(isalnum(str1[i]) || (str1[i] == '_')) && (isalnum(str2[i]) || (str2[i] == '_'))) || ((isalnum(str1[i]) || (str1[i] == '_')) && !(isalnum(str2[i]) || (str2[i] == '_'))))
+        return 0;
+
+    return 1;
 }
 
 static int StrInOperators(const char* str)
@@ -336,16 +355,8 @@ static int StrInOperators(const char* str)
     size_t token_size = TokenSize(str);
     for (size_t i = 0; i < SIZE_OF_OPERATORS; i++)
     {
-        if ((!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name))) && (strlen(ArrayOperators[i].Name) == token_size)) return (int) i;
-    }
-    return NOT_IN_OPER;
-}
-
-static int StrInBrackets(const char* str)
-{
-    for (size_t i = 0; i < SIZE_OF_BRACKETS; i++)
-    {
-        if (!strncmp(ArrayBrackets[i], str, 1)) return (int) i;
+        if ((!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name))) && (ArrayOperators[i].Num == MULT)) return (int) i;
+        if ((!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name))) && (strlen(ArrayOperators[i].Name) == token_size) && (ArrayOperators[i].Num == SOLO)) return (int) i;
     }
     return NOT_IN_OPER;
 }
@@ -367,5 +378,11 @@ static EnumOperType TypeOfChar(char unknown_char)
     if (isalnum(unknown_char)) return LETTER;
     else                       return SYMBOL;
 }
-//========================================================================================================
-//========================================================================================================
+
+void PrintToken(Token_t* CurrToken)
+{
+    if (CurrToken->Type == NUMBER)   printf("[num   %lg]\n", CurrToken->Value.Number);
+    if (CurrToken->Type == OPERATOR) printf("[oper  %s]\n",  ArrayOperators[CurrToken->Value.Index].Name);
+    if (CurrToken->Type == VARIABLE) printf("[var   %s]\n",  "now");
+    if (CurrToken->Type == END)      printf("[end     ]\n");
+}

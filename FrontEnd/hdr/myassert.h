@@ -25,13 +25,13 @@
 #endif
 //===============================================================================================================
 //Write Error unclosed
-#define USER_ERROR(check, error_code, letter, ending)                                                       \
+#define USER_ERROR(check, error_code, word, ending)                                                       \
         do                                                                                                  \
         {                                                                                                   \
             if (!(check))                                                                                   \
             {                                                                                               \
                 fprintf(stderr, RED ">>>>> Error! Error code: %s <<<<<\n" RESET, ArrayOfErrors[error_code]);\
-                fprintf(stderr, MAGENTA "%c\n" RESET, letter);                                              \
+                fprintf(stderr, MAGENTA "%s\n" RESET, word);                                              \
                 fprintf(stderr, RED "In File: %s, In Line: %d, In Function: %s\n",__FILE__,__LINE__,__PRETTY_FUNCTION__);\
                 fprintf(stderr, "In this condition:\t\"%s\"\n\n" RESET, #check);                            \
                 ending;                                                                                     \

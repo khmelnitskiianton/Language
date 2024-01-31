@@ -1,1 +1,1 @@
-./FrontEnd/frontend.exe ./bin/test_code.txt ./FrontEnd
+./FrontEnd/frontend.exe ./bin/$1 ./FrontEnd

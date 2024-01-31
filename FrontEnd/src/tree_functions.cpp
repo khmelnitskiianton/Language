@@ -6,11 +6,8 @@
 #include <sys/stat.h>
 
 #include "tree.h" 
-#include "tree_functions.h"
 #include "myassert.h"
 #include "verificator.h"
-
-static void RecFree (Node_t* CurrentNode);
 
 void TreeCtor (BinaryTree_t* myTree)
 {
@@ -39,7 +36,7 @@ EnumOfErrors TreeDtor (BinaryTree_t* myTree)
     return ERR_OK;
 }
 
-static void RecFree (Node_t* CurrentNode)
+void RecFree (Node_t* CurrentNode)
 {
     MYASSERT(CurrentNode, ERR_BAD_POINTER_NODE, return)
 
@@ -73,3 +70,4 @@ Node_t* CreateNode (BinaryTree_t* myTree)
     myTree->Size++;
     return NewNode;
 }
+

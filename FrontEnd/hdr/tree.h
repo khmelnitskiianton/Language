@@ -1,86 +1,37 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include "element.h"
+//==============================================================================================================
+//ABOUT ELEMENT
+
+#include <math.h>
+#include <limits.h>
+
+typedef double Elem_t;
+
+#define SPECIFIER_SCANF "%lf"
+#define SPECIFIER_INIT " %.3lf "
+#define SPECIFIER_NUMBER " %.3lf "
+#define SPECIFIER_OPERATOR_STR " %s "
+#define SPECIFIER_VARIABLE_STR " %s "
+#define SPECIFIER_VARIABLE_NUM " %.3lf "
+
+const Elem_t POISON_ELEMENT = NAN;
+const double EPSILONE = 1e-5;
+
+const size_t SIZE_OF_VARIABLES = 40;   //amount of variables
+const size_t SIZE_OF_VAR = 100;        //max length of variable
+
+//==============================================================================================================
+//ABOUT TREE
 
 enum EnumOfType {
     INIT     = 0,
     NUMBER   = 1,
     OPERATOR = 2,
     VARIABLE = 3,
-    BRACKET  = 4,
-    END      = 5,
+    END      = 4,
 };
-
-// enum EnumOperIndex {
-    
-// }
-
-enum EnumOperType {
-    UNKNOWN = 0,
-    SYMBOL  = 1,
-    LETTER  = 2,
-};
-
-typedef struct Operator {
-    const char*     Name;
-    EnumOperType    Type;    
-} Operator_t;
-
-constexpr Operator_t ArrayOperators[] = {
-    {"!=",      SYMBOL},
-    {"==",      SYMBOL},
-    {">",       SYMBOL},
-    {"<",       SYMBOL},
-    {"<=",      SYMBOL},
-    {">=",      SYMBOL},
-    {"/",       SYMBOL},
-    {"*",       SYMBOL},
-    {"+",       SYMBOL},
-    {"-",       SYMBOL},
-    {"%",       SYMBOL},
-    {"=",       SYMBOL},
-    {";",       SYMBOL},
-    {"if",      LETTER},
-    {"while",   LETTER},
-    {"int",     LETTER},
-    {"char",    LETTER},
-    {"double",  LETTER},
-    {"return",  LETTER},
-};
-
-constexpr const char* ArrayBrackets[]  = {"(", ")", "{", "}", "[", "]"};
-
-const size_t SIZE_OF_OPERATORS = sizeof(ArrayOperators)/sizeof(ArrayOperators[0]);
-const size_t SIZE_OF_BRACKETS  = sizeof(ArrayBrackets)/sizeof(ArrayBrackets[0]);
-
-const size_t SIZE_OF_VARIABLES = 30;   //макс. кол-во переменных
-const size_t SIZE_OF_VAR = 100;        //макс. размер одной переменной, можно сделать динамикой
-
-const char COMMENT_SYMBOL = '$';
-
-//================================
-//Токены
-
-typedef struct TokenValue {
-    Elem_t Number;
-    int    Index;
-} TokenValue_t;
-
-typedef struct Token {
-    EnumOfType Type;
-    TokenValue Value;
-}Token_t;
-
-typedef struct Tokens {
-    Token_t* Data;
-    size_t   Capacity;
-    int      Size;
-    char     Variables[SIZE_OF_VARIABLES][SIZE_OF_VAR];
-} Tokens_t;
-
-//=================================
-//Дерево
 
 typedef struct NodeValue {
     Elem_t Number;
@@ -103,5 +54,16 @@ typedef struct BinaryTree {
     bool     ChangeOptimize;
     char     Variables[SIZE_OF_VARIABLES][SIZE_OF_VAR];
 } BinaryTree_t;
+
+//==============================================================================================================
+//ABOUT FUNCTIONS
+
+#include "errors_enum.h"
+
+void            TreeCtor    (BinaryTree_t* myTree);
+EnumOfErrors    TreeDtor    (BinaryTree_t* myTree);
+void            InitNode    (Node_t* NewNode);
+Node_t*         CreateNode  (BinaryTree_t* myTree);
+void            RecFree     (Node_t* CurrentNode);
 
 #endif

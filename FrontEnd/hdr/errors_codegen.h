@@ -20,4 +20,10 @@ DEF_ERROR(BAD_FREAD,                    "Size of return fread not equal to size_
 DEF_ERROR(NO_FILE_TO_OPEN,              "There is no file to open! You forgot to create it")
 DEF_ERROR(BAD_POINTER_PASSED_IN_FUNC,   "Bad pointer passed in function!")
 DEF_ERROR(OVERFLOW_VARIABLES,           "Amount of variables is < 30! Please write code shortly")
+DEF_ERROR(EMPTY_FILE,                   "Your code file is empty!")
 DEF_ERROR(UNKNOWN_OBJ,                  "Something strange in your code! It's not a variable and not oper/num/bracket!")
+DEF_ERROR(BAD_TOKEN,                    "Strange token!")
+
+DEF_ERROR(NO_OPEN_BRACKET,              "You forgot open bracket!")
+DEF_ERROR(NO_CLOSE_BRACKET,             "You forgot close bracket!")
+DEF_ERROR(NO_DIVIDER,                   "You forgot divider after expression!")
