@@ -4,8 +4,8 @@
 #define DEBUG_LOG 1
 
 #ifdef DEBUG_LOG
-    #define PrintLogStart(path) \
-            _PrintLogStart(path)
+    #define PrintLogStart(path, path1) \
+            _PrintLogStart(path, path1)
     #define PrintLogFinish() \
             _PrintLogFinish()
     #define PrintLogTree(myTree) \
@@ -19,19 +19,18 @@
 	#define PrintLogText(string)
 #endif
 
-void  _PrintLogTree (BinaryTree_t* myTree, 
+void    _PrintLogTree (BinaryTree_t* myTree, 
                     const char* file,  const char* function, const size_t line);
-void  _PrintLogStart (const char* log_file_path);
-void  _PrintLogFinish (void);
-void  _PrintLogText (const char* log_string, const char* file,  const char* function, const size_t line);
+void    _PrintLogStart (const char* log_file_path, const char* path_of_code);
+void  	_PrintLogFinish (void);
+void  	_PrintLogText (const char* log_string, const char* file,  const char* function, const size_t line);
 
-#define FOLDER_LOG "log"
+#define FOLDER_LOG "log_frontend"
 #define FILE_LOG "log.html"
 #define FILE_GRAPH "graph.dot"
 #define TYPE_OF_IMAGE "svg"
 
 const size_t SIZE_OF_PATH   	= 500;
-const size_t SIZE_OF_LOG_BUFFER = 500;
 const size_t SIZE_OF_POINTER 	= 13;
 const size_t SIZE_OF_COMMAND 	= SIZE_OF_PATH + 40;
 

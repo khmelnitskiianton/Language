@@ -1,1 +1,1 @@
-./FrontEnd/frontend.exe ./bin/$1 ./FrontEnd
+./FrontEnd/frontend.exe ./.tmp $1

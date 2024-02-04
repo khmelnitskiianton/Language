@@ -27,8 +27,8 @@ const size_t SIZE_OF_VAR = 100;        //max length of variable
 
 enum EnumOfType {
     INIT     = 0,
-    NUMBER   = 1,
-    OPERATOR = 2,
+    OPERATOR = 1,
+    NUMBER   = 2,
     VARIABLE = 3,
     END      = 4,
 };

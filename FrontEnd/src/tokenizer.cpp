@@ -18,6 +18,8 @@
     ======================
 */
 
+//=============================================================================================================
+
 static const int    NOT_IN_OPER   = -1;
 static const size_t MULTIPLIER    = 2;
 static const size_t INIT_CAPACITY = 10;
@@ -67,7 +69,7 @@ char* CreateDirtyBuffer (const char* file_database)
 static FILE* OpenFile (const char* file_open, const char* option)
 {
     FILE *FileOpen = fopen (file_open, option);
-    MYASSERT(FileOpen, OPEN_FILE, return NULL)
+    MYASSERT(FileOpen, ERR_OPEN_FILE, return NULL)
     return FileOpen;
 }
 
@@ -75,7 +77,7 @@ static void CloseFile (FILE* file_text)
 {
 	MYASSERT(file_text, BAD_POINTER_PASSED_IN_FUNC, assert(0))
     int result = fclose(file_text);
-	MYASSERT(!result, CLOSE_FILE, assert(0))
+	MYASSERT(!result, ERR_CLOSE_FILE, assert(0))
 }
 
 static size_t FileSize (FILE *file_text)
@@ -242,11 +244,11 @@ static char* ProcessOperator(Tokens_t* TokensArr, char* current_ptr, bool* token
 
 static Token_t* Expand (Tokens_t *TokensArr)
 {
-    MYASSERT(TokensArr, BAD_POINTER_PASSED_IN_FUNC, return NULL)
+    MYASSERT(TokensArr, ERR_BAD_POINTER_PASSED_IN_FUNC, return NULL)
     void* new_place = nullptr;
     TokensArr->Capacity = (TokensArr->Capacity) * MULTIPLIER;                                                                                      
     new_place = realloc((TokensArr->Data), sizeof(Token_t)*(TokensArr->Capacity));
-    MYASSERT(new_place, BAD_REALLOC, return NULL)
+    MYASSERT(new_place, ERR_BAD_REALLOC, return NULL)
                                                  
     MemPoison(new_place + sizeof(Token_t)*((size_t)(TokensArr->Size)), (TokensArr->Capacity)-((size_t)(TokensArr->Size)));                        
 

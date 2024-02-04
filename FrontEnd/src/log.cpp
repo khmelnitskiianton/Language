@@ -24,7 +24,7 @@ static FILE* OpenFile      (const char* file_open, const char* option);
 static void  CloseFile     (FILE* file_text);
 static void  CleanCharBuffer(char* buffer, const size_t buffer_size);
 
-void _PrintLogStart (const char* log_file_path)
+void _PrintLogStart (const char* log_file_path, const char* path_of_code)
 {
     MYASSERT(log_file_path, ERR_BAD_OPEN_FILE, return)
     snprintf(buffer_path, SIZE_OF_PATH, "%s/" FOLDER_LOG "/", log_file_path);
@@ -47,6 +47,8 @@ void _PrintLogStart (const char* log_file_path)
     snprintf(buffer_file, SIZE_OF_COMMAND, "%s" FILE_LOG, buffer_path);
     FileLog = OpenFile (buffer_file, "w");
 
+    char* code_buffer = CreateDirtyBuffer(path_of_code);
+
     fprintf(FileLog,    "<!DOCTYPE html>\n"
                         "<html lang=\"eng\">\n"
                         "<head>\n"
@@ -64,7 +66,18 @@ void _PrintLogStart (const char* log_file_path)
                         "<h1> Logs for Binary Tree </h1>\n"
                         "</header>\n"
                         "<main>\n"
-                        "<pre>\n"); 
+                        "<pre>\n"
+                        "<p>\n"
+                        "<b>\n"
+                        "<big>\n"
+                        "<ins>Code:</ins>\n\n"
+                        ">>>\n%s\n<<<\n"
+                        "</big>\n"
+                        "</b>\n"
+                        "<hr size = \"4\" color = \"#000000\">\n" 
+                        "</p>\n\n",
+                        code_buffer); 
+    free(code_buffer);
 }
 
 void _PrintLogFinish (void)
@@ -157,16 +170,16 @@ static FILE* OpenFile (const char* file_open, const char* option)
 {
     FILE *FileOpen = fopen (file_open, option);
 
-    MYASSERT(FileOpen, OPEN_FILE, return 0);
+    MYASSERT(FileOpen, ERR_OPEN_FILE, return 0);
 
     return FileOpen;
 }
 
 static void CloseFile (FILE* file_text)
 {
-	MYASSERT(file_text, BAD_POINTER_PASSED_IN_FUNC, assert(0));
+	MYASSERT(file_text, ERR_BAD_POINTER_PASSED_IN_FUNC, assert(0));
     int result = fclose(file_text);
-	MYASSERT(!result, CLOSE_FILE, assert(0));
+	MYASSERT(!result, ERR_CLOSE_FILE, assert(0));
 }
 
 static void WriteTree (BinaryTree_t* myTree)

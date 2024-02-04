@@ -1,8 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-Node_t* GetMain (Tokens_t* myTokens);
-size_t  CopyVars(BinaryTree_t* myTree, Tokens_t* myTokens);
+Node_t* GetMain (Tokens_t* myTokens, BinaryTree_t* myTree);
+EnumOfErrors CopyVars(BinaryTree_t* myTree, Tokens_t* myTokens);
 
 //==============================================================================================================
 //ABOUT OPERATORS AND LANGUAGE
@@ -51,53 +51,55 @@ typedef struct Operator {
     EnumOperType    Type;  
     EnumOperNum     Num; //CAN SYMBOL BE REPEATED MANY TIMES
     EnumOperClass   Class; //FOR PARSER CATEGORY
+    size_t          Id;//FOR STANDART OF TREE
 } Operator_t;
 
 constexpr Operator_t ArrayOperators[] = {
-    {"!=",              SYMBOL,         MULT,       ZERO},
-    {"==",              SYMBOL,         MULT,       ZERO},
-    {">",               SYMBOL,         MULT,       ZERO},
-    {"<",               SYMBOL,         MULT,       ZERO},
-    {"<=",              SYMBOL,         MULT,       ZERO},
-    {">=",              SYMBOL,         MULT,       ZERO},
+    {">",               SYMBOL,         MULT,       ZERO,               52},
+    {"<",               SYMBOL,         MULT,       ZERO,               53},
+    {">=",              SYMBOL,         MULT,       ZERO,               54},
+    {"<=",              SYMBOL,         MULT,       ZERO,               55},
+    {"!=",              SYMBOL,         MULT,       ZERO,               57},
+    {"==",              SYMBOL,         MULT,       ZERO,               56},
 
-    {"++",              SYMBOL,         MULT,       FOURTH},
-    {"--",              SYMBOL,         MULT,       FOURTH},
-    {"!",               SYMBOL,         MULT,       FOURTH},    
+    {"++",              SYMBOL,         MULT,       FOURTH,             106},
+    {"--",              SYMBOL,         MULT,       FOURTH,             108},
+    {"!",               SYMBOL,         MULT,       FOURTH,             205},    
 
-    {"||",              SYMBOL,         MULT,       FIRST},
-    {"+",               SYMBOL,         MULT,       FIRST},
-    {"-",               SYMBOL,         MULT,       FIRST},
+    {"+",               SYMBOL,         MULT,       FIRST,              101},
+    {"-",               SYMBOL,         MULT,       FIRST,              102},
+    {"||",              SYMBOL,         MULT,       FIRST,              204},
 
-    {"&&",              SYMBOL,         MULT,       SECOND},
-    {"/",               SYMBOL,         MULT,       SECOND},
-    {"*",               SYMBOL,         MULT,       SECOND},
-    {"%",               SYMBOL,         MULT,       SECOND},
+    {"&&",              SYMBOL,         MULT,       SECOND,             203},
+    {"%",               SYMBOL,         MULT,       SECOND,             102},
+    {"*",               SYMBOL,         MULT,       SECOND,             103},
+    {"/",               SYMBOL,         MULT,       SECOND,             104},
 
-    {"^",               SYMBOL,         MULT,       THIRD},
+    {"^",               SYMBOL,         MULT,       THIRD,              109},
 
-    {"=",               SYMBOL,         MULT,       EQUAL},
-    {";",               SYMBOL,         MULT,       DIVIDER},
-    {",",               SYMBOL,         MULT,       DIVIDER_ARG},
+    {"=",               SYMBOL,         MULT,       EQUAL,              51},
+    {";",               SYMBOL,         MULT,       DIVIDER,            1},
+    {",",               SYMBOL,         MULT,       DIVIDER_ARG,        5},
 
-    {"(",               SYMBOL,         MULT,       OP_BR_ONE},
-    {")",               SYMBOL,         MULT,       CL_BR_ONE},
-    {"{",               SYMBOL,         MULT,       OP_BR_TWO},
-    {"}",               SYMBOL,         MULT,       CL_BR_TWO},
-    {"[",               SYMBOL,         MULT,       OP_BR_THREE},
-    {"]",               SYMBOL,         MULT,       CL_BR_THREE},
+    {"(",               SYMBOL,         MULT,       OP_BR_ONE,          0},
+    {")",               SYMBOL,         MULT,       CL_BR_ONE,          0},
+    {"{",               SYMBOL,         MULT,       OP_BR_TWO,          0},
+    {"}",               SYMBOL,         MULT,       CL_BR_TWO,          0},
+    {"[",               SYMBOL,         MULT,       OP_BR_THREE,        0},
+    {"]",               SYMBOL,         MULT,       CL_BR_THREE,        0},
 
-    {"var",             LETTER,         SOLO,       VAR},
-    {"void",            LETTER,         SOLO,       VOID},
-    {"if",              LETTER,         SOLO,       IF},
-    {"else",            LETTER,         SOLO,       ELSE},
-    {"while",           LETTER,         SOLO,       WHILE},
-    {"break",           LETTER,         SOLO,       BREAK},
-    {"continue",        LETTER,         SOLO,       CONTINUE},
-    {"return",          LETTER,         SOLO,       RETURN},
-    {"func_def",        LETTER,         SOLO,       FUNC_DEF},
-    {"func_def_help",   LETTER,         SOLO,       FUNC_DEF_HELP},
-    {"call",            LETTER,         SOLO,       CALL},
+    {"var",             LETTER,         SOLO,       VAR,                207},
+    {"void",            LETTER,         SOLO,       VOID,               208},
+    {"if",              LETTER,         SOLO,       IF,                 201},
+    {"while",           LETTER,         SOLO,       WHILE,              202},
+    {"else",            LETTER,         SOLO,       ELSE,               206},
+    {"return",          LETTER,         SOLO,       RETURN,             402},
+    {"break",           LETTER,         SOLO,       BREAK,              406},
+    {"continue",        LETTER,         SOLO,       CONTINUE,           407},
+
+    {"func_def",        LETTER,         SOLO,       FUNC_DEF,           3},
+    {"func_def_help",   LETTER,         SOLO,       FUNC_DEF_HELP,      4},
+    {"call",            LETTER,         SOLO,       CALL,               401},
 };
 const size_t SIZE_OF_OPERATORS = sizeof(ArrayOperators)/sizeof(ArrayOperators[0]);
 

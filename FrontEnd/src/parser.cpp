@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "tree.h"
 #include "tokenizer.h"
@@ -11,12 +12,13 @@
 #include "verificator.h"
 
 /*
-    ========================
-    |MAKE RECURSIVE DESCENT|
-    ========================
+    =================================================
+    |MAKE RECURSIVE DESCENT AND WRITING TREE TO FILE|
+    =================================================
 */
 
-//GetMain not static
+//=============================================================================================================
+
 static Node_t* GetCommon            (Token_t** PtrCurrentToken);
 static Node_t* GetNumber            (Token_t** PtrCurrentToken);
 static Node_t* GetVariable          (Token_t** PtrCurrentToken);
@@ -39,8 +41,17 @@ static bool     InOperators     (Token_t* CurrentToken);
 static Node_t*  DiffCreateNode  (EnumOfType NewType, NodeValue_t NewValue, Node_t* LeftNode, Node_t* RightNode);
 
 const int NO_FIND = -1;
+static size_t amount_nodes = 0;
 
-Node_t* GetMain(Tokens_t* myTokens)
+//=============================================================================================================
+
+/*
+    ======================================
+    |FUNCTIONS FOR MAKE RECURSIVE DESCENT|
+    ======================================
+*/
+
+Node_t* GetMain(Tokens_t* myTokens, BinaryTree_t* myTree)
 {
     Token_t* current_token = myTokens->Data;
     if (current_token->Type == END) return NULL; //TREE FOR EMPTY CODE
@@ -70,29 +81,12 @@ Node_t* GetMain(Tokens_t* myTokens)
             USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[current_token->Value.Index].Name, return NULL)
         }
     }
+    myTree->Size = amount_nodes;
     return new_node;
-}
-
-size_t  CopyVars(BinaryTree_t* myTree, Tokens_t* myTokens)
-{
-    MYASSERT(myTree, BAD_POINTER_PASSED_IN_FUNC, return 0)
-    MYASSERT(myTokens, BAD_POINTER_PASSED_IN_FUNC, return 0)
-    MYASSERT(myTree->Variables, BAD_POINTER_PASSED_IN_FUNC, return 0)
-    MYASSERT(myTokens->Variables, BAD_POINTER_PASSED_IN_FUNC, return 0)
-
-    for (size_t i = 0; i < SIZE_OF_VARIABLES; i++)
-    {
-        if (myTokens->Variables[i] != NULL)
-        {
-            strncpy(myTree->Variables[i], myTokens->Variables[i], SIZE_OF_VAR);
-        }
-    }
-    return 1;
 }
 
 static Node_t* GetCommon(Token_t** PtrCurrentToken)
 {
-    //TODO: get function def
     Node_t* NewNode = NULL;
     if ((NewNode = GetZeroPriority(PT)) != NULL)    return NewNode;
     if ((NewNode = GetAssignment(PT))   != NULL)    return NewNode;
@@ -300,11 +294,11 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
         {
             (*PT)++;
             right_node = GetCommon(PT);
-            while (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO))
+            while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
             {
                 copy_node = right_node;
                 right_node = GetCommon(PT);
-                if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == DIVIDER))
+                if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
                     right_node = OPR((*PT)->Value.Index, copy_node, right_node);
                     (*PT)++;
@@ -314,20 +308,22 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                     USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[(*PT)->Value.Index].Name, exit(0))
                 }
             }
-            (*PT)++;
-            if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == ELSE))
+            Token_t* current_token = *PT;
+            if ((current_token->Type == OPERATOR) && (ArrayOperators[current_token->Value.Index].Class == ELSE))
             {
+                (*PT)++;
                 int index_else = (*PT)->Value.Index;
                 (*PT)++;
                 if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == OP_BR_TWO))
                 {
                     (*PT)++;
                     middle_node = GetCommon(PT);
-                    while (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO))
+                    while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
                     {
                         copy_node = middle_node;
                         middle_node = GetCommon(PT);
-                        if (((*PT)->Type == OPERATOR)&&(ArrayOperators[(*PT)->Value.Index].Class == DIVIDER))
+                        
+                        if (((*PT)->Type == OPERATOR)&&((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                         {
                             middle_node = OPR((*PT)->Value.Index, middle_node, copy_node);
                             (*PT)++;
@@ -338,7 +334,6 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                         }
                     }
                     right_node = OPR(index_else, right_node, middle_node);
-                    (*PT)++;
                 }
             }
             return OPR(index_if, left_node, right_node);
@@ -378,11 +373,11 @@ static Node_t* GetLoop(Token_t** PtrCurrentToken)
         {
             (*PT)++;
             right_node = GetCommon(PT);
-            while (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO))
+            while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
             {
                 copy_node = right_node;
                 right_node = GetCommon(PT);
-                if (((*PT)->Type == OPERATOR)&&(ArrayOperators[(*PT)->Value.Index].Class == DIVIDER))
+                if (((*PT)->Type == OPERATOR)&&((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
                     right_node = OPR((*PT)->Value.Index, copy_node, right_node);
                     (*PT)++;
@@ -392,7 +387,6 @@ static Node_t* GetLoop(Token_t** PtrCurrentToken)
                     USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[(*PT)->Value.Index].Name, return NULL)
                 }
             }
-            (*PT)++;
             return OPR(index_while, left_node, right_node);
         }
         else
@@ -407,9 +401,9 @@ static Node_t* GetLoop(Token_t** PtrCurrentToken)
 static Node_t* GetFuncCall(Token_t** PtrCurrentToken)
 {
     Token_t* current_token = *PT;
-    Node_t* left_node  = NULL;
-    Node_t* right_node = NULL;
-    Node_t* copy_node  = NULL;
+    Node_t*  left_node     = NULL;
+    Node_t*  right_node    = NULL;
+    Node_t*  copy_node     = NULL;
     if (((current_token)->Type == VARIABLE) && (((++current_token)->Type == OPERATOR) && (ArrayOperators[(current_token)->Value.Index].Class == OP_BR_ONE)))
     {
         int index_call    = 0;
@@ -522,7 +516,8 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
             {
                 copy_node = right_node;
                 right_node = GetCommon(PT);
-                if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == DIVIDER))
+
+                if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
                     right_node = OPR((*PT)->Value.Index, copy_node, right_node);
                     (*PT)++;
@@ -532,7 +527,6 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
                     USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[(*PT)->Value.Index].Name, exit(0))
                 }
             }
-            (*PT)++;
         }
         else
         {
@@ -560,6 +554,12 @@ static Node_t* GetType(Token_t** PtrCurrentToken)
 
 //===========================================================================================================
 
+/*
+    =====================
+    |AUXILIARY FUNCTIONS|
+    =====================
+*/
+
 static int FindOper(const Token_t* CurrentToken, EnumOperClass CurrentClass)
 {
     if ((T->Type == OPERATOR)&&(CurrentClass == ArrayOperators[T->Value.Index].Class))
@@ -577,6 +577,7 @@ static bool InOperators(Token_t* CurrentToken)
 static Node_t* DiffCreateNode (EnumOfType NewType, NodeValue_t NewValue, Node_t* LeftNode, Node_t* RightNode)
 {
     Node_t* NewNode = (Node_t*) calloc (1, sizeof (NewNode[0]));
+    amount_nodes++;
     MYASSERT(NewNode, ERR_BAD_CALLOC, return NULL)
     InitNode(NewNode);
     NewNode->Left   = LeftNode;
@@ -595,4 +596,21 @@ static Node_t* DiffCreateNode (EnumOfType NewType, NodeValue_t NewValue, Node_t*
         NewNode->Value.Index  = NewValue.Index;
     }
     return NewNode;
+}
+
+EnumOfErrors CopyVars(BinaryTree_t* myTree, Tokens_t* myTokens)
+{
+    MYASSERT(myTree, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
+    MYASSERT(myTokens, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
+    MYASSERT(myTree->Variables, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
+    MYASSERT(myTokens->Variables, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
+
+    for (size_t i = 0; i < SIZE_OF_VARIABLES; i++)
+    {
+        if (myTokens->Variables[i] != NULL)
+        {
+            strncpy(myTree->Variables[i], myTokens->Variables[i], SIZE_OF_VAR);
+        }
+    }
+    return ERR_OK;
 }
