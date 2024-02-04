@@ -1,7 +1,0 @@
-0	main
-1	x
-2	y
-3	a
-4	summ
-5	print
-6	b
