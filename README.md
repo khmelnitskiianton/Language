@@ -94,4 +94,4 @@ Logs use GraphViz to visualize graphs in pictures
 
 After generating image it includes to html file `log.html`
 
-<img src="https://github.com/khmelnitskiianton/MyLanguage/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=80% >
+<img src="https://github.com/khmelnitskiianton/MyLanguage/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100% >

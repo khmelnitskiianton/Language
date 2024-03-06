@@ -11,8 +11,6 @@ _deps
 
 ./build
 ./bin
-./.tmp
-./vscode
 ./FrontEnd/CMakeFiles
 ./FrontEnd/cmake_install.cmake
 ./FrontEnd/Makefile
@@ -22,6 +20,9 @@ _deps
 ./BackEnd/CMakeFiles
 ./BackEnd/cmake_install.cmake
 ./BackEnd/Makefile
+
+.tmp/
+.vscode/
 
 ./FrontEnd/log
 ./MiddleEnd/log
