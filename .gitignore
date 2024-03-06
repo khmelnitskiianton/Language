@@ -12,6 +12,7 @@ _deps
 ./build
 ./bin
 ./.tmp
+./vscode
 ./FrontEnd/CMakeFiles
 ./FrontEnd/cmake_install.cmake
 ./FrontEnd/Makefile

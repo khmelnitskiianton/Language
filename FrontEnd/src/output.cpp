@@ -29,28 +29,40 @@ FILE* FileTree = NULL;
 FILE* FileVars = NULL;
 //============================================================================================================
 
-EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* out_file_path)
+EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* out_file_path, const char* in_file_path)
 {
-    static char buffer_path[SIZE_OF_OUT_PATH] = {};
-    snprintf(buffer_path, SIZE_OF_OUT_PATH, "%s/", out_file_path);
-    struct stat sb = {};
-    char buffer_create[SIZE_OF_OUT_COMMAND] = {};
-    if (stat(buffer_path, &sb) || !S_ISDIR(sb.st_mode)) 
+    //Get last '/' in path
+    const char* ptr_of_name = NULL; 
+    size_t position = 0;
+    while (in_file_path[position] != '\0')
     {
-        snprintf(buffer_create, SIZE_OF_OUT_COMMAND, "touch %s" FILE_TREE, buffer_path);
-        system(buffer_create);
-        CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
-        snprintf(buffer_create, SIZE_OF_OUT_COMMAND, "touch %s" FILE_VARS, buffer_path);
-        system(buffer_create);
-        CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
+        if ((in_file_path[position] == '/') || (in_file_path[position] == '\\'))
+        {
+            ptr_of_name = in_file_path + position;
+        }
+        position++;
     }
-    char buffer_file[SIZE_OF_OUT_COMMAND] = {};
-    snprintf(buffer_file, SIZE_OF_OUT_COMMAND, "%s" FILE_TREE, buffer_path);
+    ptr_of_name++; //set on first symbol of name
+
+    //Get nam    while (in_file_path[position] != '\0')
+    position = 0;
+    char buffer_name_file[SIZE_OF_NAME_FILE] = {};
+    while ((ptr_of_name[position] != '\0') && (ptr_of_name[position] != '.'))
+    {
+        buffer_name_file[position] = ptr_of_name[position];
+        position++;
+    }
+    //In buffer_name_file - name of file
+    char buffer_file[SIZE_OF_OUT_PATH] = {};
+    snprintf(buffer_file, SIZE_OF_OUT_PATH, "%s/%s" EXT_TREE, out_file_path, buffer_name_file);
+
+    char buffer_create[SIZE_OF_OUT_COMMAND] = {};
+    snprintf(buffer_create, SIZE_OF_OUT_COMMAND, "touch %s",buffer_file);
+    system(buffer_create);
+    CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
+
     FileTree = OpenFile (buffer_file, "w");
-    CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
-    snprintf(buffer_file, SIZE_OF_OUT_COMMAND, "%s" FILE_VARS, buffer_path);
-    FileVars = OpenFile (buffer_file, "w");
-    CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
+    FileVars = OpenFile (buffer_file, "a");
     Verify(myTree);
     
     PrintRecNode(myTree->Root, FileTree);
@@ -89,7 +101,7 @@ static void PrintVars(BinaryTree_t* myTree, FILE* filestream)
 {
     for (size_t i = 0; i < SIZE_OF_VARIABLES; i++)
     {
-        if (myTree->Variables[i][0] != '\0') fprintf(filestream, "%lu\t%s\n", i, myTree->Variables[i]);
+        if (myTree->Variables[i][0] != '\0') fprintf(filestream, "\n%lu\t%s", i, myTree->Variables[i]);
     }
 }
 

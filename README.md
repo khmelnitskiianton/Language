@@ -1,21 +1,23 @@
-# SCC
-Small Compiler Collection(SCC) - my translation system
+# MyLanguage
+
+Project of translation system - from my language to my assembler with processor.
 
 It consists of 
-- Translator: FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on my assembler (from project [Github Processor](https://github.com/khmelnitskiianton/Processor "my processor")) 
+- Translator: FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on my assembler (from project `Processor`) 
     + FrontEnd: parses code to tree based recursive descent
-    + MiddleEnd: optimizes tree (based on project [Github Differentiator](https://github.com/khmelnitskiianton/Differentiator "my differentiator"))
+    + MiddleEnd: optimizes tree
     + BackEnd: converts tree to code on my assembler
+- My Processor ([```Github Processor```](https://github.com/khmelnitskiianton/Processor)) that work similar to Assembler, but on C and simpler.
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Extra programs](#extra-programs)
-- [Language](#language)
-- [Options of compiling](#options-of-compiling)
-- [Myassert](#myassert)
-- [Verificator](#verificator)
-- [Logs](#logs)
+- [Translator](#translator)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Extra programs](#extra-programs)
+  - [Language](#language)
+  - [Standard](#standart)
+  - [Logs](#logs)
 
 ## Installation
 
@@ -24,40 +26,39 @@ To start program you need to use CMake and run program
 1.  Clone repository
 2.  Compile CMake, write command in main directory in repo
 3.  Run CMake (compile program), write command in main directory in repo
-4.  Run program(before you need to create this file) 
-```c
-git clone https://github.com/khmelnitskiianton/SCC.git
-cd ./SCC
+4.  Run program(before you need to create this file)
+
+```bash
+git clone https://github.com/khmelnitskiianton/MyLanguage.git
+cd ./MyLanguage
 cmake .
 make
-./scc.bat <path to file with code>/<file with code>
+./translator.sh {path to file begin with this repo}/{file with code}
 ```
+
+It will be create folder `.tmp`, there will be logs, and intermediate files
 
 ## Extra programs
 
-Logs using Graphviz to vizualize binary tree!(you can turn them off) 
+Compiler - gcc. Uses - Cmake. Logs using GraphViz to visualize binary tree!
 
-```c
-sudo apt install graphviz
+```bash
+sudo apt update && sudo apt upgrade     #update
+sudo apt install build-essential        #gcc
+sudo apt install make                   #makefile
+sudo apt install cmake                  #cmake
+sudo apt install graphviz               #graphviz
 ```
 
 ## Language
 
-[Grammar of my language](https://github.com/khmelnitskiianton/SCC/blob/main/grammar.pdf)
+*Rules and Grammar of my Language:*
 
-```java
-- Initilizing                       var x;
-- Assignment                        var y = (1+3^2)*a - sum(b,c)/4;
-- Increment_decrement_operators     i++;
-- Condition                         if (a && (b || c)) { ... } else { ... }
-- Loop                              while ((x >= y) == 1) {... break; ... continue;}
-- Define_function                   void foo(var p, var m) { ... return;}
-- Call_function                     hello();
-```
+[```Grammar+Language```](https://github.com/khmelnitskiianton/MyLanguage/blob/main/Language.md)
 
-```java
-Example of code:
+*Example of code:*
 
+```cpp
 void main(){
     var x;
     var x = 0;
@@ -75,36 +76,22 @@ void main(){
 void summ(var a, var b){
     return a+b;
 }
-```
+``` 
 
-## Options of compiling
+## Standard
 
-DEBUG_LOG 
+Generated tree has a standard, with which you can translate my tree without frontend on your asm(with your BackEnd)!
 
-DEBUG_TEX_LOG
+*Standard of generated tree:*
 
-DEBUG_MYASSERT 
-
-DEBUG_VERIFY 
-
-## Myassert
-
-`myassert.h`
-
-Now it relized like MYASSERT() that take all errors with enum and write it to console
-
-## Verificator
-
-`verificator.cpp` `verificator.h` 
-
-Checking tree for loops and other errors. Functions returns EnumOfErrors 
+[```Standard of Tree```](https://github.com/khmelnitskiianton/MyLanguage/blob/main/Standard.md)
 
 ## Logs
 
 `log.cpp` `log.h`
 
-Logs use GraphViz to vizualized graphs in pictures
+Logs use GraphViz to visualize graphs in pictures
 
 After generating image it includes to html file `log.html`
 
-[Example of log](https://github.com/khmelnitskiianton/SCC/blob/main/example_log.svg)
+<img src="https://github.com/khmelnitskiianton/MyLanguage/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=80% >
