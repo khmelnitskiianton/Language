@@ -35,6 +35,7 @@ cmake .
 make
 ./translator.sh {path to file begin with this repo}/{file with code}
 ```
+*Example:* `./translator.sh examples/test_code.sus`
 
 It will be create folder `.tmp`, there will be logs, and intermediate files
 
