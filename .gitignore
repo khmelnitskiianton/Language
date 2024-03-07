@@ -9,23 +9,23 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
-./build
-./bin
-./FrontEnd/CMakeFiles
-./FrontEnd/cmake_install.cmake
-./FrontEnd/Makefile
-./MiddleEnd/CMakeFiles
-./MiddleEnd/cmake_install.cmake
-./MiddleEnd/Makefile
-./BackEnd/CMakeFiles
-./BackEnd/cmake_install.cmake
-./BackEnd/Makefile
+build
+bin
+FrontEnd/CMakeFiles
+FrontEnd/cmake_install.cmake
+FrontEnd/Makefile
+MiddleEnd/CMakeFiles
+MiddleEnd/cmake_install.cmake
+MiddleEnd/Makefile
+BackEnd/CMakeFiles
+BackEnd/cmake_install.cmake
+BackEnd/Makefile
 
 *.tmp
 *.vscode
 .tmp/
 .vscode/
 
-./FrontEnd/frontend.exe
-./MiddleEnd/middleend.exe
-./BackEnd/backend.exe
+FrontEnd/frontend.exe
+MiddleEnd/middleend.exe
+BackEnd/backend.exe
