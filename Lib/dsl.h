@@ -1,5 +1,6 @@
 #ifndef DSL_H
 #define DSL_H
+//DSL FOR WRITING ADDRESSING FOR NODES SIMPLIER
 
 #define L CurrentNode->Left
 #define R CurrentNode->Right

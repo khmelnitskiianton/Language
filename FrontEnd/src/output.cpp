@@ -9,6 +9,7 @@
 #include "output.h"
 #include "colors.h"
 #include "dump.h"
+#include "dsl.h"
 #include "myassert.h"
 #include "verificator.h"
 
@@ -29,32 +30,19 @@ FILE* FileTree = NULL;
 FILE* FileVars = NULL;
 //============================================================================================================
 
-EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* out_file_path, const char* in_file_path)
+EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path)
 {
-    //Get last '/' in path
-    const char* ptr_of_name = NULL; 
+    //Get file path to create <old_file_path>/<same name>.<extension>
     size_t position = 0;
-    while (in_file_path[position] != '\0')
-    {
-        if ((in_file_path[position] == '/') || (in_file_path[position] == '\\'))
-        {
-            ptr_of_name = in_file_path + position;
-        }
-        position++;
-    }
-    ptr_of_name++; //set on first symbol of name
-
-    //Get nam    while (in_file_path[position] != '\0')
-    position = 0;
     char buffer_name_file[SIZE_OF_NAME_FILE] = {};
-    while ((ptr_of_name[position] != '\0') && (ptr_of_name[position] != '.'))
+    while ((in_file_path[position] != '\0') && (in_file_path[position] != '.'))
     {
-        buffer_name_file[position] = ptr_of_name[position];
+        buffer_name_file[position] = in_file_path[position];
         position++;
     }
     //In buffer_name_file - name of file
     char buffer_file[SIZE_OF_OUT_PATH] = {};
-    snprintf(buffer_file, SIZE_OF_OUT_PATH, "%s/%s" EXT_TREE, out_file_path, buffer_name_file);
+    snprintf(buffer_file, SIZE_OF_OUT_PATH, "%s" EXT_TREE, buffer_name_file);
 
     char buffer_create[SIZE_OF_OUT_COMMAND] = {};
     snprintf(buffer_create, SIZE_OF_OUT_COMMAND, "touch %s",buffer_file);
@@ -78,9 +66,9 @@ static void PrintRecNode (Node_t* CurrentNode, FILE* filestream)
     if (!CurrentNode) {fprintf(filestream, " _ "); return;}
     fprintf(filestream, "(");
 
-    PrintNodeValue(CurrentNode, filestream);
-    PrintRecNode(CurrentNode->Left, filestream);
-    PrintRecNode(CurrentNode->Right, filestream);
+    PrintNodeValue(C, filestream);
+    PrintRecNode(L, filestream);
+    PrintRecNode(R, filestream);
 
     fprintf(filestream, ")");
 }
@@ -89,11 +77,11 @@ static void PrintNodeValue(Node_t* CurrentNode, FILE* filestream)
 {
     fprintf(filestream, "%d", CurrentNode->Type);
 
-    if (CurrentNode->Type == NUMBER)    {fprintf(filestream, " %g ", CurrentNode->Value.Number); return;}
-    if (CurrentNode->Type == VARIABLE)  {fprintf(filestream, " %d ", CurrentNode->Value.Index);  return;}
-    if (CurrentNode->Type == OPERATOR) 
+    if (C->Type == NUMBER)    {fprintf(filestream, " %g ", C->Value.Number); return;}
+    if (C->Type == VARIABLE)  {fprintf(filestream, " %d ", C->Value.Index);  return;}
+    if (C->Type == OPERATOR) 
     {
-        fprintf(filestream, " %lu ", ArrayOperators[CurrentNode->Value.Index].Id);
+        fprintf(filestream, " %lu ", ArrayOperators[C->Value.Index].Id);
     }
 }
 

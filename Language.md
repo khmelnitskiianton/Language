@@ -1,13 +1,15 @@
 ## Common rules
 
 ```cpp
-- Initializing                   var x;
-- Assignment                     var y = (1+3^2)*a - sum(b,c)/4;
-- Inc_dec_oper                   i++;
-- Condition                      if (a && (b || c)) { ... } else { ... }
-- Loop                           while ((x >= y) == 1) {... break; ... continue;}
-- Define_function                void foo(var p, var m) { ... return;}
-- Call_function                  hello(); foo(x,y) 
+- Initializing          var x;
+- Assignment            var y = (1+3^2)*a - sum(b,c)/4;
+- Inc_dec_oper          i++;
+- Condition             if (a && (b || c)) { ... } else { ... }
+- Loop                  while ((x >= y) == 1) {... break; ... continue;}
+- Define_function       void foo(var p, var m) { ... return;}
+- Call_function         hello(); foo(x,y) 
+- One line comments     #bla bla
+- Many lines comments   $bla bla bla$
 ```
 
 ## Grammar of my language

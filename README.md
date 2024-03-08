@@ -11,12 +11,12 @@ It consists of
 
 ## Table of Contents
 
-- [Translator](#translator)
+- [MyLanguage](#mylanguage)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Extra programs](#extra-programs)
   - [Language](#language)
-  - [Standard](#standart)
+  - [Standard](#standard)
   - [Logs](#logs)
 
 ## Installation
@@ -81,7 +81,7 @@ void summ(var a, var b){
 
 ## Standard
 
-Generated tree has a standard, with which you can translate my tree without frontend on your asm(with your BackEnd)!
+Generated tree has a standard, with which you can translate Tree without FrontEnd on your asm(with your BackEnd)!
 
 *Standard of generated tree:*
 
@@ -89,10 +89,12 @@ Generated tree has a standard, with which you can translate my tree without fron
 
 ## Logs
 
-`log.cpp` `log.h`
+When programs work, they create folder `.tmp` where will be all logs of translation
 
 Logs use GraphViz to visualize graphs in pictures
 
-After generating image it includes to html file `log.html`
+`log.html` - full generated log of changes while working with tree.
+
+*Example:*
 
 <img src="https://github.com/khmelnitskiianton/MyLanguage/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100% >

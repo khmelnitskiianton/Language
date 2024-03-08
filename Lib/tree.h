@@ -1,5 +1,7 @@
 #ifndef TREE_H
 #define TREE_H
+//TREE HEADER
+
 
 //==============================================================================================================
 //ABOUT ELEMENT
@@ -58,7 +60,7 @@ typedef struct BinaryTree {
 //==============================================================================================================
 //ABOUT FUNCTIONS
 
-#include "errors_enum.h"
+#include "errors_codegen.h" //add EnumOfErrors functions
 
 void            TreeCtor    (BinaryTree_t* myTree);
 EnumOfErrors    TreeDtor    (BinaryTree_t* myTree);

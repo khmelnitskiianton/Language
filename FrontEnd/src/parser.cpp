@@ -7,7 +7,7 @@
 #include "parser.h"
 #include "colors.h"
 #include "log.h"
-#include "DSL.h"
+#include "dsl.h"
 #include "myassert.h"
 #include "verificator.h"
 
@@ -223,18 +223,24 @@ static Node_t* GetAssignment(Token_t** PtrCurrentToken)
     {
         int index_var = (*PT)->Value.Index;
         (*PT)++;
-        Node_t* right_node = GetVariable(PT);        
+        Node_t* left_node  = GetVariable(PT);
+        Node_t* right_node = NULL;
+        Node_t* new_node = NULL;
         if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == EQUAL))
         {
             int index_equal = (*PT)->Value.Index;
             (*PT)++;
-            Node_t* left_node = GetZeroPriority(PT);
-            right_node = OPR(index_equal, right_node, left_node);
+            right_node = GetZeroPriority(PT);
+            right_node = OPR(index_equal, left_node, right_node);
         }
-        right_node = OPR(index_var, NULL, right_node);
-        return right_node;
+        else
+        {
+            right_node = left_node;
+        }
+        new_node = OPR(index_var, NULL, right_node);
+        return new_node;
     }
-    else return NULL;
+    return NULL;
 }
 
 static Node_t* GetFuncLoopEnd(Token_t** PtrCurrentToken)
@@ -344,7 +350,7 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
         }
         return NULL;
     }
-    else return NULL;
+    return NULL;
 }
 
 static Node_t* GetLoop(Token_t** PtrCurrentToken)

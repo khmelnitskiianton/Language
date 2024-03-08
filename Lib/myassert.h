@@ -3,7 +3,7 @@
 
 #include <assert.h>
 #include "colors.h"
-#include "errors_enum.h"
+#include "errors_codegen.h"
 
 #define DEBUG_MYASSERT 1
 
@@ -23,17 +23,17 @@
 #else   
 #define MYASSERT(check, error_code, ending)
 #endif
+
 //===============================================================================================================
 //Write Error unclosed
-#define USER_ERROR(check, error_code, word, ending)                                                       \
+#define USER_ERROR(check, error_code, word, ending)                                                         \
         do                                                                                                  \
         {                                                                                                   \
             if (!(check))                                                                                   \
             {                                                                                               \
-                fprintf(stderr, RED ">>>>> Error! Error code: %s <<<<<\n" RESET, ArrayOfErrors[error_code]);\
-                fprintf(stderr, MAGENTA "%s\n" RESET, word);                                              \
+                fprintf(stderr, RED ">>>>> Error! %s <<<<<\n" RESET, ArrayOfErrors[error_code]);            \
+                fprintf(stderr, MAGENTA "%s" RESET, word);                                                \
                 fprintf(stderr, RED "In File: %s, In Line: %d, In Function: %s\n",__FILE__,__LINE__,__PRETTY_FUNCTION__);\
-                fprintf(stderr, "In this condition:\t\"%s\"\n\n" RESET, #check);                            \
                 ending;                                                                                     \
             }                                                                                               \
         }                                                                                                   \

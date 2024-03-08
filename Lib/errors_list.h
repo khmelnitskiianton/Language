@@ -1,3 +1,4 @@
+//CODE-GENERATED DEFINED ERRORS <NAME>-<MESSAGE>
 DEF_ERROR(OK,                           "Everything is ok!")
 DEF_ERROR(BAD_POINTER_TREE,             "Bad pointer of tree was passed in function")
 DEF_ERROR(BAD_POINTER_NODE,             "Bad pointer of node was passed in function")
@@ -22,7 +23,7 @@ DEF_ERROR(OVERFLOW_VARIABLES,           "Amount of variables is < 50! Please wri
 DEF_ERROR(EMPTY_FILE,                   "Your code file is empty!")
 DEF_ERROR(UNKNOWN_OBJ,                  "Something strange in your code! It's not a variable and not oper/num/bracket!")
 DEF_ERROR(BAD_TOKEN,                    "Strange token!")
-DEF_ERROR(FORGOT_ARGS_IN_START,         "You forgot arguments when starting program!")
+DEF_ERROR(FORGOT_ARGS_IN_START,         "Missing args in frontend.exe! Try >frontend.exe {folder of temorary files} {path to source code}")
 
 DEF_ERROR(NO_OPEN_BRACKET,              "You forgot open bracket!")
 DEF_ERROR(NO_CLOSE_BRACKET,             "You forgot close bracket!")

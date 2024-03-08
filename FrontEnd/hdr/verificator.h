@@ -1,8 +1,9 @@
 #ifndef VERIFICATOR_H
 #define VERIFICATOR_H
+//SIMPLE VERIFICATOR FOR TREE
 
 #include "dump.h"
-#include "errors_enum.h"
+#include "errors_codegen.h"
 
 #define DEBUG_VERIFY 1
 

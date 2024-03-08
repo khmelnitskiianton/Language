@@ -1,5 +1,6 @@
 #ifndef DUMP_H
 #define DUMP_H
+//SIMPLE DUMP FOR DEBUGGING
 
 #include "colors.h"
 
