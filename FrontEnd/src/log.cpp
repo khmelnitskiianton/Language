@@ -24,7 +24,7 @@ static FILE* OpenFile      (const char* file_open, const char* option);
 static void  CloseFile     (FILE* file_text);
 static void  CleanCharBuffer(char* buffer, const size_t buffer_size);
 
-void _PrintLogStart (const char* log_file_path, const char* path_of_code)
+EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code)
 {
     MYASSERT(log_file_path, ERR_BAD_OPEN_FILE, return)
     snprintf(buffer_path, SIZE_OF_PATH, "%s/" FOLDER_LOG "/", log_file_path);
@@ -48,6 +48,7 @@ void _PrintLogStart (const char* log_file_path, const char* path_of_code)
     FileLog = OpenFile (buffer_file, "w");
 
     char* code_buffer = CreateDirtyBuffer(path_of_code);
+    if (!code_buffer) return ERR_NO_FILE_TO_OPEN;
 
     fprintf(FileLog,    "<!DOCTYPE html>\n"
                         "<html lang=\"eng\">\n"
@@ -78,6 +79,7 @@ void _PrintLogStart (const char* log_file_path, const char* path_of_code)
                         "</p>\n\n",
                         code_buffer); 
     free(code_buffer);
+    return ERR_OK;
 }
 
 void _PrintLogFinish (void)

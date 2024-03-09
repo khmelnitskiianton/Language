@@ -19,11 +19,11 @@
 	#define PrintLogText(string)
 #endif
 
-void    _PrintLogTree (BinaryTree_t* myTree, 
+void            _PrintLogTree (BinaryTree_t* myTree, 
                     const char* file,  const char* function, const size_t line);
-void    _PrintLogStart (const char* log_file_path, const char* path_of_code);
-void  	_PrintLogFinish (void);
-void  	_PrintLogText (const char* log_string, const char* file,  const char* function, const size_t line);
+EnumOfErrors    _PrintLogStart (const char* log_file_path, const char* path_of_code);
+void  	        _PrintLogFinish (void);
+void  	        _PrintLogText (const char* log_string, const char* file,  const char* function, const size_t line);
 
 #define FOLDER_LOG "log_frontend"
 #define FILE_LOG "log.html"

@@ -1,12 +1,7 @@
 void main(){
-    var y;
-    var x = 0;
-    if (a)
+    if {}
+    while (a)
     {
-        printf(x);
+        var x = 0;
     }
-}
-void summ(){
-    return a+b;
-    var a;
 }

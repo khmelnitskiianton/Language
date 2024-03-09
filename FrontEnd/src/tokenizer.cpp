@@ -51,7 +51,7 @@ char* CreateDirtyBuffer (const char* file_database)
     MYASSERT(file_database, ERR_WHAT_FILE_OF_DATA, return NULL)
 
     FILE* FileRead = OpenFile (file_database, "rb");
-    USER_ERROR(FileRead, ERR_NO_FILE_TO_OPEN, "", exit(0))
+    if (!FileRead) return NULL;
 
     size_t size_text = FileSize (FileRead);
     char* text_buffer = NULL;

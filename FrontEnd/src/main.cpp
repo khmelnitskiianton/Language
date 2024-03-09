@@ -37,18 +37,23 @@ int main(int argc, char *argv[])
         snprintf(buffer_create_folder, SIZE_OF_COMMAND, "mkdir %s", argv[1]);
         system(buffer_create_folder);
     }
+    
     //=========================================================================
     //INITIALIZATION
     BinaryTree_t myTree   = {};
     Tokens_t     myTokens = {};
     TreeCtor(&myTree);
     TokensCtor(&myTokens);
-    PrintLogStart(argv[1], argv[2]);
+    if (PrintLogStart(argv[1], argv[2]) == ERR_NO_FILE_TO_OPEN) 
+    {
+        USER_ERROR(0, ERR_NO_FILE_TO_OPEN, "", exit(0))
+    }
     PrintLogTree(&myTree);
     fprintf(stdout, GREEN "#Initializing complete!\n" RESET);
     //=========================================================================
     //READ DATA
     char* code_buffer = CreateDirtyBuffer(argv[2]);
+    USER_ERROR(code_buffer, ERR_NO_FILE_TO_OPEN, "", exit(0))
     fprintf(stdout, GREEN "#Reading complete!\n" RESET);
     //=========================================================================
     //CREATE ARRAY OF TOKENS
@@ -57,7 +62,7 @@ int main(int argc, char *argv[])
     //=========================================================================
     //CREATE RECURSIVE DESCENT
     CopyVars(&myTree, &myTokens);
-    myTree.Root = GetMain(&myTokens, &myTree); 
+    myTree.Root = GetMain(&myTokens, &myTree);
     PrintLogTree(&myTree);
     //=========================================================================
     //PRINT TREE

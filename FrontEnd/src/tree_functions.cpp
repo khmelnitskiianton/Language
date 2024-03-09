@@ -38,8 +38,8 @@ EnumOfErrors TreeDtor (BinaryTree_t* myTree)
 
 void RecFree (Node_t* CurrentNode)
 {
-    MYASSERT(CurrentNode, ERR_BAD_POINTER_NODE, return)
-
+    if (!CurrentNode) return;
+    
     if (CurrentNode->Left)
     {
         RecFree (CurrentNode->Left);

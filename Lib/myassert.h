@@ -5,7 +5,7 @@
 #include "colors.h"
 #include "errors_codegen.h"
 
-#define DEBUG_MYASSERT 1
+#define DEBUG_MYASSERT 0
 
 #ifdef DEBUG_MYASSERT
 #define MYASSERT(check, error_code, ending)                                                                             \
