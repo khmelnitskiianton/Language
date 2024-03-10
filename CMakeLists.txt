@@ -6,6 +6,11 @@ set(CMAKE_CXX_FLAGS "-D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Wag
 
 include_directories(./Lib)
 
+set(PREF_LIB "Lib")
+
+FILE(GLOB SRC_LIB ${PREF_LIB}/*.cpp)
+FILE(GLOB HDR_LIB ${PREF_LIB}/*.h)
+
 add_subdirectory(FrontEnd)
 #add_subdirectory(BackEnd)
 #add_subdirectory(MiddleEnd)

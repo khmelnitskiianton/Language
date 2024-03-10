@@ -1,7 +1,17 @@
 void main(){
-    if {}
-    while (a)
-    {
-        var x = 0;
+    var x;
+    var x = 0;
+    var y = (2+0)^1 - 4;
+    var a = summ(x, y);
+    if (a) {
+        print(x);
     }
+    while (y != 5){
+        y++;
+        print(y);
+    }
+}
+
+void summ(var a, var b){
+    return a+b;
 }

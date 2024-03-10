@@ -26,7 +26,7 @@ static void  CleanCharBuffer(char* buffer, const size_t buffer_size);
 
 EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code)
 {
-    MYASSERT(log_file_path, ERR_BAD_OPEN_FILE, return)
+    MYASSERT(log_file_path, ERR_BAD_OPEN_FILE, return ERR_BAD_POINTER_PASSED_IN_FUNC)
     snprintf(buffer_path, SIZE_OF_PATH, "%s/" FOLDER_LOG "/", log_file_path);
     struct stat sb = {};
     char buffer_create[SIZE_OF_COMMAND] = {};
