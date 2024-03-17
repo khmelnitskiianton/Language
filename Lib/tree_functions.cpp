@@ -17,7 +17,8 @@ void TreeCtor (BinaryTree_t* myTree)
     myTree->Size = 0;
     for (size_t i = 0; i < SIZE_OF_VARIABLES; i++)
     {
-        myTree->Variables[i][0] = {};
+        myTree->Variables[i].Name[0] = '\0';
+        myTree->Variables[i].Number = 0;
     }
 }
 

@@ -4,10 +4,11 @@
 #include <string.h>
 
 #include "tree.h"
-#include "tokenizer.h"
-#include "parser.h"
+#include "creator.h"
+#include "MyLangConfig.h"
 #include "log.h"
 #include "myassert.h"
+#include "verificator.h"
 
 static size_t NumImage  = 0;
 static char   buffer_path[SIZE_OF_PATH] = {};

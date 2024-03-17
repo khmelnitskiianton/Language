@@ -12,7 +12,7 @@ My tree file is named similar to source and has extension `.tree`
 
 `<type of data> <data>`
 
-Type of data in {0,1,2}
+Type of data in {1,2,3}
 
 - `1`: Operator, data - code in table for each operator in language
 - `2`: Number,   data - number, int/double in format `1.0`

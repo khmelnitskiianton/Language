@@ -24,7 +24,11 @@ DEF_ERROR(EMPTY_FILE,                   "Your code file is empty!")
 DEF_ERROR(UNKNOWN_OBJ,                  "Something strange in your code! It's not a variable and not oper/num/bracket!")
 DEF_ERROR(BAD_TOKEN,                    "Strange token!")
 DEF_ERROR(FORGOT_ARGS_IN_START,         "Missing args in frontend.exe! Try >frontend.exe {folder of temorary files} {path to source code}")
+DEF_ERROR(OVERFLOW_BUFF,                "Buffer of buffer is overflow")
 
 DEF_ERROR(NO_OPEN_BRACKET,              "You forgot open bracket!")
 DEF_ERROR(NO_CLOSE_BRACKET,             "You forgot close bracket!")
 DEF_ERROR(NO_DIVIDER,                   "You forgot divider after expression!")
+
+DEF_ERROR(BAD_VARS,                     "In file with tree, bad table of vars!")
+DEF_ERROR(BAD_VARS_INDEX,               "In file with tree, bad indexies in table of vars!")

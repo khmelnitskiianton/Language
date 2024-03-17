@@ -33,12 +33,19 @@ FILE* FileVars = NULL;
 EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path)
 {
     //Get file path to create <old_file_path>/<same name>.<extension>
-    size_t position = 0;
+    size_t position = strlen(in_file_path)+1;
     char buffer_name_file[SIZE_OF_NAME_FILE] = {};
-    while ((in_file_path[position] != '\0') && (in_file_path[position] != '.'))
+    while ((position > 0) && (in_file_path[position] != '.'))
     {
-        buffer_name_file[position] = in_file_path[position];
-        position++;
+        position--;
+    }
+    if (!position)
+    {
+        position = strlen(in_file_path);
+    }
+    for (size_t i = 0; i < position; i++)
+    {
+        buffer_name_file[i] = in_file_path[i];    
     }
     //In buffer_name_file - name of file
     char buffer_file[SIZE_OF_OUT_PATH] = {};
@@ -48,6 +55,7 @@ EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path)
     snprintf(buffer_create, SIZE_OF_OUT_COMMAND, "touch %s",buffer_file);
     system(buffer_create);
     CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
+    fprintf(stdout, BLUE "[was created tree file: %s]\n" RESET, buffer_file);
 
     FileTree = OpenFile (buffer_file, "w");
     FileVars = OpenFile (buffer_file, "a");
@@ -89,7 +97,7 @@ static void PrintVars(BinaryTree_t* myTree, FILE* filestream)
 {
     for (size_t i = 0; i < SIZE_OF_VARIABLES; i++)
     {
-        if (myTree->Variables[i][0] != '\0') fprintf(filestream, "\n%lu\t%s", i, myTree->Variables[i]);
+        if (myTree->Variables[i].Name[0] != '\0') fprintf(filestream, "\n%lu\t%s", i, myTree->Variables[i].Name);
     }
 }
 

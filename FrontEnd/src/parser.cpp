@@ -817,7 +817,7 @@ EnumOfErrors CopyVars(BinaryTree_t* myTree, Tokens_t* myTokens)
     {
         if (myTokens->Variables[i] != NULL)
         {
-            strncpy(myTree->Variables[i], myTokens->Variables[i], SIZE_OF_VAR);
+            strncpy(myTree->Variables[i].Name, myTokens->Variables[i], SIZE_OF_VAR);
         }
     }
     return ERR_OK;
