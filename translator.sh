@@ -1,7 +1,6 @@
 #!/bin/bash
 #=================================
 log_folder="./.tmp"
-ext_code=".sus"
 ext_tree=".tree"
 #=================================
 color_grey="\033[1;30m"
@@ -15,6 +14,10 @@ color_white="\033[1;37m"
 color_reset="\033[1;0m"
 fail_run="\nRunning failed."
 #=================================
+
+code_file=""    #source file
+name_file=""    #name of file without extension
+tree_file=""    #tree file created from source
 
 #Check for zero args
 if [ $# -eq 0 ] 
@@ -43,7 +46,7 @@ pos_dot=$(( ${#str} - ${#substr} - $reverse_index ))
 if [ $pos_dot -eq -1 ]
 then
 name_file=$code_file
-tree_file=${name_file}.tree
+tree_file=${name_file}${ext_tree}
 else
 name_file_arr=()       #else create name_of tree
 curr_pos=0
@@ -54,18 +57,15 @@ do
     curr_pos=$((curr_pos+1))
 done
 printf -v name_file '%s' "${name_file_arr[@]}"
-tree_file=${name_file}.tree
+tree_file=${name_file}${ext_tree}
 fi
 
-echo -e "Name of file: ${name_file}"
+echo -e "Name of file: $name_file"
 echo -e "Name of code: $code_file"
 echo -e "Name of tree: $tree_file"
 
-
-
 if [ $# -eq 1 ]
 then 
-    echo -e "Source file: $1"
     if [[ -f $1 ]];
     then
         if [ -f "./FrontEnd/frontend.exe" ] && [ -f "./MiddleEnd/middleend.exe" ]
