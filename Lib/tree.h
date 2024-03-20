@@ -73,5 +73,6 @@ EnumOfErrors    TreeDtor    (BinaryTree_t* myTree);
 void            InitNode    (Node_t* NewNode);
 Node_t*         CreateNode  (BinaryTree_t* myTree);
 void            RecFree     (Node_t* CurrentNode);
+bool            Compare     (double x, double y);
 
 #endif

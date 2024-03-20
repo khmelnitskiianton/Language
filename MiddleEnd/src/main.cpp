@@ -4,6 +4,7 @@
 
 #include "tree.h"
 #include "creator.h"
+#include "optimizier.h"
 #include "colors.h"
 #include "MyLangConfig.h"
 #include "dump.h"
@@ -57,6 +58,10 @@ int main(int argc, char *argv[])
     }
     PrintLogTree(&myTree);
         fprintf(stdout, GREEN "#reading complete!\n" RESET);
+    //=========================================================================
+    //OPTIMIZATION
+    TreeOptimize(&myTree);
+    PrintLogTree(&myTree);
     //=========================================================================
     //DESTRUCTION
 destruction_label:

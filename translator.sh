@@ -1,7 +1,15 @@
 #!/bin/bash
-#=================================
+#====================================================
+#               Launcher for my Language            #
+#====================================================
+
 log_folder="./.tmp"
 ext_tree=".tree"
+
+code_file=""    #source file
+name_file=""    #name of file without extension
+tree_file=""    #tree file created from source
+
 #=================================
 color_grey="\033[1;30m"
 color_red="\033[1;31m"
@@ -14,11 +22,6 @@ color_white="\033[1;37m"
 color_reset="\033[1;0m"
 fail_run="\nRunning failed."
 #=================================
-
-code_file=""    #source file
-name_file=""    #name of file without extension
-tree_file=""    #tree file created from source
-
 #Check for zero args
 if [ $# -eq 0 ] 
     then 
@@ -60,9 +63,9 @@ printf -v name_file '%s' "${name_file_arr[@]}"
 tree_file=${name_file}${ext_tree}
 fi
 
-echo -e "Name of file: $name_file"
-echo -e "Name of code: $code_file"
-echo -e "Name of tree: $tree_file"
+echo -e "Name of file without ext:  $name_file"
+echo -e "Name of file with code:    $code_file"
+echo -e "Name of file with tree:    $tree_file"
 
 if [ $# -eq 1 ]
 then 

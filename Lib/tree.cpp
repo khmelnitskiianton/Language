@@ -20,6 +20,7 @@ void TreeCtor (BinaryTree_t* myTree)
         myTree->Variables[i].Name[0] = '\0';
         myTree->Variables[i].Number = 0;
     }
+    myTree->ChangeOptimize = 0;
 }
 
 EnumOfErrors TreeDtor (BinaryTree_t* myTree)
@@ -72,3 +73,10 @@ Node_t* CreateNode (BinaryTree_t* myTree)
     return NewNode;
 }
 
+bool Compare (double x, double y)
+{
+    if (((isnan (x) == 1) && (isnan (y) == 1)) || (fabs (x - y) < EPSILONE))
+        return 1;
+    else
+        return 0;
+}

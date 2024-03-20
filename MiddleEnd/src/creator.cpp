@@ -123,7 +123,7 @@ static EnumOfErrors RecScanTree(size_t* position, const char* text_buffer, Node_
         //1. Scan Value
         size_t shift = 0;
         //put in buffer object
-        while ((isdigit(*(text_buffer + *position)))||(isspace(*(text_buffer + *position)))) 
+        while ((isdigit(*(text_buffer + *position)))||(isspace(*(text_buffer + *position)))||(*(text_buffer + *position) == '.')) 
         {
             //printf("Найден2: %c %d\n", *(text_buffer + *position), *position);
             if (shift == SIZE_OF_BUFFER){
@@ -217,7 +217,7 @@ static EnumOfErrors ProcessObject (char* object_buffer, Node_t* NewNode)
         USER_ERROR(0, ERR_BAD_VALUE_OF_DATA, "",global_bool_verify = 1)
         return ERR_BAD_VALUE_OF_DATA;
     }
-    //scna number
+    //scan number
     double number_arg = NAN;
     if (type_node == NUMBER)
     {
@@ -231,7 +231,7 @@ static EnumOfErrors ProcessObject (char* object_buffer, Node_t* NewNode)
         return ERR_OK;
     }
     int index_arg = -1;
-    if (sscanf(ptr_arg, " %d ", &index_arg) != 1)  //если цифра 100% число
+    if (sscanf(ptr_arg, " %d ", &index_arg) != 1)
     {
         USER_ERROR(0, ERR_BAD_VALUE_OF_DATA, "", global_bool_verify = 1)
         return ERR_BAD_VALUE_OF_DATA;

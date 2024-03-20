@@ -442,7 +442,8 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                     }
                 }
             }
-            Token_t* current_token = *PT;
+            Token_t* current_token = (*PT);
+            current_token++;
             if ((current_token->Type == OPERATOR) && (ArrayOperators[current_token->Value.Index].Class == ELSE))
             {
                 (*PT)++;
@@ -711,7 +712,7 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
 
                 if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
-                    right_node = OPR((*PT)->Value.Index, copy_node, right_node);
+                    right_node = OPR(DIVIDER, copy_node, right_node);
                     (*PT)++;
                 }
                 else 
