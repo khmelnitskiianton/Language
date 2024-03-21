@@ -4,11 +4,9 @@
 #include <string.h>
 
 #include "tree.h"
-#include "tokenizer.h"
-#include "parser.h"
 #include "output.h"
 #include "colors.h"
-#include "dump.h"
+#include "MyLangConfig.h"
 #include "dsl.h"
 #include "myassert.h"
 #include "verificator.h"

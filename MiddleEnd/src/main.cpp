@@ -7,7 +7,7 @@
 #include "optimizier.h"
 #include "colors.h"
 #include "MyLangConfig.h"
-#include "dump.h"
+#include "output.h"
 #include "log.h"
 #include "myassert.h"
 #include "verificator.h"
@@ -62,6 +62,9 @@ int main(int argc, char *argv[])
     //OPTIMIZATION
     TreeOptimize(&myTree);
     PrintLogTree(&myTree);
+    //=========================================================================
+    //PRINT TREE
+    PrintTree(&myTree, argv[2]);
     //=========================================================================
     //DESTRUCTION
 destruction_label:

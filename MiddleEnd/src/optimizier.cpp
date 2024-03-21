@@ -19,6 +19,7 @@ static bool         RecOptimizeConst(Node_t* CurrentNode, BinaryTree_t* myTree);
 static EnumOfErrors RecOptimizeNeutral(Node_t* CurrentNode, BinaryTree_t* myTree);
 static EnumOfErrors DeleteNeutralNode(Node_t* NeutralNode, Node_t* BranchNode, BinaryTree_t* myTree);
 static EnumOfErrors DeleteNeutralBranch(Node_t* CurrentNode, double NewValue);
+static EnumOfErrors RecOptimizeCondLoop(Node_t* CurrentNode, BinaryTree_t* myTree);
 
 EnumOfErrors TreeOptimize(BinaryTree_t* myTree)
 {
@@ -26,25 +27,28 @@ EnumOfErrors TreeOptimize(BinaryTree_t* myTree)
     while (myTree->ChangeOptimize)
     {
         myTree->ChangeOptimize = 0;
-        RecOptimizeConst  (myTree->Root, myTree);
-        RecOptimizeNeutral(myTree->Root, myTree);
+        RecOptimizeConst   (myTree->Root, myTree);
+        RecOptimizeNeutral (myTree->Root, myTree);
+        RecOptimizeCondLoop(myTree->Root, myTree);
         PrintLogTree(myTree);
     }
     return ERR_OK;
 }
 
-//1. Свертка констант done 
+//1. Const killing done
 /* 
     0*... ...*0 1*... ...*1
     0+... ...+0
     0-... ...-0
     .../1
     ...^0 0^... ...^1 1^...
+    &&
+    ||
 */
 
 static EnumOfErrors RecOptimizeNeutral(Node_t* CurrentNode, BinaryTree_t* myTree)
 {
-    if (!C) {return ERR_OK;}
+    if (!C) return ERR_OK;
     if (C->Type == OPERATOR)
     {
         int index_arith_oper = FindArithOper(C);   //index in calc_operators arith 
@@ -73,6 +77,16 @@ static EnumOfErrors RecOptimizeNeutral(Node_t* CurrentNode, BinaryTree_t* myTree
                 if (ISNUM(R, 1)) {DeleteNeutralNode(R, L, myTree);  TREE_CHANGED; return ERR_OK;}
                 if (ISNUM(L, 0)) {DeleteNeutralBranch(C, 0);        TREE_CHANGED; return ERR_OK;}
                 if (ISNUM(R, 0)) {DeleteNeutralBranch(C, 0);        TREE_CHANGED; return ERR_OK;}
+            break;
+            case 50: //&&
+                if (ISNUM(L, 1)) {DeleteNeutralNode(L, R, myTree);  TREE_CHANGED; return ERR_OK;}
+                if (ISNUM(R, 1)) {DeleteNeutralNode(R, L, myTree);  TREE_CHANGED; return ERR_OK;}
+                if (ISNUM(L, 0)) {DeleteNeutralBranch(C, 0);        TREE_CHANGED; return ERR_OK;}
+                if (ISNUM(R, 0)) {DeleteNeutralBranch(C, 0);        TREE_CHANGED; return ERR_OK;}
+            break;
+            case 42: //+ 
+                if (ISNUM(L, 0)) {DeleteNeutralNode(L, R, myTree);  TREE_CHANGED; return ERR_OK;}
+                if (ISNUM(R, 0)) {DeleteNeutralNode(R, L, myTree);  TREE_CHANGED; return ERR_OK;}            
             break;
             default: break;
         }
@@ -164,4 +178,77 @@ static bool RecOptimizeConst(Node_t* CurrentNode, BinaryTree_t* myTree)
     }
 
     return 0;
+}
+
+static EnumOfErrors RecOptimizeCondLoop(Node_t* CurrentNode, BinaryTree_t* myTree)
+{
+    if (!C) return ERR_OK;
+    if ((C->Type == OPERATOR)&&(ArrayOperators[C->Value.Index].Class == IF))
+    {
+        bool cond_number = (L->Type == NUMBER);
+        bool else_node = 0;
+        if (R)
+        {
+            else_node = ((R->Type == OPERATOR) && (ArrayOperators[R->Value.Index].Class == ELSE));
+        }
+        if (cond_number && (!else_node)) 
+        {
+            if (Compare(L->Value.Number, 0))    // if (0) {...}
+            {
+                if ((P->Left)  == C) (P->Left)  = NULL;
+                if ((P->Right) == C) (P->Right) = NULL;
+                RecFree(C);
+                TREE_CHANGED; 
+                return ERR_OK;
+            }
+            if (!Compare(L->Value.Number, 0))    // if (number not zero) {...}
+            {
+                if ((P->Left) == C)  {(P->Left)  = R; (R->Parent) = P;}
+                if ((P->Right) == C) {(P->Right) = R; (R->Parent) = P;}
+                free(L);
+                free(C);
+                TREE_CHANGED;
+                return ERR_OK;
+            }
+        }
+        if (cond_number && else_node) 
+        {
+            if (Compare(L->Value.Number, 0))    // if (0) {...}
+            {
+                if ((P->Left)  == C) {(P->Left)  = R->Right; R->Right->Parent = P;}
+                if ((P->Right) == C) {(P->Right) = R->Right; R->Right->Parent = P;}
+                RecFree(R->Left);
+                free(R);
+                free(L);
+                free(C);
+                TREE_CHANGED; 
+                return ERR_OK;
+            }
+            if (!Compare(L->Value.Number, 0))    // if (1) {...}
+            {
+                if ((P->Left)  == C) {(P->Left)  = R->Left; R->Left->Parent = P;}
+                if ((P->Right) == C) {(P->Right) = R->Left; R->Left->Parent = P;}
+                RecFree(R->Right);
+                free(R);
+                free(L);
+                free(C);
+                TREE_CHANGED; 
+                return ERR_OK;
+            }
+        }
+    }
+    if ((C->Type == OPERATOR)&&(ArrayOperators[C->Value.Index].Class == WHILE))
+    {
+        if (Compare(L->Value.Number, 0))    // if (0) {...}
+        {
+            if ((P->Left)  == C) (P->Left)  = NULL;
+            if ((P->Right) == C) (P->Right) = NULL;
+            RecFree(C);
+            TREE_CHANGED; 
+            return ERR_OK;
+        }
+    }
+    RecOptimizeCondLoop(L, myTree);
+    RecOptimizeCondLoop(R, myTree);
+    return ERR_OK;
 }

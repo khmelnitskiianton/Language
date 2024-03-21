@@ -17,6 +17,8 @@ It consists of
   - [Extra programs](#extra-programs)
   - [Language](#language)
   - [Standard](#standard)
+  - [FrontEnd](#frontend)
+  - [MiddleEnd](#middleend)
   - [Logs](#logs)
 
 ## Installation
@@ -86,6 +88,16 @@ Generated tree has a standard, with which you can translate Tree without FrontEn
 *Standard of generated tree:*
 
 [```Standard of Tree```](https://github.com/khmelnitskiianton/MyLanguage/blob/main/Standard.md)
+
+## FrontEnd
+
+Based on recursive descent create a file with tree and table of variables with `.tree` extension
+
+## MiddleEnd
+
+Optimizes tree
+
+Now optimizations: convolution of constants, neutral arithmetic operands and convolution of condition `if(0/num){}else{}` and loops `while(0)`
 
 ## Logs
 
