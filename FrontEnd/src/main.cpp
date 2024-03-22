@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "tokenizer.h"
 #include "parser.h"
+#include "creator.h"
 #include "output.h"
 #include "colors.h"
 #include "dump.h"

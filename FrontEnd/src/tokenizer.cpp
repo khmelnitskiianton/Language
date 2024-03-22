@@ -46,26 +46,6 @@ static bool         CheckIfVar          (const char* maybe_var);
 //========================================================================================================
 //READ TEXT FROM FILE
 
-char* CreateDirtyBuffer (const char* file_database)
-{
-    MYASSERT(file_database, ERR_WHAT_FILE_OF_DATA, return NULL)
-
-    FILE* FileRead = OpenFile (file_database, "rb");
-    if (!FileRead) return NULL;
-
-    size_t size_text = FileSize (FileRead);
-    char* text_buffer = NULL;
-    text_buffer = (char*) calloc (size_text + 1, sizeof (char));
-    MYASSERT(text_buffer, ERR_BAD_CALLOC, return NULL)
-    size_t result_size = fread (text_buffer, 1, size_text, FileRead);
-    MYASSERT(result_size == size_text, ERR_BAD_FREAD, return NULL)
-
-	*(text_buffer + size_text) = '\0';
-    CloseFile (FileRead);
-
-    return text_buffer;   
-}
-
 static FILE* OpenFile (const char* file_open, const char* option)
 {
     FILE *FileOpen = fopen (file_open, option);

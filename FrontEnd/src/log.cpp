@@ -5,6 +5,7 @@
 
 #include "tree.h"
 #include "tokenizer.h"
+#include "creator.h"
 #include "parser.h"
 #include "log.h"
 #include "myassert.h"
@@ -20,8 +21,6 @@ static void  GenerateGraph (BinaryTree_t* myTree);
 static void  WriteNode     (Node_t* CurrentNode, BinaryTree_t* myTree);
 static void  WriteHead     (BinaryTree_t* myTree);
 static void  WriteTree     (BinaryTree_t* myTree);
-static FILE* OpenFile      (const char* file_open, const char* option);
-static void  CloseFile     (FILE* file_text);
 static void  CleanCharBuffer(char* buffer, const size_t buffer_size);
 
 EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code)
@@ -166,22 +165,6 @@ static FILE* GenerateImage (void)
     FILE* pPipe = popen (buffer_cmd, "r");
     MYASSERT(pPipe, ERR_BAD_OPEN_FILE, )
     return pPipe;
-}
-
-static FILE* OpenFile (const char* file_open, const char* option)
-{
-    FILE *FileOpen = fopen (file_open, option);
-
-    MYASSERT(FileOpen, ERR_OPEN_FILE, return 0);
-
-    return FileOpen;
-}
-
-static void CloseFile (FILE* file_text)
-{
-	MYASSERT(file_text, ERR_BAD_POINTER_PASSED_IN_FUNC, assert(0));
-    int result = fclose(file_text);
-	MYASSERT(!result, ERR_CLOSE_FILE, assert(0));
 }
 
 static void WriteTree (BinaryTree_t* myTree)

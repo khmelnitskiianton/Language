@@ -13,4 +13,4 @@ FILE(GLOB HDR_LIB ${PREF_LIB}/*.h)
 
 add_subdirectory(FrontEnd)
 add_subdirectory(MiddleEnd)
-#add_subdirectory(BackEnd)
+add_subdirectory(BackEnd)

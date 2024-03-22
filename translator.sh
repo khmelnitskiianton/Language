@@ -71,11 +71,11 @@ if [ $# -eq 1 ]
 then 
     if [[ -f $1 ]];
     then
-        if [ -f "./FrontEnd/frontend.exe" ] && [ -f "./MiddleEnd/middleend.exe" ]
+        if [ -f "./FrontEnd/frontend.exe" ] && [ -f "./MiddleEnd/middleend.exe" ] && [ -f "./BackEnd/backend.exe" ]
         then
-            ./FrontEnd/frontend.exe $log_folder $code_file && ./MiddleEnd/middleend.exe $log_folder $tree_file
+            ./FrontEnd/frontend.exe $log_folder $code_file && ./MiddleEnd/middleend.exe $log_folder $tree_file && ./BackEnd/backend.exe $log_folder $tree_file
         else
-            echo -e $color_red"FrontEnd or MiddleEnd program not found.$fail_run" $reset
+            echo -e $color_red"FrontEnd or MiddleEnd or BackEnd program not found.$fail_run" $reset
         fi
     else
         echo -e $color_red"File not found or its not a file.$fail_run" $reset

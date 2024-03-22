@@ -4,18 +4,16 @@
 
 #include "tree.h"
 #include "creator.h"
-#include "optimizier.h"
 #include "colors.h"
 #include "MyLangConfig.h"
-#include "output.h"
 #include "log.h"
 #include "myassert.h"
 #include "verificator.h"
 
 /*
-    =========================
-    |OPTIMIZIER OF LANG TREE|
-    =========================
+    ==============================
+    |TRANSLATOR TREE IN PROCESSOR|
+    ==============================
 */
 
 //=============================================================================
@@ -25,7 +23,7 @@ int main(int argc, char *argv[])
     //=========================================================================
     //STARTING
     USER_ERROR(argc == 3, ERR_FORGOT_ARGS_IN_START, "\0",return 0;)
-    fprintf(stdout, GREEN "\n<<<middleend begin>>>\n" RESET);
+    fprintf(stdout, GREEN "\n<<<backend begin>>>\n" RESET);
     printf(GREEN "<file to read  code: %s>\n" RESET, argv[2]);
     printf(GREEN "<file to write logs: %s>\n" RESET, argv[1]);
     //=========================================================================
@@ -37,7 +35,6 @@ int main(int argc, char *argv[])
         snprintf(buffer_create_folder, SIZE_OF_COMMAND, "mkdir %s", argv[1]);
         system(buffer_create_folder);
     }
-    
     //=========================================================================
     //INITIALIZATION
     BinaryTree_t myTree = {};
@@ -59,12 +56,8 @@ int main(int argc, char *argv[])
     PrintLogTree(&myTree);
     fprintf(stdout, GREEN "#reading complete!\n" RESET);
     //=========================================================================
-    //OPTIMIZATION
-    TreeOptimize(&myTree);
-    PrintLogTree(&myTree);
-    //=========================================================================
-    //PRINT TREE
-    PrintTree(&myTree, argv[2]);
+    //TRANSLATION
+
     //=========================================================================
     //DESTRUCTION
 destruction_label:
@@ -73,6 +66,6 @@ destruction_label:
     fprintf(stdout, GREEN "#destruction complete!\n" RESET);
     //=========================================================================
     //END
-    printf(GREEN "<<<middleend end>>>\n\n" RESET);
+    printf(GREEN "<<<backend end>>>\n\n" RESET);
     return 0;
 }

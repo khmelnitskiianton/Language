@@ -13,9 +13,6 @@
 #include "myassert.h"
 #include "verificator.h"
 
-static FILE*        OpenFile        (const char* file_open, const char* option);
-static void         CloseFile       (FILE* file_text);
-static size_t       FileSize        (FILE *file_text);
 static EnumOfErrors RecScanTree     (size_t* position, const char* text_buffer, Node_t** ResNode, Node_t* CurrentNode, BinaryTree_t* myTree);
 static size_t       SkipSpaces      (size_t current_position, const char* text_buffer);
 static EnumOfErrors ScanVars        (char* vars_buffer, BinaryTree_t* myTree);
@@ -67,7 +64,7 @@ end_label:
     return return_val;   
 }
 
-static FILE* OpenFile (const char* file_open, const char* option)
+FILE* OpenFile (const char* file_open, const char* option)
 {
     FILE *FileOpen = fopen (file_open, option);
 
@@ -76,14 +73,14 @@ static FILE* OpenFile (const char* file_open, const char* option)
     return FileOpen;
 }
 
-static void CloseFile (FILE* file_text)
+void CloseFile (FILE* file_text)
 {
 	MYASSERT(file_text, BAD_POINTER_PASSED_IN_FUNC, assert(0));
     int result = fclose(file_text);
 	MYASSERT(!result, CLOSE_FILE, assert(0));
 }
 
-static size_t FileSize (FILE *file_text)
+size_t FileSize (FILE *file_text)
 {
     MYASSERT(file_text, ERR_BAD_POINTER_FILE, return 0)
 	struct stat st;
