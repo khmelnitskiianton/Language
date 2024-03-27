@@ -1,5 +1,5 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef LOG_B_E_H
+#define LOG_B_E_H
 
 #define DEBUG_LOG 1
 
@@ -25,7 +25,7 @@ EnumOfErrors    _PrintLogStart (const char* log_file_path, const char* path_of_c
 void  	        _PrintLogFinish (void);
 void  	        _PrintLogText (const char* log_string, const char* file,  const char* function, const size_t line);
 
-#define FOLDER_LOG "log_middleend"
+#define FOLDER_LOG "log_backend"
 #define FILE_LOG "log.html"
 #define FILE_GRAPH "graph.dot"
 #define TYPE_OF_IMAGE "svg"

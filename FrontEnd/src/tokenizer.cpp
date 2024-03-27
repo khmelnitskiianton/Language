@@ -7,6 +7,7 @@
 #include "colors.h"
 #include "tree.h"
 #include "tokenizer.h"
+#include "creator.h"
 #include "parser.h"
 #include "log.h"
 #include "myassert.h"
@@ -20,13 +21,9 @@
 
 //=============================================================================================================
 
-static const int    NOT_IN_OPER   = -1;
 static const size_t MULTIPLIER    = 2;
 static const size_t INIT_CAPACITY = 10;
 
-static FILE*        OpenFile            (const char* file_open, const char* option);
-static void         CloseFile           (FILE* file_text);
-static size_t       FileSize            (FILE *file_text);
 static void         InitToken           (Token_t* Token);
 static int          MemPoison           (void* memptr, size_t num);
 static Token_t*     Expand              (Tokens_t *TokensArr);
@@ -42,33 +39,6 @@ static char*        ProcessOperator     (Tokens_t* TokensArr, char* current_ptr,
 static EnumOperType TypeOfChar          (char unknown_char);
 static size_t       TokenSize           (const char* str);
 static bool         CheckIfVar          (const char* maybe_var);
-
-//========================================================================================================
-//READ TEXT FROM FILE
-
-static FILE* OpenFile (const char* file_open, const char* option)
-{
-    FILE *FileOpen = fopen (file_open, option);
-    MYASSERT(FileOpen, ERR_OPEN_FILE, return NULL)
-    return FileOpen;
-}
-
-static void CloseFile (FILE* file_text)
-{
-	MYASSERT(file_text, BAD_POINTER_PASSED_IN_FUNC, assert(0))
-    int result = fclose(file_text);
-	MYASSERT(!result, ERR_CLOSE_FILE, assert(0))
-}
-
-static size_t FileSize (FILE *file_text)
-{
-    MYASSERT(file_text, ERR_BAD_POINTER_FILE, return 0)
-	struct stat st;
-    int fd = fileno (file_text); 
-    fstat (fd, &st);
-    size_t size_text = (size_t) st.st_size;
-	return size_text;
-}
 
 //========================================================================================================
 //CREATE ARRAY OF TOKENS
@@ -337,8 +307,7 @@ static int StrInOperators(const char* str)
     size_t token_size = TokenSize(str);
     for (size_t i = 0; i < SIZE_OF_OPERATORS; i++)
     {
-        if ((!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name))) && (ArrayOperators[i].Num == MULT)) return (int) i;
-        if ((!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name))) && (strlen(ArrayOperators[i].Name) == token_size) && (ArrayOperators[i].Num == SOLO)) return (int) i;
+        if ((strlen(ArrayOperators[i].Name) == token_size) && (!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name)))) return (int) i;
     }
     return NOT_IN_OPER;
 }
@@ -357,7 +326,7 @@ static size_t TokenSize(const char* str)
 
 static EnumOperType TypeOfChar(char unknown_char)
 {
-    if (isalnum(unknown_char)) return LETTER;
+    if ((isalnum(unknown_char)) || (unknown_char == '_')) return LETTER;
     else                       return SYMBOL;
 }
 

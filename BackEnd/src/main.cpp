@@ -6,6 +6,7 @@
 #include "creator.h"
 #include "colors.h"
 #include "MyLangConfig.h"
+#include "translator.h"
 #include "log.h"
 #include "myassert.h"
 #include "verificator.h"
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
     fprintf(stdout, GREEN "#reading complete!\n" RESET);
     //=========================================================================
     //TRANSLATION
-
+    TranslateTree(&myTree, argv[2]);
     //=========================================================================
     //DESTRUCTION
 destruction_label:

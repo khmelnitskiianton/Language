@@ -5,6 +5,7 @@
 
 #include "tree.h"
 #include "output.h"
+#include "creator.h"
 #include "colors.h"
 #include "MyLangConfig.h"
 #include "dsl.h"
@@ -21,14 +22,30 @@
 static void  PrintRecNode (Node_t* CurrentNode, FILE* filestream);
 static void  PrintNodeValue(Node_t* CurrentNode, FILE* filestream);
 static void  PrintVars(BinaryTree_t* myTree, FILE* filestream);
-static void  CleanCharBuffer(char* buffer, const size_t buffer_size);
-static FILE* OpenFile      (const char* file_open, const char* option);
-static void  CloseFile     (FILE* file_text);
+static char* CreateFile(const char* in_file_path, const char* extension);
 FILE* FileTree = NULL;
 FILE* FileVars = NULL;
 //============================================================================================================
+static char buffer_file[SIZE_OF_OUT_PATH] = {};
 
-EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path)
+
+EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path, const char* extension)
+{
+    if (!CreateFile(in_file_path, extension)) return ERR_BAD_IN_READ_FILE;
+
+    FileTree = OpenFile (buffer_file, "w");
+    FileVars = OpenFile (buffer_file, "a");
+    Verify(myTree);
+    
+    PrintRecNode(myTree->Root, FileTree);
+    PrintVars(myTree, FileVars);
+
+    CloseFile(FileTree);
+    CloseFile(FileVars);
+    return ERR_OK;
+}
+
+static char* CreateFile(const char* in_file_path, const char* extension)
 {
     //Get file path to create <old_file_path>/<same name>.<extension>
     size_t position = strlen(in_file_path)+1;
@@ -46,25 +63,14 @@ EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path)
         buffer_name_file[i] = in_file_path[i];    
     }
     //In buffer_name_file - name of file
-    char buffer_file[SIZE_OF_OUT_PATH] = {};
-    snprintf(buffer_file, SIZE_OF_OUT_PATH, "%s" EXT_TREE, buffer_name_file);
+    snprintf(buffer_file, SIZE_OF_OUT_PATH, "%s%s", buffer_name_file, extension);
 
     char buffer_create[SIZE_OF_OUT_COMMAND] = {};
     snprintf(buffer_create, SIZE_OF_OUT_COMMAND, "touch %s",buffer_file);
     system(buffer_create);
     CleanCharBuffer(buffer_create, SIZE_OF_OUT_COMMAND); 
     fprintf(stdout, BLUE "[was created tree file: %s]\n" RESET, buffer_file);
-
-    FileTree = OpenFile (buffer_file, "w");
-    FileVars = OpenFile (buffer_file, "a");
-    Verify(myTree);
-    
-    PrintRecNode(myTree->Root, FileTree);
-    PrintVars(myTree, FileVars);
-
-    CloseFile(FileTree);
-    CloseFile(FileVars);
-    return ERR_OK;
+    return buffer_file;
 }
 
 static void PrintRecNode (Node_t* CurrentNode, FILE* filestream)
@@ -97,26 +103,4 @@ static void PrintVars(BinaryTree_t* myTree, FILE* filestream)
     {
         if (myTree->Variables[i].Name[0] != '\0') fprintf(filestream, "\n%lu\t%s", i, myTree->Variables[i].Name);
     }
-}
-
-static void CleanCharBuffer(char* buffer, const size_t buffer_size)
-{
-    for (size_t i = 0; i < buffer_size; i++)
-    {
-        *(buffer + i) = 0;
-    }
-}
-
-static FILE* OpenFile (const char* file_open, const char* option)
-{
-    FILE *FileOpen = fopen (file_open, option);
-    MYASSERT(FileOpen, ERR_OPEN_FILE, return 0);
-    return FileOpen;
-}
-
-static void CloseFile (FILE* file_text)
-{
-	MYASSERT(file_text, ERR_BAD_POINTER_PASSED_IN_FUNC, assert(0));
-    int result = fclose(file_text);
-	MYASSERT(!result, ERR_CLOSE_FILE, assert(0));
 }

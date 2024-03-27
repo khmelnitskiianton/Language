@@ -49,58 +49,57 @@ enum EnumOperClass{
 typedef struct Operator {
     const char*     Name;
     EnumOperType    Type;  
-    EnumOperNum     Num; //CAN SYMBOL BE REPEATED MANY TIMES
     EnumOperClass   Class; //FOR PARSER CATEGORY
     size_t          Id;//FOR STANDART OF TREE
 } Operator_t;
 
 constexpr Operator_t ArrayOperators[] = {
-    {"func_def",        LETTER,         SOLO,       FUNC_DEF,           10},
-    {"func_def_help",   LETTER,         SOLO,       FUNC_DEF_HELP,      11},
-    {"call",            LETTER,         SOLO,       CALL,               12},
-    {"return",          LETTER,         SOLO,       RETURN,             13},
+    {"func_def",        LETTER,         FUNC_DEF,           10},
+    {"func_def_help",   LETTER,         FUNC_DEF_HELP,      11},
+    {"call",            LETTER,         CALL,               12},
+    {"return",          LETTER,         RETURN,             13},
 
-    {";",               SYMBOL,         MULT,       DIVIDER,            20},
-    {",",               SYMBOL,         MULT,       DIVIDER_ARG,        21},
-    {"=",               SYMBOL,         MULT,       EQUAL,              22},   
+    {";",               SYMBOL,         DIVIDER,            20},
+    {",",               SYMBOL,         DIVIDER_ARG,        21},
+    {"=",               SYMBOL,         EQUAL,              22},   
 
-    {"var",             LETTER,         SOLO,       VAR,                100},
-    {"void",            LETTER,         SOLO,       VOID,               101},
-    {"if",              LETTER,         SOLO,       IF,                 102},
-    {"while",           LETTER,         SOLO,       WHILE,              103},
-    {"else",            LETTER,         SOLO,       ELSE,               104},
-    {"break",           LETTER,         SOLO,       BREAK,              105},
-    {"continue",        LETTER,         SOLO,       CONTINUE,           106},
+    {"var",             LETTER,         VAR,                100},
+    {"void",            LETTER,         VOID,               101},
+    {"if",              LETTER,         IF,                 102},
+    {"while",           LETTER,         WHILE,              103},
+    {"else",            LETTER,         ELSE,               104},
+    {"break",           LETTER,         BREAK,              105},
+    {"continue",        LETTER,         CONTINUE,           106},
 
-    {">",               SYMBOL,         MULT,       ZERO,               30},
-    {"<",               SYMBOL,         MULT,       ZERO,               31},
-    {">=",              SYMBOL,         MULT,       ZERO,               32},
-    {"<=",              SYMBOL,         MULT,       ZERO,               33},
-    {"!=",              SYMBOL,         MULT,       ZERO,               34},
-    {"==",              SYMBOL,         MULT,       ZERO,               35},
+    {">",               SYMBOL,         ZERO,               30},
+    {"<",               SYMBOL,         ZERO,               31},
+    {">=",              SYMBOL,         ZERO,               32},
+    {"<=",              SYMBOL,         ZERO,               33},
+    {"!=",              SYMBOL,         ZERO,               34},
+    {"==",              SYMBOL,         ZERO,               35},
 
-    {"+",               SYMBOL,         MULT,       FIRST,              40},
-    {"-",               SYMBOL,         MULT,       FIRST,              41},
-    {"||",              SYMBOL,         MULT,       FIRST,              42},
+    {"+",               SYMBOL,         FIRST,              40},
+    {"-",               SYMBOL,         FIRST,              41},
+    {"||",              SYMBOL,         FIRST,              42},
 
-    {"&&",              SYMBOL,         MULT,       SECOND,             50},
-    {"%",               SYMBOL,         MULT,       SECOND,             51},
-    {"*",               SYMBOL,         MULT,       SECOND,             52},
-    {"/",               SYMBOL,         MULT,       SECOND,             53},
+    {"&&",              SYMBOL,         SECOND,             50},
+    {"%",               SYMBOL,         SECOND,             51},
+    {"*",               SYMBOL,         SECOND,             52},
+    {"/",               SYMBOL,         SECOND,             53},
 
-    {"^",               SYMBOL,         MULT,       THIRD,              60},
+    {"^",               SYMBOL,         THIRD,              60},
 
-    {"++",              SYMBOL,         MULT,       FOURTH,             70},
-    {"--",              SYMBOL,         MULT,       FOURTH,             71},
-    {"!",               SYMBOL,         MULT,       FOURTH,             72}, 
+    {"++",              SYMBOL,         FOURTH,             70},
+    {"--",              SYMBOL,         FOURTH,             71},
+    {"!",               SYMBOL,         FOURTH,             72}, 
 
 
-    {"(",               SYMBOL,         MULT,       OP_BR_ONE,          0},
-    {")",               SYMBOL,         MULT,       CL_BR_ONE,          0},
-    {"{",               SYMBOL,         MULT,       OP_BR_TWO,          0},
-    {"}",               SYMBOL,         MULT,       CL_BR_TWO,          0},
-    {"[",               SYMBOL,         MULT,       OP_BR_THREE,        0},
-    {"]",               SYMBOL,         MULT,       CL_BR_THREE,        0},
+    {"(",               SYMBOL,         OP_BR_ONE,          0},
+    {")",               SYMBOL,         CL_BR_ONE,          0},
+    {"{",               SYMBOL,         OP_BR_TWO,          0},
+    {"}",               SYMBOL,         CL_BR_TWO,          0},
+    {"[",               SYMBOL,         OP_BR_THREE,        0},
+    {"]",               SYMBOL,         CL_BR_THREE,        0},
 };
 const size_t SIZE_OF_OPERATORS = sizeof(ArrayOperators)/sizeof(ArrayOperators[0]);
 

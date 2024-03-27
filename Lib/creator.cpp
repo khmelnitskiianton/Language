@@ -17,7 +17,6 @@ static EnumOfErrors RecScanTree     (size_t* position, const char* text_buffer, 
 static size_t       SkipSpaces      (size_t current_position, const char* text_buffer);
 static EnumOfErrors ScanVars        (char* vars_buffer, BinaryTree_t* myTree);
 static EnumOfErrors ProcessObject   (char* object_buffer, Node_t* NewNode);
-static void         CleanCharBuffer (char* buffer, const size_t buffer_size);
 
 bool global_bool_verify = 0;    //0 - everything ok, if error - bool = 1
 
@@ -280,7 +279,7 @@ static EnumOfErrors ScanVars(char* vars_buffer, BinaryTree_t* myTree)
     return ERR_OK;
 }
 
-static void CleanCharBuffer(char* buffer, const size_t buffer_size)
+void CleanCharBuffer(char* buffer, const size_t buffer_size)
 {
     for (size_t i = 0; i < buffer_size; i++)
     {

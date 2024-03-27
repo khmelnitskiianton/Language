@@ -1,5 +1,5 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef LOG_F_E_H
+#define LOG_F_E_H
 
 #define DEBUG_LOG 1
 

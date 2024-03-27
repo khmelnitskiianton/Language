@@ -32,3 +32,6 @@ DEF_ERROR(NO_DIVIDER,                   "You forgot divider after expression!")
 
 DEF_ERROR(BAD_VARS,                     "In file with tree, bad table of vars!")
 DEF_ERROR(BAD_VARS_INDEX,               "In file with tree, bad indexies in table of vars!")
+
+DEF_ERROR(BAD_TRANSLATION,              "Error in BE in translation!")
+DEF_ERROR(BAD_END_FUNC,                 "Error in ending function")

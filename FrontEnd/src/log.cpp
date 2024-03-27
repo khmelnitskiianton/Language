@@ -21,7 +21,7 @@ static void  GenerateGraph (BinaryTree_t* myTree);
 static void  WriteNode     (Node_t* CurrentNode, BinaryTree_t* myTree);
 static void  WriteHead     (BinaryTree_t* myTree);
 static void  WriteTree     (BinaryTree_t* myTree);
-static void  CleanCharBuffer(char* buffer, const size_t buffer_size);
+static void  LogCleanCharBuffer(char* buffer, const size_t buffer_size);
 
 EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code)
 {
@@ -33,13 +33,13 @@ EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code
     { 
         snprintf(buffer_create, SIZE_OF_COMMAND, "mkdir %s", buffer_path);
         system(buffer_create);
-        CleanCharBuffer(buffer_create, SIZE_OF_COMMAND);
+        LogCleanCharBuffer(buffer_create, SIZE_OF_COMMAND);
         snprintf(buffer_create, SIZE_OF_COMMAND, "touch %s" FILE_GRAPH, buffer_path);
         system(buffer_create);
-        CleanCharBuffer(buffer_create, SIZE_OF_COMMAND);
+        LogCleanCharBuffer(buffer_create, SIZE_OF_COMMAND);
         snprintf(buffer_create, SIZE_OF_COMMAND, "touch %s" FILE_LOG, buffer_path);
         system(buffer_create);
-        CleanCharBuffer(buffer_create, SIZE_OF_COMMAND);
+        LogCleanCharBuffer(buffer_create, SIZE_OF_COMMAND);
     }
 
     char buffer_file[SIZE_OF_COMMAND] = {};
@@ -232,7 +232,7 @@ static void WriteHead(BinaryTree_t* myTree)
     }
 }
 
-static void CleanCharBuffer(char* buffer, const size_t buffer_size)
+static void LogCleanCharBuffer(char* buffer, const size_t buffer_size)
 {
     for (size_t i = 0; i < buffer_size; i++)
     {

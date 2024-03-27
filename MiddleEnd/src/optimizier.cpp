@@ -203,8 +203,13 @@ static EnumOfErrors RecOptimizeCondLoop(Node_t* CurrentNode, BinaryTree_t* myTre
             }
             if (!Compare(L->Value.Number, 0))    // if (number not zero) {...}
             {
-                if ((P->Left) == C)  {(P->Left)  = R; (R->Parent) = P;}
-                if ((P->Right) == C) {(P->Right) = R; (R->Parent) = P;}
+                if (!(C->Right))
+                {
+                    if (((P->Left)  == C)) {P->Left  = NULL;}
+                    if (((P->Right) == C)) {P->Right = NULL;}   
+                }
+                if (((P->Left)  == C)) {(P->Left)  = R; (R->Parent) = P;}
+                if (((P->Right) == C)) {(P->Right) = R; (R->Parent) = P;}
                 free(L);
                 free(C);
                 TREE_CHANGED;

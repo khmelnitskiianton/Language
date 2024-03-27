@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     PrintLogTree(&myTree);
     //=========================================================================
     //PRINT TREE
-    PrintTree(&myTree, argv[2]);
+    PrintTree(&myTree, argv[2], EXT_TREE);
     //=========================================================================
     //DESTRUCTION
     PrintLogFinish();

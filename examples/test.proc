@@ -1,0 +1,15 @@
+;Start module
+Start:
+	call main
+hlt
+
+;Main module
+
+
+jmp while_check_0
+while_start_0:
+while_check_0:
+push 0
+push 1
+je while_start_0
+while_end___0:
