@@ -167,8 +167,16 @@ static bool RecOptimizeConst(Node_t* CurrentNode, BinaryTree_t* myTree)
     if (left && right && (index_arith_oper != -1))
     {   
         C->Type = NUMBER;
-        if (CalcOperators[index_arith_oper].TypeOperator) C->Value.Number = CalcOperators[index_arith_oper].Operation(L->Value.Number, R->Value.Number);
-        else C->Value.Number = CalcOperators[index_arith_oper].Operation(L->Value.Number, NAN);
+        if (L) 
+        {
+            if (CalcOperators[index_arith_oper].TypeOperator) C->Value.Number = CalcOperators[index_arith_oper].Operation(L->Value.Number, R->Value.Number);
+            else C->Value.Number = CalcOperators[index_arith_oper].Operation(L->Value.Number, NAN);   
+        }
+        else
+        {
+            if (CalcOperators[index_arith_oper].TypeOperator) C->Value.Number = CalcOperators[index_arith_oper].Operation(0, R->Value.Number);
+            else C->Value.Number = CalcOperators[index_arith_oper].Operation(L->Value.Number, NAN);   
+        }
         free(L);
         free(R);
         L = NULL;

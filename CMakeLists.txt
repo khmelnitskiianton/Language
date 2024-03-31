@@ -8,8 +8,8 @@ include_directories(./Lib)
 
 set(PREF_LIB "Lib")
 
-FILE(GLOB SRC_LIB ${PREF_LIB}/*.cpp)
-FILE(GLOB HDR_LIB ${PREF_LIB}/*.h)
+FILE(GLOB_RECURSE SRC_LIB ${PREF_LIB}/*.cpp)
+FILE(GLOB_RECURSE HDR_LIB ${PREF_LIB}/*.h)
 
 add_subdirectory(FrontEnd)
 add_subdirectory(MiddleEnd)

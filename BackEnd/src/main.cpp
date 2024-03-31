@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 
 #include "tree.h"
+#include "Stacks/stack_int.h"
 #include "creator.h"
 #include "colors.h"
 #include "MyLangConfig.h"
@@ -38,8 +39,11 @@ int main(int argc, char *argv[])
     }
     //=========================================================================
     //INITIALIZATION
-    BinaryTree_t myTree = {};
-    TreeCtor(&myTree);
+    BinaryTree_t myTree         = {};
+    StackInt_t   StackWhileCond = {};
+    CleanCharBuffer(buffer_create_folder, SIZE_OF_COMMAND);
+    snprintf(buffer_create_folder, SIZE_OF_COMMAND, "%s/%s/stack_while_cond.txt", argv[1], FOLDER_LOG);
+    StackIntCtor(&StackWhileCond, buffer_create_folder);
     if (PrintLogStart(argv[1], argv[2]) == ERR_NO_FILE_TO_OPEN) 
     {
         USER_ERROR(0, ERR_NO_FILE_TO_OPEN, "", exit(0))
@@ -58,12 +62,13 @@ int main(int argc, char *argv[])
     fprintf(stdout, GREEN "#reading complete!\n" RESET);
     //=========================================================================
     //TRANSLATION
-    TranslateTree(&myTree, argv[2]);
+    TranslateTree(&myTree, argv[2], &StackWhileCond);
     //=========================================================================
     //DESTRUCTION
 destruction_label:
     PrintLogFinish();
     TreeDtor(&myTree);
+    StackIntDtor(&StackWhileCond);
     fprintf(stdout, GREEN "#destruction complete!\n" RESET);
     //=========================================================================
     //END

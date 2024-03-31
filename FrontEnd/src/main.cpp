@@ -59,6 +59,10 @@ int main(int argc, char *argv[])
     //CREATE ARRAY OF TOKENS
     CreateTokens(&myTokens, code_buffer);
     free(code_buffer); 
+    //for (size_t i = 0; i < myTokens.Size; i++)
+    //{
+    //    PrintToken(myTokens.Data + i);
+    //}
     //=========================================================================
     //CREATE RECURSIVE DESCENT
     CopyVars(&myTree, &myTokens);

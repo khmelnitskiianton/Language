@@ -3,12 +3,12 @@
 #include <sys/stat.h>
 #include <string.h>
 
+#include "myassert.h"
 #include "tree.h"
 #include "tokenizer.h"
 #include "creator.h"
 #include "parser.h"
 #include "log.h"
-#include "myassert.h"
 
 static size_t NumImage  = 0;
 static char   buffer_path[SIZE_OF_PATH] = {};

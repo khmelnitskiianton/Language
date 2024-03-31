@@ -6,10 +6,12 @@ hlt
 ;Main module
 
 
-jmp while_check_0
-while_start_0:
-while_check_0:
-push 0
+jmp if_check_0
+if_start_0:
+jmp if_end_0
+if_check_0:
+push 2
 push 1
-je while_start_0
-while_end___0:
+jae if_start_0
+if_end___0:
+
