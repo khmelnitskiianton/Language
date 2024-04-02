@@ -1,3 +1,9 @@
-if (1 >= 2)
+var main(var x, var y)
 {
+    summ(1, x);
+}
+
+var summ(var a, var b)
+{
+    return a;
 }

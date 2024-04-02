@@ -37,7 +37,6 @@ static Node_t* GetFuncDef           (Token_t** PtrCurrentToken);
 static Node_t* GetType              (Token_t** PtrCurrentToken);
 
 static int      FindOper        (const Token_t* CurrentToken, EnumOperClass CurrentClass);
-static bool     InOperators     (Token_t* CurrentToken);
 static Node_t*  DiffCreateNode  (EnumOfType NewType, NodeValue_t NewValue, Node_t* LeftNode, Node_t* RightNode);
 
 const int       NO_FIND = -1;
@@ -79,6 +78,7 @@ Node_t* GetMain(Tokens_t* myTokens, BinaryTree_t* myTree)
         }
         else
         {
+            printf("\n%d %d\n",current_token->Type, current_token->Value.Index);
             USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[current_token->Value.Index].Name, syntax_error = 1)
             if (syntax_error)
             {
@@ -371,13 +371,15 @@ static Node_t* GetFuncLoopEnd(Token_t** PtrCurrentToken)
     {
         (*PT)++;
         Node_t* left_node = NULL;
-        if ((InOperators(*PT)) && (ArrayOperators[(*PT)->Value.Index].Class == DIVIDER))
+
+        if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == DIVIDER))
         {
-            return OPR(index, left_node, NULL);
+            return OPR(index, NULL, NULL);
         }
         else 
         {
             left_node = GetZeroPriority(PT);
+            (*PT)++;
             return OPR(index, left_node, NULL);
         }
     }
@@ -594,7 +596,7 @@ static Node_t* GetFuncCall(Token_t** PtrCurrentToken)
         }
 
         left_node = GetVariable(PT);
-        if ((InOperators(*PT)) && (ArrayOperators[(*PT)->Value.Index].Class != OP_BR_ONE))
+        if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != OP_BR_ONE))
         {
             USER_ERROR(0, ERR_NO_OPEN_BRACKET, "_", syntax_error = 1)
             if (syntax_error) 
@@ -679,7 +681,7 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
         }
 
         var_node = GetVariable(PT); //start - variable
-        if ((InOperators(*PT)) && (ArrayOperators[(*PT)->Value.Index].Class != OP_BR_ONE))
+        if (((*PT)->Type == OPERATOR)  && (ArrayOperators[(*PT)->Value.Index].Class != OP_BR_ONE))
         {
             USER_ERROR(0, ERR_NO_OPEN_BRACKET, "_", syntax_error = 1)
             if (syntax_error) 
@@ -793,11 +795,6 @@ static int FindOper(const Token_t* CurrentToken, EnumOperClass CurrentClass)
         return T->Value.Index;
     }
     return NO_FIND;
-}
-
-static bool InOperators(Token_t* CurrentToken)
-{
-    return (0 <= (CurrentToken)->Value.Index) && ((CurrentToken)->Value.Index < (int)SIZE_OF_OPERATORS);
 }
 
 static Node_t* DiffCreateNode (EnumOfType NewType, NodeValue_t NewValue, Node_t* LeftNode, Node_t* RightNode)

@@ -36,3 +36,4 @@ DEF_ERROR(BAD_VARS_INDEX,               "In file with tree, bad indexies in tabl
 DEF_ERROR(BAD_TRANSLATION,              "Error in BE in translation!")
 DEF_ERROR(BAD_END_FUNC,                 "Error in ending function!")
 DEF_ERROR(BAD_USING_BREAK_CONT,         "Error in using break or continue!")
+DEF_ERROR(BAD_RETURN,                   "Error unknown variable you want to return!")

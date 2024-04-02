@@ -21,7 +21,7 @@ typedef double Elem_t;
 const Elem_t POISON_ELEMENT = NAN;
 const double EPSILONE = 1e-5;
 
-const size_t SIZE_OF_VARIABLES  = 40;   //amount of variables
+const size_t SIZE_OF_VARIABLES  = 100;   //amount of variables
 const size_t SIZE_OF_VAR        = 100;        //max length of variable
 const size_t SIZE_OF_BUFFER     = 100;
 
@@ -52,8 +52,8 @@ struct Node {
 typedef struct Node Node_t;
 
 typedef struct Var {
-    char   Name[SIZE_OF_VAR];
-    Elem_t Number;
+    char    Name[SIZE_OF_VAR];
+    int     Number;
 } Var_t;
 
 typedef struct BinaryTree {

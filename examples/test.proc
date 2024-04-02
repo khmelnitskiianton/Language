@@ -5,13 +5,46 @@ hlt
 
 ;Main module
 
+main:
 
-jmp if_check_0
-if_start_0:
-jmp if_end_0
-if_check_0:
+pop [0]
+pop [1]
+
 push 2
+push rex
+add
+pop rex
+
 push 1
-jae if_start_0
-if_end___0:
+push [1]
+call summ
+
+
+push rex
+push 2
+sub
+pop rex
+
+ret
+
+summ:
+
+pop [2]
+pop [3]
+
+push 2
+push rex
+add
+pop rex
+
+push [3]
+pop rax
+ret
+
+push rex
+push 2
+sub
+pop rex
+
+ret
 

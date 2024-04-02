@@ -29,3 +29,6 @@ BackEnd/Makefile
 FrontEnd/frontend.exe
 MiddleEnd/middleend.exe
 BackEnd/backend.exe
+
+Lib/Stacks/*.txt
+Lib/Stacks/*.txth

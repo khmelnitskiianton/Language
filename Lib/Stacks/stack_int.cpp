@@ -296,4 +296,3 @@ static size_t size_data (StackInt_t* stk)
 {
     return sizeof(int)*((size_t) (stk -> capacity));
 }
- 
