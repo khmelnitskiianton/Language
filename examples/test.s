@@ -21,23 +21,14 @@ _start:
 main:
 push rbp
 mov  rbp, rsp
-sub  rsp, 16
+sub  rsp, 32
 
 mov qword [rbp - _stack_offset*0], 0
 mov qword [rbp - _stack_offset*1], 0
+mov qword [rbp - _stack_offset*2], 0
+mov qword [rbp - _stack_offset*3], 0
+call add
 
-pop  rbp
-ret
-
-summ:
-push rbp
-mov  rbp, rsp
-sub  rsp, 0
-
-
-mov rax, qword [rbp + _stack_offset*0]
-pop  rbp
-ret
 
 pop  rbp
 ret

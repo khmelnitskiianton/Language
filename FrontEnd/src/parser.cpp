@@ -78,7 +78,6 @@ Node_t* GetMain(Tokens_t* myTokens, BinaryTree_t* myTree)
         }
         else
         {
-            printf("\n%d %d\n",current_token->Type, current_token->Value.Index);
             USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[current_token->Value.Index].Name, syntax_error = 1)
             if (syntax_error)
             {
@@ -98,13 +97,17 @@ static Node_t* GetCommon(Token_t** PtrCurrentToken)
         return NULL;
     }
     Node_t* NewNode = NULL;
-    if ((NewNode = GetZeroPriority(PT)) != NULL)    return NewNode;
+    
     if ((NewNode = GetAssignment(PT))   != NULL)    return NewNode;
     if ((NewNode = GetFuncLoopEnd(PT))  != NULL)    return NewNode;
     if ((NewNode = GetCondition(PT))    != NULL)    return NewNode;
     if ((NewNode = GetLoop(PT))         != NULL)    return NewNode; 
+    
     if ((NewNode = GetFuncCall(PT))     != NULL)    return NewNode;
     if ((NewNode = GetFuncDef(PT))      != NULL)    return NewNode;
+        
+    if ((NewNode = GetZeroPriority(PT)) != NULL)    return NewNode;
+
     return NULL;
 }
 
@@ -724,11 +727,10 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
         {
             (*PT)++;
             right_node = GetCommon(PT);
-            while (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO))
+            while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
             {
                 copy_node = right_node;
                 right_node = GetCommon(PT);
-
                 if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
                     right_node = OPR(index_div, copy_node, right_node);

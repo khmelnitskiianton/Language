@@ -74,7 +74,7 @@ then
     then
         if [ -f "./FrontEnd/frontend.exe" ] && [ -f "./MiddleEnd/middleend.exe" ] && [ -f "./BackEnd/backend.exe" ]
         then
-            ./FrontEnd/frontend.exe $log_folder $code_file && ./MiddleEnd/middleend.exe $log_folder $tree_file && ./BackEnd/backend.exe $log_folder $tree_file
+            ./FrontEnd/frontend.exe $log_folder $code_file  && ./MiddleEnd/middleend.exe $log_folder $tree_file && ./BackEnd/backend.exe $log_folder $tree_file
         else
             echo -e $color_red"FrontEnd or MiddleEnd or BackEnd program not found.$fail_run" $reset
         fi
