@@ -2,17 +2,9 @@
 ;#Start module#
 ;#============#
 
-global _start
-
-section .text
-
 _stack_offset equ 8
 
-_start:
-	call main
-	mov rax, 60
-	mov rdi, 0
-	syscall
+global main
 
 ;#===========#
 ;#Main module#
@@ -21,15 +13,16 @@ _start:
 main:
 push rbp
 mov  rbp, rsp
-sub  rsp, 32
+sub  rsp, 8
 
 mov qword [rbp - _stack_offset*0], 0
-mov qword [rbp - _stack_offset*1], 0
-mov qword [rbp - _stack_offset*2], 0
-mov qword [rbp - _stack_offset*3], 0
-call add
 
+mov rax, qword [rbp - _stack_offset*0]
+mov rsp, rbp
+pop  rbp
+ret
 
+mov rsp, rbp
 pop  rbp
 ret
 

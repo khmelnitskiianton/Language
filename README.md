@@ -27,7 +27,8 @@ cd ./MyLanguage
 cmake .
 make
 chmod ugo+x translator.sh
-./translator.sh {path to file begin with this repo}/{file with code}
+./translator.sh {path to file begin with this repo}/{file with source code}
+./linker.sh {path to file begin with this repo}/{file with NASM code}
 ```
 *Example:* `./translator.sh examples/test_code.sus`
 
@@ -40,6 +41,7 @@ Compiler - gcc. Uses - Cmake. Logs using GraphViz to visualize binary tree!
 ```bash
 sudo apt update && sudo apt upgrade     #update
 sudo apt install build-essential        #gcc
+sudo apt install nasm                   #nasm
 sudo apt install make                   #makefile
 sudo apt install cmake                  #cmake
 sudo apt install graphviz               #graphviz

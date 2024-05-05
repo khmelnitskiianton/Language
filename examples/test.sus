@@ -1,8 +1,5 @@
-void main()
+var main()
 {
     var z = 0;
-    var m = 0;
-    var x = 0;
-    var a = 0;
-    add();
+    return z;
 }
