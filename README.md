@@ -2,19 +2,17 @@
 
 Project of translation system - from my language to my assembler with processor.
 
-It consists of 
-- Translator: FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on my assembler (from project `Processor`) 
-    + FrontEnd: parses code to tree based recursive descent
-    + MiddleEnd: optimizes tree
-    + BackEnd: converts tree to code on my assembler
-- My Processor ([```Github Processor```](https://github.com/khmelnitskiianton/Processor)) that work similar to Assembler, but on C and simpler.
+It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
++ FrontEnd: parses code to tree based recursive descent
++ MiddleEnd: optimizes tree
++ BackEnd: converts tree to code on my assembler
 
 ## Table of Contents
 
 - [MyLanguage](#mylanguage)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-  - [Extra programs](#extra-programs)
+  - [Dependent Objects](#dependent-objects)
   - [Language](#language)
   - [Standard](#standard)
   - [FrontEnd](#frontend)
@@ -23,25 +21,19 @@ It consists of
 
 ## Installation
 
-To start program you need to use CMake and run program
-
-1.  Clone repository
-2.  Compile CMake, write command in main directory in repo
-3.  Run CMake (compile program), write command in main directory in repo
-4.  Run program(before you need to create this file)
-
 ```bash
 git clone https://github.com/khmelnitskiianton/MyLanguage.git
 cd ./MyLanguage
 cmake .
 make
+chmod ugo+x translator.sh
 ./translator.sh {path to file begin with this repo}/{file with code}
 ```
 *Example:* `./translator.sh examples/test_code.sus`
 
 It will be create folder `.tmp`, there will be logs, and intermediate files
 
-## Extra programs
+## Dependent Objects
 
 Compiler - gcc. Uses - Cmake. Logs using GraphViz to visualize binary tree!
 
@@ -71,7 +63,6 @@ void main(){
         print(x);
     }
     while (y != 5){
-        y++;
         print(y);
     }
 }

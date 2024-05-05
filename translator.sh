@@ -22,6 +22,7 @@ color_white="\033[1;37m"
 color_reset="\033[1;0m"
 fail_run="\nRunning failed."
 #=================================
+
 #Check for zero args
 if [ $# -eq 0 ] 
     then 

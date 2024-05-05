@@ -2,7 +2,7 @@
 #define OUTPUT_H
 
 #define EXT_TREE ".tree"
-#define EXT_PROC ".proc"
+#define EXT_PROC ".s"
 
 EnumOfErrors PrintTree (BinaryTree_t* myTree, const char* in_file_path, const char* extension);
 

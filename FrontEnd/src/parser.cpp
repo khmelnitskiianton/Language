@@ -704,7 +704,7 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
                 (*PT)++;
                 copy_node = left_node;
                 left_node = GetAssignment(PT);
-                left_node = OPR(index_div_arg, left_node, copy_node);
+                left_node = OPR(index_div_arg, copy_node, left_node);
             }
             else
             {

@@ -1,9 +1,10 @@
 var main(var x, var y)
 {
-    summ(1, x);
+    var z = 0;
+    var m = 0;
 }
 
-var summ(var a, var b)
+var summ(var a, var b, var x)
 {
     return a;
 }
