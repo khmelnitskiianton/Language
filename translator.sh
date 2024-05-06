@@ -6,9 +6,15 @@
 log_folder="./.tmp"
 ext_tree=".tree"
 
+frontend=./FrontEnd/frontend.elf
+middleend=./MiddleEnd/middleend.elf
+backend=./BackEnd/backend.elf
+
 code_file=""    #source file
 name_file=""    #name of file without extension
 tree_file=""    #tree file created from source
+
+
 
 #=================================
 color_grey="\033[1;30m"
@@ -72,9 +78,11 @@ if [ $# -eq 1 ]
 then 
     if [[ -f $1 ]];
     then
-        if [ -f "./FrontEnd/frontend.exe" ] && [ -f "./MiddleEnd/middleend.exe" ] && [ -f "./BackEnd/backend.exe" ]
+        if [ -f $frontend ] && [ -f $middleend ] && [ -f $backend ]
         then
-            ./FrontEnd/frontend.exe $log_folder $code_file  && ./MiddleEnd/middleend.exe $log_folder $tree_file && ./BackEnd/backend.exe $log_folder $tree_file
+            $frontend   $log_folder     $code_file
+            $middleend  $log_folder     $tree_file 
+            $backend    $log_folder     $tree_file
         else
             echo -e $color_red"FrontEnd or MiddleEnd or BackEnd program not found.$fail_run" $reset
         fi

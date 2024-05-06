@@ -27,6 +27,7 @@ cd ./MyLanguage
 cmake .
 make
 chmod ugo+x translator.sh
+chmod ugo+x linker.sh
 ./translator.sh {path to file begin with this repo}/{file with source code}
 ./linker.sh {path to file begin with this repo}/{file with NASM code}
 ```

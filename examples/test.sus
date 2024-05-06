@@ -1,5 +1,17 @@
 var main()
 {
-    var z = 0;
-    return z;
+    var a = 0;
+    var b = 0;
+    if (a == 0)
+    {
+        sum(0, a, b);
+    }
+    return 0;
+}
+
+void sum(var a, var b)
+{
+    var x = 0;
+    var y = 0;
+    return;
 }

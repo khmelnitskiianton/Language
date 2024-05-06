@@ -382,7 +382,6 @@ static Node_t* GetFuncLoopEnd(Token_t** PtrCurrentToken)
         else 
         {
             left_node = GetZeroPriority(PT);
-            (*PT)++;
             return OPR(index, left_node, NULL);
         }
     }
@@ -733,8 +732,8 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
                 right_node = GetCommon(PT);
                 if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
-                    right_node = OPR(index_div, copy_node, right_node);
                     (*PT)++;
+                    right_node = OPR(index_div, copy_node, right_node);
                 }
                 else 
                 {
