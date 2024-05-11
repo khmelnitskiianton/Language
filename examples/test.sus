@@ -1,17 +1,11 @@
 var main()
 {
-    var a = 0;
-    var b = 0;
-    if (a == 0)
+    var a = 1;
+    var z = 6;
+    var b = a + z - 20*a;
+    while (a)
     {
-        sum(0, a, b);
+        var x = 0;
     }
     return 0;
-}
-
-void sum(var a, var b)
-{
-    var x = 0;
-    var y = 0;
-    return;
 }

@@ -16,31 +16,86 @@ main:
 ;#=======Input=Action======#
 push rbp
 mov  rbp, rsp
-sub  rsp, 16
+sub  rsp, 32
 ;#=======End=Action========#
 
 ;#========Init=Local=======#
 mov qword [rbp - _stack_offset*0], 0
 mov qword [rbp - _stack_offset*1], 0
+mov qword [rbp - _stack_offset*2], 0
+mov qword [rbp - _stack_offset*3], 0
 ;#========End=Init=========#
 
 
-jmp if_check_0
-if_start_0:
-;#==========Call===========#
-push qword [rbp - _stack_offset*1]
+;#========Var=Assign=======#
+
+push 1
+
+;assign
+pop rax
+mov qword [rbp - _stack_offset*0], rax
+;#=========End=Var=========#
+
+;#========Var=Assign=======#
+
+push 6
+
+;assign
+pop rax
+mov qword [rbp - _stack_offset*1], rax
+;#=========End=Var=========#
+
+;#========Var=Assign=======#
+
 push qword [rbp - _stack_offset*0]
+
+push qword [rbp - _stack_offset*1]
+
+pop rbx      ; add
+pop rax
+add rax, rbx
+push rax
+
+push 20
+
+push qword [rbp - _stack_offset*0]
+
+pop rbx      ; imul
+pop rax
+mov rdx, 0
+imul rbx
+push rax
+
+pop rbx      ; sub
+pop rax
+sub rax, rbx
+push rax
+
+;assign
+pop rax
+mov qword [rbp - _stack_offset*2], rax
+;#=========End=Var=========#
+
+jmp .while_check_0
+.while_start_0:
+
+
+;#========Var=Assign=======#
+
 push 0
 
-call sum
-;#=========End=Call========#
-jmp if_end___0
-if_check_0:
-mov rax, qword [rbp - _stack_offset*0]
-mov rbx, 0
-cmp rax, rbx
-je if_start_0
-if_end___0:
+;assign
+pop rax
+mov qword [rbp - _stack_offset*3], rax
+;#=========End=Var=========#
+
+.while_check_0:
+
+push qword [rbp - _stack_offset*0]
+pop rax
+cmp rax, 1
+ja .while_start_0
+.while_end___0:
 
 
 ;#========Var=Return=======#
@@ -48,33 +103,6 @@ mov rax, 0
 mov rsp, rbp
 pop  rbp
 ret
-
-;#=======Leave=Action======#
-mov  rsp, rbp
-pop  rbp
-ret
-;#=======End=Function======#
-
-;#=========Function========#
-sum:
-;#=======Input=Action======#
-push rbp
-mov  rbp, rsp
-sub  rsp, 16
-;#=======End=Action========#
-
-;#========Init=Local=======#
-mov qword [rbp - _stack_offset*0], 0
-mov qword [rbp - _stack_offset*1], 0
-;#========End=Init=========#
-
-
-;#=======Void=Return=======#
-mov    rsp, rbp
-pop    rbp
-ret
-;#=========End=Return========#
-
 
 ;#=======Leave=Action======#
 mov  rsp, rbp

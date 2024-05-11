@@ -49,7 +49,6 @@ Type of data in {1,2,3}
 |SECOND|51|Binary|Operator of expression|`%`|
 |SECOND|52|Binary|Operator of expression|`*`|
 |SECOND|53|Binary|Operator of expression|`/`|
-|THIRD|60|Binary|Operator of expression|`^`|
 |FOURTH|70|Unary|Operator of expression|`++`|
 |FOURTH|71|Unary|Operator of expression|`--`|
 |FOURTH|72|Unary|Operator of expression|`!`|

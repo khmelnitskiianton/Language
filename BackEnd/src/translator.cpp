@@ -13,7 +13,7 @@
 #include "verificator.h"
 #include "dsl.h"
 
-static void     WriteStart      (BinaryTree_t* myTree);
+static void     WriteStart      ();
 static void     WriteRecTree    (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     WriteDefFunc    (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     CountArgs       (BinaryTree_t* myTree, int* counter_args, Node_t* CurrentNode);
@@ -28,6 +28,7 @@ static void     CleanFuncArgVars        (void);
 
 static void     WriteCall       (BinaryTree_t* myTree, Node_t* CurrentNode);
 static void     WriteVar        (BinaryTree_t* myTree, Node_t* CurrentNode);
+static void     RecEvaluate     (BinaryTree_t* myTree, Node_t* CurrentNode);
 static void     WriteWhile      (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     GetArgs         (BinaryTree_t* myTree, Node_t* CurrentNode);
 static void     WriteCond       (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
@@ -42,17 +43,18 @@ static void     WriteBreak      (BinaryTree_t* myTree, Node_t* CurrentNode, Stac
 static void     WriteContinue   (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 
 static char     buffer_file[SIZE_OF_OUT_PATH]       = {};
-static Var_t    FuncArgVars[SIZE_OF_VARIABLES]     = {};
+static Var_t    FuncArgVars[SIZE_OF_VARIABLES]      = {};
 static Var_t    FuncLocalVars[SIZE_OF_VARIABLES]    = {};
-static Var_t    FuncGlobalVars[SIZE_OF_VARIABLES]   = {};   //add global vars
+static Var_t    FuncGlobalVars[SIZE_OF_VARIABLES]   = {};   //TODO:add global vars
 static FILE*    FileProc = NULL;
 
 static const int DIMENSION = 8;
 
-static int  counter_while = 0;
-static int  counter_if    = 0;
-static bool is_void       = false;  
-static int  counter_move_vars = 0; 
+static int   counter_while       = 0;
+static int   counter_if          = 0;
+static int   counter_label_var   = 0;
+static int   counter_move_vars   = 0;
+static bool  is_void             = false;   
 
 EnumOfErrors TranslateTree(BinaryTree_t* myTree, const char* in_file_path, StackInt_t* StackWhileCond)
 {
@@ -83,14 +85,14 @@ EnumOfErrors TranslateTree(BinaryTree_t* myTree, const char* in_file_path, Stack
     FileProc = OpenFile (buffer_file, "w");
 
     //Start Writing
-    WriteStart(myTree);
+    WriteStart();
     //WriteGlobalVars(); for future
     WriteRecTree(myTree, myTree->Root, StackWhileCond);
 
     return ERR_OK;
 }
 
-static void WriteStart(BinaryTree_t* myTree)
+static void WriteStart()
 {
     fprintf(FileProc,   ";#=========================#\n"
                         ";#      Start module       #\n"
@@ -166,6 +168,10 @@ static void WriteDefFunc(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* 
         is_void = false;
     }
     //Vars with args 
+    counter_if          = 0;
+    counter_while       = 0;
+    counter_label_var   = 0;
+    counter_move_vars   = 0;
     CleanFuncLocalVars();
     CleanFuncArgVars();
     CleanCountArgs(myTree);
@@ -185,6 +191,7 @@ static void WriteDefFunc(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* 
     WriteFuncArgVars(myTree, CurrentNode->Right->Left);
     counter_move_vars = 0;
     WriteFuncLocalVars(myTree, CurrentNode->Right->Right);
+
     fprintf(FileProc,   ";#========End=Init=========#\n\n");
     WriteRecTree(myTree, CurrentNode->Right->Right, StackWhileCond);
     fprintf(FileProc,   "\n;#=======Leave=Action======#\n"   
@@ -308,7 +315,55 @@ static void CleanFuncArgVars(void)
 
 static void WriteVar(BinaryTree_t* myTree, Node_t* CurrentNode)
 {
+    fprintf(FileProc,   "\n;#========Var=Assign=======#\n");
+    RecEvaluate(myTree, R->Right);
+    fprintf(FileProc,   "\n;assign\n"
+                        "pop rax\n");
+    int index_assign_var  = FindIndexLocalVar(myTree, R->Left);
+    if (index_assign_var != -1)
+    {
+        fprintf(FileProc, "mov qword [rbp - _stack_offset*%d], rax\n", FuncLocalVars[index_assign_var].Number);
+        fprintf(FileProc, ";#=========End=Var=========#\n");
+        return;
+    }
+    USER_ERROR(0, ERR_UNKNOWN_VAR, "", return)
+}
 
+static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
+{
+    if (!C) return;
+    if (C->Type == NUMBER)
+    {
+        fprintf(FileProc, "\npush %g\n", C->Value.Number);
+        return;
+    }
+    if (C->Type == VARIABLE)
+    {
+        int index_use_var = FindIndexLocalVar(myTree, C);
+        if (index_use_var != -1)
+        {
+            fprintf(FileProc, "\npush qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_use_var].Number);
+            return;
+        }
+        index_use_var = FindIndexArgVar(myTree, C);
+        if (index_use_var != -1)
+        {
+            fprintf(FileProc, "\npush qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_use_var].Number);
+            return;
+        }
+        USER_ERROR(0, ERR_UNKNOWN_VAR, "", return)
+    }    
+
+    RecEvaluate(myTree, L);
+    RecEvaluate(myTree, R);
+
+    if (C->Type == OPERATOR)
+    { 
+        counter_label_var += ArrayOperators[C->Value.Index].Operation(FileProc, counter_label_var);
+        return;
+    }
+
+    USER_ERROR(0, ERR_UNKNOWN_NODE, "",return)
 }
 
 //done
@@ -342,13 +397,15 @@ static void GetArgs(BinaryTree_t* myTree, Node_t* CurrentNode)
         if (index_call_var != -1)
         {
             fprintf(FileProc, "push qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_call_var].Number);
+            return;
         }
         index_call_var = FindIndexArgVar(myTree, C);
         if (index_call_var != -1)
         {
             fprintf(FileProc, "push qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_call_var].Number);
+            return;
         }
-        return;
+        USER_ERROR(0, ERR_BAD_RETURN, "", return);
     }
     MYASSERT(0, ERR_BAD_END_FUNC, )
 }
@@ -388,7 +445,7 @@ static void WriteReturn(BinaryTree_t* myTree, Node_t* CurrentNode)
         fprintf(FileProc, "mov rax, %g\nmov rsp, rbp\npop  rbp\nret\n", L->Value.Number);
         return;
     }
-    fprintf(FileProc,   ";#=======End=Return========#\n");
+    fprintf(FileProc,   ";#=======End=Return======#\n");
     USER_ERROR(0, ERR_BAD_RETURN_BE, "", return);
 }
 //done
@@ -423,7 +480,7 @@ static int FindIndexLocalVar(BinaryTree_t* myTree, Node_t* CurrentNode)
 //done
 static void WriteWhile(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond)
 {
-    fprintf(FileProc, "\njmp while_check_%d\n", counter_while);
+    fprintf(FileProc, "\njmp .while_check_%d\n", counter_while);
     fprintf(FileProc, ".while_start_%d:\n\n", counter_while);
     push_int(StackWhileCond, counter_while);    //save
     push_int(StackWhileCond, WHILE_TYPE);
@@ -445,91 +502,20 @@ static void WriteWhileCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_c
     //TODO: make variables
     if (!C) 
     {
-        fprintf(FileProc, "jmp while_start_%d\n", curr_counter);
+        fprintf(FileProc, "jmp .while_start_%d\n", curr_counter);
         return;
     }
-    if (C->Type == NUMBER)
-    {
-        if (!Compare(C->Value.Number, 0))
-        {
-            fprintf(FileProc, "jmp while_start_%d\n", curr_counter);
-        }
-        return;
-    }
-    int index_while_var = -1;
-    bool flag_check_var = false;
-    if (L->Type == VARIABLE)
-    {
-        index_while_var = FindIndexLocalVar(myTree, L);
-        if (index_while_var != -1)
-        {
-            fprintf(FileProc, "mov rax, qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_while_var].Number);
-            flag_check_var = true;
-        }
-        index_while_var = FindIndexArgVar(myTree, L);
-        if (index_while_var != -1)
-        {
-            fprintf(FileProc, "mov rax, qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_while_var].Number);
-            flag_check_var = true;
-        }
-        USER_ERROR(flag_check_var, ERR_BAD_RETURN, "", return);
-    }
-    else
-    {   
-        fprintf(FileProc,   "mov rax, %g\n", L->Value.Number);
-    }
-    flag_check_var = false;
-    if (R->Type == VARIABLE)
-    {
-        index_while_var = FindIndexLocalVar(myTree, R);
-        if (index_while_var != -1)
-        {
-            fprintf(FileProc, "mov rbx, qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_while_var].Number);
-            flag_check_var = true;
-        }
-        index_while_var = FindIndexArgVar(myTree, R);
-        if (index_while_var != -1)
-        {
-            fprintf(FileProc, "mov rbx, qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_while_var].Number);
-            flag_check_var = true;
-        }
-        USER_ERROR(flag_check_var, ERR_BAD_RETURN, "", return);
-    }
-    else
-    {   
-        fprintf(FileProc,   "mov rbx, %g\n", R->Value.Number);
-    }
-    fprintf(FileProc,   "cmp rax, rbx\n");
-
-    switch (ArrayOperators[CurrentNode->Value.Index].Id)
-    {
-        case 30://>
-            fprintf(FileProc, "ja while_start_%d\n", curr_counter);
-        break; 
-        case 31://<
-            fprintf(FileProc, "jb while_start_%d\n", curr_counter);
-        break; 
-        case 32://>=
-            fprintf(FileProc, "jae while_start_%d\n", curr_counter);
-        break; 
-        case 33://<=
-            fprintf(FileProc, "jbe while_start_%d\n", curr_counter);
-        break; 
-        case 34://!=
-            fprintf(FileProc, "jne while_start_%d\n", curr_counter);
-        break; 
-        case 35://==
-            fprintf(FileProc, "je while_start_%d\n", curr_counter);
-        break; 
-        default: break;
-    }   
+    RecEvaluate(myTree, C);
+    fprintf(FileProc,   "pop rax\n"
+                        "cmp rax, 1\n"
+                        "ja .while_start_%d\n", curr_counter);
 }
 
 //done
 static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* StackWhileCond)
 {
-    fprintf(FileProc, "\njmp if_check_%d\n", counter_if);
-    fprintf(FileProc, "if_start_%d:\n", counter_if);
+    fprintf(FileProc, "\njmp .if_check_%d\n", counter_if);
+    fprintf(FileProc, ".if_start_%d:\n", counter_if);
     push_int(StackWhileCond, counter_if);    //save
     push_int(StackWhileCond, IF_TYPE);
     counter_if++;
@@ -541,12 +527,12 @@ static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* Stac
         int type_operator = 0;
         pop_int(StackWhileCond, &type_operator);
         pop_int(StackWhileCond, &save_counter);     //pop index
-        fprintf(FileProc, "jmp if_end___%d\n", save_counter);
-        fprintf(FileProc, "if_check_%d:\n",  save_counter);
+        fprintf(FileProc, "jmp .if_end___%d\n", save_counter);
+        fprintf(FileProc, ".if_check_%d:\n",  save_counter);
         //Condition
         WriteCondCond(myTree, L, save_counter);
         WriteRecTree(myTree, (R)->Right, StackWhileCond);
-        fprintf(FileProc, "if_end___%d:\n\n", save_counter);
+        fprintf(FileProc, ".if_end___%d:\n\n", save_counter);
     }
     else
     {
@@ -555,11 +541,11 @@ static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* Stac
         int type_operator = 0;
         pop_int(StackWhileCond, &type_operator);
         pop_int(StackWhileCond, &save_counter);     //pop index
-        fprintf(FileProc, "jmp if_end___%d\n", save_counter);
-        fprintf(FileProc, "if_check_%d:\n",  save_counter);
+        fprintf(FileProc, "jmp .if_end___%d\n", save_counter);
+        fprintf(FileProc, ".if_check_%d:\n",  save_counter);
         //Condition
         WriteCondCond(myTree, L, save_counter);
-        fprintf(FileProc, "if_end___%d:\n\n", save_counter);
+        fprintf(FileProc, ".if_end___%d:\n\n", save_counter);
     }
 }
 
@@ -569,84 +555,12 @@ static void WriteCondCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_co
     //TODO: make variables
     if (!C) 
     {
-        fprintf(FileProc, "jmp if_start_%d", curr_counter);
+        fprintf(FileProc, "jmp .if_start_%d", curr_counter);
         return;
     }
-    if (C->Type == NUMBER)
-    {
-        if (!Compare(C->Value.Number, 0))
-        {
-            fprintf(FileProc, "jmp if_start_%d\n", curr_counter);
-        }
-        return;
-    }
-    int index_cond_var = -1;
-    bool flag_check_var = false;
-    if (L->Type == VARIABLE)
-    {
-        index_cond_var = FindIndexLocalVar(myTree, L);
-        if (index_cond_var != -1)
-        {
-            fprintf(FileProc, "mov rax, qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_cond_var].Number);
-            flag_check_var = true;
-        }
-        index_cond_var = FindIndexArgVar(myTree, L);
-        if (index_cond_var != -1)
-        {
-            fprintf(FileProc, "mov rax, qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_cond_var].Number);
-            flag_check_var = true;
-        }
-        USER_ERROR(flag_check_var, ERR_BAD_RETURN, "", return);
-    }
-    else
-    {   
-        fprintf(FileProc,   "mov rax, %g\n", L->Value.Number);
-    }
-    flag_check_var = false;
-    if (R->Type == VARIABLE)
-    {
-        index_cond_var = FindIndexLocalVar(myTree, R);
-        if (index_cond_var != -1)
-        {
-            fprintf(FileProc, "mov rbx, qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_cond_var].Number);
-            flag_check_var = true;
-        }
-        index_cond_var = FindIndexArgVar(myTree, R);
-        if (index_cond_var != -1)
-        {
-            fprintf(FileProc, "mov rbx, qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_cond_var].Number);
-            flag_check_var = true;
-        }
-        USER_ERROR(flag_check_var, ERR_BAD_RETURN, "", return);
-    }
-    else
-    {   
-        fprintf(FileProc,   "mov rbx, %g\n", R->Value.Number);
-    }
-    fprintf(FileProc,   "cmp rax, rbx\n");
-
-    switch (ArrayOperators[CurrentNode->Value.Index].Id)
-    {
-        case 30://>
-            fprintf(FileProc, "ja if_start_%d\n", curr_counter);
-        break; 
-        case 31://<
-            fprintf(FileProc, "jb if_start_%d\n", curr_counter);
-        break; 
-        case 32://>=
-            fprintf(FileProc, "jae if_start_%d\n", curr_counter);
-        break; 
-        case 33://<=
-            fprintf(FileProc, "jbe if_start_%d\n", curr_counter);
-        break; 
-        case 34://!=
-            fprintf(FileProc, "jne if_start_%d\n", curr_counter);
-        break; 
-        case 35://==
-            fprintf(FileProc, "je if_start_%d\n", curr_counter);
-        break; 
-        default: break; //TODO: 
-    }   
+    fprintf(FileProc,   "pop rax\n"
+                        "cmp rax, 1\n"
+                        "ja .if_start_%d\n", curr_counter);
 }
 
 //done
@@ -658,7 +572,7 @@ static void WriteBreak(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* St
         if (StackWhileCond->data[i] == WHILE_TYPE)
         {
             flag = false;
-            fprintf(FileProc, "jmp while_end___%d\n", StackWhileCond->data[i-1]);
+            fprintf(FileProc, "jmp .while_end___%d\n", StackWhileCond->data[i-1]);
             break;
         }
     }
@@ -677,7 +591,7 @@ static void WriteContinue(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t*
         if (StackWhileCond->data[i] == WHILE_TYPE)
         {
             flag = false;
-            fprintf(FileProc, "jmp while_start___%d\n", StackWhileCond->data[i-1]);
+            fprintf(FileProc, "jmp .while_start___%d\n", StackWhileCond->data[i-1]);
             break;
         }
     }

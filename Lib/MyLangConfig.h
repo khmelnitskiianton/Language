@@ -45,61 +45,82 @@ enum EnumOperClass{
     CALL,
 };
 
+enum EnumOperArgType{
+    UNARY_ARG,
+    BINARY_ARG,
+};
+
 typedef struct Operator {
     const char*     Name;
+    int             (*Operation)(FILE* FileProc, int label_counter);
+    EnumOperArgType ArgType;
     EnumOperType    Type;  
     EnumOperNum     Comp;
-    EnumOperClass   Class; //FOR PARSER CATEGORY
-    size_t          Id;//FOR STANDART OF TREE
+    EnumOperClass   Class;  //FOR PARSER CATEGORY
+    size_t          Id;     //FOR STANDART OF TREE
 } Operator_t;
  
+int     _ABO       (FILE* FileProc, int label_counter);
+int     _BEL       (FILE* FileProc, int label_counter);
+int     _ABOEQU    (FILE* FileProc, int label_counter);
+int     _BELEQU    (FILE* FileProc, int label_counter);
+int     _NEQU      (FILE* FileProc, int label_counter);
+int     _EQU       (FILE* FileProc, int label_counter);
+int     _ADD       (FILE* FileProc, int label_counter);
+int     _SUB       (FILE* FileProc, int label_counter);
+int     _OR        (FILE* FileProc, int label_counter);
+int     _AND       (FILE* FileProc, int label_counter);
+int     _MOD       (FILE* FileProc, int label_counter);
+int     _MUL       (FILE* FileProc, int label_counter);
+int     _DIV       (FILE* FileProc, int label_counter);
+int     _POW       (FILE* FileProc, int label_counter);
+int     _UADD      (FILE* FileProc, int label_counter);
+int     _USUB      (FILE* FileProc, int label_counter);
+int     _NOT       (FILE* FileProc, int label_counter);
+
 constexpr Operator_t ArrayOperators[] = {
-    {"func_def",        LETTER,         MULT,       FUNC_DEF,           10},
-    {"func_def_help",   LETTER,         MULT,       FUNC_DEF_HELP,      11},
-    {"call",            LETTER,         MULT,       CALL,               12},
-    {"return",          LETTER,         MULT,       RETURN,             13},
+    {"func_def",            NULL,       BINARY_ARG,         LETTER,         MULT,       FUNC_DEF,           10},
+    {"func_def_help",       NULL,       BINARY_ARG,         LETTER,         MULT,       FUNC_DEF_HELP,      11},
+    {"call",                NULL,       BINARY_ARG,         LETTER,         MULT,       CALL,               12},
+    {"return",              NULL,       BINARY_ARG,         LETTER,         MULT,       RETURN,             13},
+    
+    {";",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       DIVIDER,            20},
+    {",",                   NULL,       BINARY_ARG,         SYMBOL,         MULT,       DIVIDER_ARG,        21},
+    {"=",                   NULL,       BINARY_ARG,         SYMBOL,         MULT,       EQUAL,              22},   
+    
+    {"var",                 NULL,       BINARY_ARG,         LETTER,         MULT,       VAR,                100},
+    {"void",                NULL,       BINARY_ARG,         LETTER,         MULT,       VOID,               101},
+    {"if",                  NULL,       BINARY_ARG,         LETTER,         MULT,       IF,                 102},
+    {"while",               NULL,       BINARY_ARG,         LETTER,         MULT,       WHILE,              103},
+    {"else",                NULL,       BINARY_ARG,         LETTER,         MULT,       ELSE,               104},
+    {"break",               NULL,       BINARY_ARG,         LETTER,         MULT,       BREAK,              105},
+    {"continue",            NULL,       BINARY_ARG,         LETTER,         MULT,       CONTINUE,           106},
+    
+    {">",                   _ABO,       BINARY_ARG,         SYMBOL,         MULT,       ZERO,               30},
+    {"<",                   _BEL,       BINARY_ARG,         SYMBOL,         MULT,       ZERO,               31},
+    {">=",                  _ABOEQU,    BINARY_ARG,         SYMBOL,         MULT,       ZERO,               32},
+    {"<=",                  _BELEQU,    BINARY_ARG,         SYMBOL,         MULT,       ZERO,               33},
+    {"!=",                  _NEQU,      BINARY_ARG,         SYMBOL,         MULT,       ZERO,               34},
+    {"==",                  _EQU,       BINARY_ARG,         SYMBOL,         SOLO,       ZERO,               35},
+    {"+",                   _ADD,       BINARY_ARG,         SYMBOL,         MULT,       FIRST,              40},
+    {"-",                   _SUB,       BINARY_ARG,         SYMBOL,         MULT,       FIRST,              41},
+    {"||",                  _OR,        BINARY_ARG,         SYMBOL,         MULT,       FIRST,              42},
+    {"&&",                  _AND,       BINARY_ARG,         SYMBOL,         MULT,       SECOND,             50},
 
-    {";",               SYMBOL,         SOLO,       DIVIDER,            20},
-    {",",               SYMBOL,         MULT,       DIVIDER_ARG,        21},
-    {"=",               SYMBOL,         MULT,       EQUAL,              22},   
+    {"%",                   _MOD,       BINARY_ARG,         SYMBOL,         MULT,       SECOND,             51},
+    {"*",                   _MUL,       BINARY_ARG,         SYMBOL,         MULT,       SECOND,             52},
+    {"/",                   _DIV,       BINARY_ARG,         SYMBOL,         MULT,       SECOND,             53},
+    {"++",                  _UADD,      UNARY_ARG,          SYMBOL,         SOLO,       FOURTH,             70},
+    {"--",                  _USUB,      UNARY_ARG,          SYMBOL,         SOLO,       FOURTH,             71},
 
-    {"var",             LETTER,         MULT,       VAR,                100},
-    {"void",            LETTER,         MULT,       VOID,               101},
-    {"if",              LETTER,         MULT,       IF,                 102},
-    {"while",           LETTER,         MULT,       WHILE,              103},
-    {"else",            LETTER,         MULT,       ELSE,               104},
-    {"break",           LETTER,         MULT,       BREAK,              105},
-    {"continue",        LETTER,         MULT,       CONTINUE,           106},
+    {"!",                   _NOT,       BINARY_ARG,         SYMBOL,         SOLO,       FOURTH,             72}, 
 
-    {">",               SYMBOL,         MULT,       ZERO,               30},
-    {"<",               SYMBOL,         MULT,       ZERO,               31},
-    {">=",              SYMBOL,         MULT,       ZERO,               32},
-    {"<=",              SYMBOL,         MULT,       ZERO,               33},
-    {"!=",              SYMBOL,         MULT,       ZERO,               34},
-    {"==",              SYMBOL,         SOLO,       ZERO,               35},
-
-    {"+",               SYMBOL,         MULT,       FIRST,              40},
-    {"-",               SYMBOL,         MULT,       FIRST,              41},
-    {"||",              SYMBOL,         MULT,       FIRST,              42},
-
-    {"&&",              SYMBOL,         MULT,       SECOND,             50},
-    {"%",               SYMBOL,         MULT,       SECOND,             51},
-    {"*",               SYMBOL,         MULT,       SECOND,             52},
-    {"/",               SYMBOL,         MULT,       SECOND,             53},
-
-    {"^",               SYMBOL,         MULT,       THIRD,              60},
-
-    {"++",              SYMBOL,         SOLO,       FOURTH,             70},
-    {"--",              SYMBOL,         SOLO,       FOURTH,             71},
-    {"!",               SYMBOL,         SOLO,       FOURTH,             72}, 
-
-
-    {"(",               SYMBOL,         SOLO,       OP_BR_ONE,          0},
-    {")",               SYMBOL,         SOLO,       CL_BR_ONE,          0},
-    {"{",               SYMBOL,         SOLO,       OP_BR_TWO,          0},
-    {"}",               SYMBOL,         SOLO,       CL_BR_TWO,          0},
-    {"[",               SYMBOL,         SOLO,       OP_BR_THREE,        0},
-    {"]",               SYMBOL,         SOLO,       CL_BR_THREE,        0},
+    {"(",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       OP_BR_ONE,          0},
+    {")",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       CL_BR_ONE,          0},
+    {"{",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       OP_BR_TWO,          0},
+    {"}",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       CL_BR_TWO,          0},
+    {"[",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       OP_BR_THREE,        0},
+    {"]",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       CL_BR_THREE,        0},
 };
 const size_t SIZE_OF_OPERATORS = sizeof(ArrayOperators)/sizeof(ArrayOperators[0]);
 

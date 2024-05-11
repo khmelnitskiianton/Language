@@ -60,7 +60,7 @@ sudo apt install graphviz               #graphviz
 void main(){
     var x;
     var x = 0;
-    var y = (2+0)^1 - 4;
+    var y = (2+x) - 4;
     var a = summ(x, y);
     if (a) {
         print(x);
