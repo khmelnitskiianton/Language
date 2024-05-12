@@ -1,6 +1,12 @@
 var main()
 {
-    var x = input();
-    print(x);
+    var z = summ(1, 2);
+    print(z);
     return 0;
+}
+
+var summ(var a, var b)
+{
+    var x = a+b;
+    return x;
 }

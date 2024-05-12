@@ -9,9 +9,11 @@ _stack_offset   equ 8
 SUCCESS_RET     equ 1
 FAIL_RET        equ 0
 
-global input
-global print
-global __SeG_FaUlT__
+global  input
+global  print
+global  error_end
+
+global  __processing_undefined_var__
 
 section .text
 
@@ -108,6 +110,12 @@ print:
 
         ret
 
+;========================================================================================
+;End program without segfault
+;Args: RDI - code of error
+error_end:
+        mov rax, 60
+        syscall
 ;========================================================================================
 ;==================================HELP=FUNCTIONS========================================
 ;write_buff() - function of write buffer in stdout
@@ -223,6 +231,15 @@ print_char:
         mov buffer_out[r11], dil
         inc r11
         ret
+__processing_undefined_var__:
+        mov rax, SYSCALL_WRITE  ; syscall 0x01: write(rdi, rsi, rdx) - (int, char*, size_t)
+        mov rdi, 1              ; stdout
+        mov rsi, msg     ; address of str - in stack last char
+        mov rdx, msg_len    ; length
+        syscall
+        mov rbx, 0
+        idiv rbx
+        ret
 ;=========================================================================================
 ;print_dec_sign(int a) - function of write decimal number
 ;Args: ABI - argument in rdi
@@ -278,6 +295,8 @@ print_dec_sign:
 ;#========================================================================================
 section .rodata
 dec_str         db "0123456789" ;const alphabets for number systems
+msg             db "Нельзя просто так взять и обратится к неинициализированной переменной", 0x0A, 0x0D, "You can't just turn to an uninitialized variable",0x0A, 0x0D 
+msg_len         equ $ - msg
 
 section .data
 buffer_out:     times SIZE_BUFFER db 0 ;buffer for write

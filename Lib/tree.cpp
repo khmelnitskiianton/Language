@@ -73,6 +73,31 @@ Node_t* CreateNode (BinaryTree_t* myTree)
     return NewNode;
 }
 
+Node_t* DiffCreateNode (BinaryTree_t* myTree, EnumOfType NewType, NodeValue_t NewValue, Node_t* LeftNode, Node_t* RightNode)
+{
+    Node_t* NewNode = (Node_t*) calloc (1, sizeof (NewNode[0]));
+    MYASSERT(NewNode, ERR_BAD_CALLOC, return NULL)
+    InitNode(NewNode);
+    NewNode->Left   = LeftNode;
+    NewNode->Right  = RightNode;
+    NewNode->Type   = NewType;
+
+    if (LeftNode) LeftNode->Parent = NewNode;
+    if (RightNode) RightNode->Parent = NewNode;
+
+    if (NewNode->Type == NUMBER) 
+    {
+        NewNode->Value.Number = NewValue.Number;
+    } 
+    if ((NewNode->Type == OPERATOR)||(NewNode->Type == VARIABLE))
+    {
+        NewNode->Value.Index  = NewValue.Index;
+    }
+    myTree->Size++;
+    return NewNode;
+}
+
+
 bool Compare (double x, double y)
 {
     if (((isnan (x) == 1) && (isnan (y) == 1)) || (fabs (x - y) < EPSILONE))

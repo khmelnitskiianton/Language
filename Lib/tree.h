@@ -72,6 +72,8 @@ void            TreeCtor    (BinaryTree_t* myTree);
 EnumOfErrors    TreeDtor    (BinaryTree_t* myTree);
 void            InitNode    (Node_t* NewNode);
 Node_t*         CreateNode  (BinaryTree_t* myTree);
+Node_t*         DiffCreateNode  (BinaryTree_t* myTree, EnumOfType NewType, NodeValue_t NewValue, Node_t* LeftNode, Node_t* RightNode);
+
 void            RecFree     (Node_t* CurrentNode);
 bool            Compare     (double x, double y);
 

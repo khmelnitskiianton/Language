@@ -45,6 +45,8 @@ int     _DIV       (FILE* FileProc, int label_counter){
                         "pop rax\n"
                         "mov rdx, 0\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
+                        "cmp rbx, 0     ; check for zero\n"
+                        "je error_end\n" 
                         "idiv rbx\n"
                         "push rax\n"); //TODO: call func in asm ERROR, Check CF 
     return 0;
@@ -54,6 +56,8 @@ int     _MOD       (FILE* FileProc, int label_counter){
                         "pop rax\n"
                         "mov rdx, 0\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
+                        "cmp rbx, 0     ; check for zero\n"
+                        "je error_end\n" 
                         "idiv rbx\n"
                         "push rdx\n"); //TODO: call func in asm ERROR, Check CF 
     return 0;

@@ -11,8 +11,8 @@
 
 #define DIF(Node) RecDiff(Node, myTree)
 #define CPY(Node) RecDiffCreateNode(Node->Type, Node->Value, (Node->Left), (Node->Right))
-#define OPR(OPR, Left, Right) DiffCreateNode(OPERATOR, {.Number = -1, .Index = OPR}, (Left), (Right))
-#define NUM(Num) DiffCreateNode(NUMBER,   {.Number = Num}, NULL, NULL)
-#define VAR(Var) DiffCreateNode(VARIABLE, {.Index = Var}, NULL, NULL)
+#define OPR(TREE, OPR, Left, Right) DiffCreateNode(TREE, OPERATOR, {.Number = -1, .Index = OPR}, (Left), (Right))
+#define NUM(TREE, Num) DiffCreateNode(TREE, NUMBER,   {.Number = Num}, NULL, NULL)
+#define VAR(TREE, Var) DiffCreateNode(TREE, VARIABLE, {.Index = Var}, NULL, NULL)
 
 #endif
