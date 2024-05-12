@@ -41,3 +41,4 @@ DEF_ERROR(BAD_RETURN_BE,                "Error, unknown object you want to retur
 DEF_ERROR(RETURN_NOTHING_IN_VAR,        "Error! You want to return nothing from var-return function!")
 DEF_ERROR(UNKNOWN_VAR,                  "Error! Unknown var!")
 DEF_ERROR(UNKNOWN_NODE,                 "Error! Unknown type of node in translator!")
+DEF_ERROR(UNKNOWN_OPERATOR,             "Error! Unknown operator in translator!")

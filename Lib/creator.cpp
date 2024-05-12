@@ -7,7 +7,7 @@
 
 #include "colors.h"
 #include "tree.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "creator.h"
 #include "log.h"
 #include "myassert.h"

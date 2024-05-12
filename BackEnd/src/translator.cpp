@@ -4,7 +4,7 @@
 #include "colors.h"
 #include "tree.h"
 #include "Stacks/stack_int.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "translator.h"
 #include "log.h"
 #include "output.h"
@@ -48,13 +48,15 @@ static Var_t    FuncLocalVars[SIZE_OF_VARIABLES]    = {};
 static Var_t    FuncGlobalVars[SIZE_OF_VARIABLES]   = {};   //TODO:add global vars
 static FILE*    FileProc = NULL;
 
-static const int DIMENSION = 8;
+static const int DIMENSION      = 8;
+static const int ADDRESS_CALL   = 8;
 
-static int   counter_while       = 0;
-static int   counter_if          = 0;
-static int   counter_label_var   = 0;
-static int   counter_move_vars   = 0;
-static bool  is_void             = false;   
+static int      counter_while       = 0;
+static int      counter_if          = 0;
+static int      counter_label_var   = 0;
+static int      counter_move_vars   = 0;
+static int      counter_push_args   = 0;
+static bool     is_void             = false;   
 
 EnumOfErrors TranslateTree(BinaryTree_t* myTree, const char* in_file_path, StackInt_t* StackWhileCond)
 {
@@ -95,10 +97,20 @@ EnumOfErrors TranslateTree(BinaryTree_t* myTree, const char* in_file_path, Stack
 static void WriteStart()
 {
     fprintf(FileProc,   ";#=========================#\n"
+                        ";# THIS FILE WAS GENERATED #\n"
+                        ";#    BY ANTON'S LANGUAGE  #\n"
+                        ";#GITHUB: khmelnitskiianton#\n"
+                        ";#=========================#\n"
+                        "\n"
+                        ";#=========================#\n"
                         ";#      Start module       #\n"
-                        ";#=========================#\n\n"
+                        ";#=========================#\n"
+                        "\n"
                         "_stack_offset equ 8\n\n"
-                        "global main\n\n");
+                        "global main\n"
+                        "extern print\n"
+                        "extern input\n"
+                        "\n");
     fprintf(FileProc,   
                         ";#=========================#\n"
                         ";#      Main module        #\n"
@@ -348,21 +360,32 @@ static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
         index_use_var = FindIndexArgVar(myTree, C);
         if (index_use_var != -1)
         {
-            fprintf(FileProc, "\npush qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_use_var].Number);
+            fprintf(FileProc, "\npush qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_use_var].Number + ADDRESS_CALL);
             return;
         }
-        USER_ERROR(0, ERR_UNKNOWN_VAR, "", return)
     }    
-
-    RecEvaluate(myTree, L);
-    RecEvaluate(myTree, R);
+    
+    if ((C->Type == OPERATOR) && (ArrayOperators[C->Value.Index].Class != CALL))
+    {
+        RecEvaluate(myTree, L);
+        RecEvaluate(myTree, R);
+    }
 
     if (C->Type == OPERATOR)
     { 
-        counter_label_var += ArrayOperators[C->Value.Index].Operation(FileProc, counter_label_var);
-        return;
+        if (ArrayOperators[C->Value.Index].Class == CALL)
+        {
+            WriteCall(myTree, C);
+            fprintf(FileProc, "push rax\n");
+            return;
+        }
+        if (ArrayOperators[C->Value.Index].Operation != NULL)
+        {
+            counter_label_var += ArrayOperators[C->Value.Index].Operation(FileProc, counter_label_var);
+            return;
+        }
+        USER_ERROR(0, ERR_UNKNOWN_OPERATOR, "",return)
     }
-
     USER_ERROR(0, ERR_UNKNOWN_NODE, "",return)
 }
 
@@ -370,10 +393,12 @@ static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
 static void WriteCall(BinaryTree_t* myTree, Node_t* CurrentNode)
 {
     fprintf(FileProc,   ";#==========Call===========#\n");
+    counter_push_args = 0;
     GetArgs(myTree, R);
     char* name_of_func = myTree->Variables[L->Value.Index].Name;
     fprintf(FileProc,   "\ncall %s\n"
-                        ";#=========End=Call========#\n", name_of_func);
+                        "add rsp,%d\n"
+                        ";#=========End=Call========#\n", name_of_func, counter_push_args*DIMENSION);
 
 }
 //done
@@ -388,7 +413,8 @@ static void GetArgs(BinaryTree_t* myTree, Node_t* CurrentNode)
     }
     if (CurrentNode->Type == NUMBER)
     {
-        fprintf(FileProc, "push %g\n", CurrentNode->Value.Number);       
+        fprintf(FileProc, "push %g\n", CurrentNode->Value.Number);    
+        counter_push_args += 1;   
         return; 
     }
     if (CurrentNode->Type == VARIABLE)
@@ -397,12 +423,14 @@ static void GetArgs(BinaryTree_t* myTree, Node_t* CurrentNode)
         if (index_call_var != -1)
         {
             fprintf(FileProc, "push qword [rbp - _stack_offset*%d]\n", FuncLocalVars[index_call_var].Number);
+            counter_push_args += 1;   
             return;
         }
         index_call_var = FindIndexArgVar(myTree, C);
         if (index_call_var != -1)
         {
-            fprintf(FileProc, "push qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_call_var].Number);
+            fprintf(FileProc, "push qword [rbp + _stack_offset*%d]\n", FuncArgVars[index_call_var].Number + ADDRESS_CALL);
+            counter_push_args += 1;   
             return;
         }
         USER_ERROR(0, ERR_BAD_RETURN, "", return);
@@ -435,7 +463,7 @@ static void WriteReturn(BinaryTree_t* myTree, Node_t* CurrentNode)
         index_ret_var = FindIndexArgVar(myTree, L);
         if (index_ret_var != -1)
         {
-            fprintf(FileProc, "mov rax, qword [rbp + _stack_offset*%d]\nmov rsp, rbp\npop  rbp\nret\n", FuncArgVars[index_ret_var].Number);
+            fprintf(FileProc, "mov rax, qword [rbp + _stack_offset*%d]\nmov rsp, rbp\npop  rbp\nret\n", FuncArgVars[index_ret_var].Number+ADDRESS_CALL);
             return;
         }
         USER_ERROR(0, ERR_BAD_RETURN, "", return);

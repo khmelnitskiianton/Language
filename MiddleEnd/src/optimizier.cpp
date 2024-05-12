@@ -9,7 +9,7 @@
 #include "tree.h"
 #include "optimizier.h"
 #include "calculation.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "log.h"
 #include "myassert.h"
 #include "verificator.h"

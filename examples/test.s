@@ -1,10 +1,18 @@
 ;#=========================#
+;# THIS FILE WAS GENERATED #
+;#    BY ANTON'S LANGUAGE  #
+;#GITHUB: khmelnitskiianton#
+;#=========================#
+
+;#=========================#
 ;#      Start module       #
 ;#=========================#
 
 _stack_offset equ 8
 
 global main
+extern print
+extern input
 
 ;#=========================#
 ;#      Main module        #
@@ -16,87 +24,32 @@ main:
 ;#=======Input=Action======#
 push rbp
 mov  rbp, rsp
-sub  rsp, 32
+sub  rsp, 8
 ;#=======End=Action========#
 
 ;#========Init=Local=======#
 mov qword [rbp - _stack_offset*0], 0
-mov qword [rbp - _stack_offset*1], 0
-mov qword [rbp - _stack_offset*2], 0
-mov qword [rbp - _stack_offset*3], 0
 ;#========End=Init=========#
 
 
 ;#========Var=Assign=======#
+;#==========Call===========#
 
-push 1
+call input
+add rsp,0
+;#=========End=Call========#
+push rax
 
 ;assign
 pop rax
 mov qword [rbp - _stack_offset*0], rax
 ;#=========End=Var=========#
-
-;#========Var=Assign=======#
-
-push 6
-
-;assign
-pop rax
-mov qword [rbp - _stack_offset*1], rax
-;#=========End=Var=========#
-
-;#========Var=Assign=======#
-
+;#==========Call===========#
 push qword [rbp - _stack_offset*0]
 
-push qword [rbp - _stack_offset*1]
-
-pop rbx      ; add
-pop rax
-add rax, rbx
-push rax
-
-push 20
-
-push qword [rbp - _stack_offset*0]
-
-pop rbx      ; imul
-pop rax
-mov rdx, 0
-imul rbx
-push rax
-
-pop rbx      ; sub
-pop rax
-sub rax, rbx
-push rax
-
-;assign
-pop rax
-mov qword [rbp - _stack_offset*2], rax
-;#=========End=Var=========#
-
-jmp .while_check_0
-.while_start_0:
-
-
-;#========Var=Assign=======#
-
-push 0
-
-;assign
-pop rax
-mov qword [rbp - _stack_offset*3], rax
-;#=========End=Var=========#
-
-.while_check_0:
-
-push qword [rbp - _stack_offset*0]
-pop rax
-cmp rax, 1
-ja .while_start_0
-.while_end___0:
-
+call print
+add rsp,8
+;#=========End=Call========#
 
 ;#========Var=Return=======#
 mov rax, 0

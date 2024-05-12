@@ -7,7 +7,7 @@
 #include "output.h"
 #include "creator.h"
 #include "colors.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "dsl.h"
 #include "myassert.h"
 #include "verificator.h"

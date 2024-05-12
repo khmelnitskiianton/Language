@@ -5,7 +5,7 @@
 
 #include "tree.h"
 #include "creator.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "log.h"
 #include "myassert.h"
 #include "verificator.h"

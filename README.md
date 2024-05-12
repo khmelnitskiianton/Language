@@ -1,6 +1,6 @@
 # MyLanguage
 
-Project of translation system - from my language to my assembler with processor.
+Project of translation system - from my language to NASM
 
 It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
 + FrontEnd: parses code to tree based recursive descent

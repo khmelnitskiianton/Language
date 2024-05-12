@@ -6,7 +6,7 @@
 #include "Stacks/stack_int.h"
 #include "creator.h"
 #include "colors.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "translator.h"
 #include "log.h"
 #include "myassert.h"

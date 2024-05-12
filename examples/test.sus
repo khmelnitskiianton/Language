@@ -1,11 +1,6 @@
 var main()
 {
-    var a = 1;
-    var z = 6;
-    var b = a + z - 20*a;
-    while (a)
-    {
-        var x = 0;
-    }
+    var x = input();
+    print(x);
     return 0;
 }

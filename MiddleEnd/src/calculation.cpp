@@ -6,7 +6,7 @@
 #include "tree.h"
 #include "calculation.h"
 #include "colors.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "myassert.h"
 #include "verificator.h"
 #include "dsl.h"

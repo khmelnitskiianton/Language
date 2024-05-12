@@ -6,7 +6,7 @@
 #include "creator.h"
 #include "optimizier.h"
 #include "colors.h"
-#include "MyLangConfig.h"
+#include "MyLangConfig/MyLangConfig.h"
 #include "output.h"
 #include "log.h"
 #include "myassert.h"
