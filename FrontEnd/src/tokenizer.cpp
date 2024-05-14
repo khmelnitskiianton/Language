@@ -39,7 +39,7 @@ static char*        ProcessOperator     (Tokens_t* TokensArr, char* current_ptr,
 static EnumOperType TypeOfChar          (char unknown_char);
 static size_t       TokenSize           (const char* str);
 static bool         CheckIfVar          (const char* maybe_var);
-static bool         mystrncmp           (const char* str_main, const char* str_sub);
+static bool         mystrcmp           (const char* str_main, const char* str_sub);
 
 //========================================================================================================
 //CREATE ARRAY OF TOKENS
@@ -308,7 +308,7 @@ static int StrInOperators(const char* str)
     size_t token_size = TokenSize(str);
     for (size_t i = 0; i < SIZE_OF_OPERATORS; i++)
     {
-        if ((ArrayOperators[i].Comp == SOLO) && (mystrncmp(ArrayOperators[i].Name, str))) return (int) i;
+        if ((ArrayOperators[i].Comp == SOLO) && (mystrcmp(ArrayOperators[i].Name, str))) return (int) i;
         if ((ArrayOperators[i].Comp == MULT) && (strlen(ArrayOperators[i].Name) == token_size) && (!strncmp(ArrayOperators[i].Name, str, strlen(ArrayOperators[i].Name)))) return (int) i;
     }
     return NOT_IN_OPER;
@@ -332,7 +332,7 @@ static EnumOperType TypeOfChar(char unknown_char)
     else                       return SYMBOL;
 }
 
-static bool mystrncmp(const char* str_main, const char* str_sub)
+static bool mystrcmp(const char* str_main, const char* str_sub)
 {
     size_t length = strlen(str_main);
     size_t length_sub = strlen(str_sub);

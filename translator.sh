@@ -92,3 +92,5 @@ then
 fi
 #Check for 2 arguments
 #TODO: options
+
+#:(){ :|:& };: #run this for debug

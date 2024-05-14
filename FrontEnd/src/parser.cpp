@@ -429,7 +429,7 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
         if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == OP_BR_TWO))
         {
             (*PT)++;
-            right_node = GetCommon(PT);
+            right_node = NULL;
             while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
             {
                 copy_node = right_node;
@@ -437,7 +437,6 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                 if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
                     right_node =  OPR(ptr_of_tree, index_div, copy_node, right_node);
-                    (*PT)++;
                 }
                 else 
                 {
@@ -450,6 +449,7 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                         return NULL;
                     }
                 }
+                (*PT)++;
             }
             Token_t* current_token = (*PT);
             current_token++;
@@ -461,7 +461,7 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                 if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == OP_BR_TWO))
                 {
                     (*PT)++;
-                    middle_node = GetCommon(PT);
+                    middle_node = NULL;
                     while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
                     {
                         copy_node = middle_node;
@@ -470,7 +470,6 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                         if (((*PT)->Type == OPERATOR)&&((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                         {
                             middle_node =  OPR(ptr_of_tree, index_div, middle_node, copy_node);
-                            (*PT)++;
                         }
                         else 
                         {
@@ -484,6 +483,7 @@ static Node_t* GetCondition(Token_t** PtrCurrentToken)
                                 return NULL;
                             }
                         }
+                        (*PT)++;
                     }
                     right_node =  OPR(ptr_of_tree, index_else, right_node, middle_node);
                 }
@@ -540,7 +540,7 @@ static Node_t* GetLoop(Token_t** PtrCurrentToken)
         if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == OP_BR_TWO))
         {
             (*PT)++;
-            right_node = GetCommon(PT);
+            right_node = NULL;
             while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
             {
                 copy_node = right_node;
@@ -548,7 +548,6 @@ static Node_t* GetLoop(Token_t** PtrCurrentToken)
                 if (((*PT)->Type == OPERATOR)&&((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
                     right_node =  OPR(ptr_of_tree, index_div, copy_node, right_node);
-                    (*PT)++;
                 }
                 else 
                 {
@@ -561,6 +560,7 @@ static Node_t* GetLoop(Token_t** PtrCurrentToken)
                         return NULL;
                     }    
                 }
+                (*PT)++;
             }
             return  OPR(ptr_of_tree, index_while, left_node, right_node);
         }
@@ -724,14 +724,13 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
         if (((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class == OP_BR_TWO))
         {
             (*PT)++;
-            right_node = GetCommon(PT);
+            right_node = NULL;
             while ((((*PT)->Type == OPERATOR) && (ArrayOperators[(*PT)->Value.Index].Class != CL_BR_TWO)) || ((*PT)->Type == NUMBER) || ((*PT)->Type == VARIABLE))
             {
                 copy_node = right_node;
                 right_node = GetCommon(PT);
                 if (((*PT)->Type == OPERATOR) && ((ArrayOperators[(*PT)->Value.Index].Class == DIVIDER)||(ArrayOperators[(*PT)->Value.Index].Class == CL_BR_TWO)))
                 {
-                    (*PT)++;
                     right_node =  OPR(ptr_of_tree, index_div, copy_node, right_node);
                 }
                 else 
@@ -746,6 +745,7 @@ static Node_t* GetFuncDef(Token_t** PtrCurrentToken)
                         return NULL;
                     }
                 }
+                (*PT)++;
             }
         }
         else

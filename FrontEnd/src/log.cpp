@@ -22,6 +22,7 @@ static void  WriteNode     (Node_t* CurrentNode, BinaryTree_t* myTree);
 static void  WriteHead     (BinaryTree_t* myTree);
 static void  WriteTree     (BinaryTree_t* myTree);
 static void  LogCleanCharBuffer(char* buffer, const size_t buffer_size);
+static bool  CheckForTabooSymbols(const char* str);
 
 EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code)
 {
@@ -194,8 +195,16 @@ static void WriteNode (Node_t* CurrentNode, BinaryTree_t* myTree)
     }
     if (CurrentNode->Type == OPERATOR) 
     {
-        fprintf (FileGraph, "\tnode%p [shape = Mrecord, style = filled, fillcolor = \"" COLOR_OPERATOR "\", color = \"" COLOR_FRAME "\", label = \"{ PARENT: %p | PTR: %p | TYPE: %d | DATA: " SPECIFIER_OPERATOR_STR  " | { <f0> LEFT: %p | <f1> RIGHT: %p }}\"];\n", 
-                CurrentNode, CurrentNode->Parent, CurrentNode, OPERATOR, ArrayOperators[CurrentNode->Value.Index].Name, CurrentNode->Left, CurrentNode->Right);                                                                                                                                              
+        fprintf (FileGraph, "\tnode%p [shape = Mrecord, style = filled, fillcolor = \"" COLOR_OPERATOR "\", color = \"" COLOR_FRAME "\", label = \"{ PARENT: %p | PTR: %p | TYPE: %d | DATA: ", CurrentNode, CurrentNode->Parent, CurrentNode, OPERATOR);
+        if (CheckForTabooSymbols(ArrayOperators[CurrentNode->Value.Index].Name)) 
+        {
+            fprintf(FileGraph, SPECIFIER_OPERATOR_STR, "Object has taboo symbols!");
+        }
+        else
+        {
+            fprintf(FileGraph, SPECIFIER_OPERATOR_STR,  ArrayOperators[CurrentNode->Value.Index].Name);
+        }
+        fprintf (FileGraph, " | { <f0> LEFT: %p | <f1> RIGHT: %p }}\"];\n", CurrentNode->Left, CurrentNode->Right);   
     }
     if (CurrentNode->Type == VARIABLE) 
     {                               
@@ -238,4 +247,13 @@ static void LogCleanCharBuffer(char* buffer, const size_t buffer_size)
     {
         *(buffer + i) = 0;
     }
+}
+
+static bool CheckForTabooSymbols(const char* str)
+{
+    for (size_t i = 0; i < strlen(str); i++)
+    {
+        if ((str[i] == '{')||(str[i] == '}')||(str[i] == '|')||(str[i] == '<')||(str[i] == '>')) return 1;
+    }
+    return 0;
 }

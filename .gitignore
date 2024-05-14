@@ -26,9 +26,9 @@ BackEnd/Makefile
 .tmp/
 .vscode/
 
-FrontEnd/frontend.exe
-MiddleEnd/middleend.exe
-BackEnd/backend.exe
+FrontEnd/frontend.elf
+MiddleEnd/middleend.elf
+BackEnd/backend.elf
 
 Lib/Stacks/*.txt
 Lib/Stacks/*.txth

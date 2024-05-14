@@ -13,7 +13,33 @@ global  input
 global  print
 global  error_end
 
-global  __processing_undefined_var__
+global  __processing_unassigned_var__
+
+section .rodata
+dec_str         db "0123456789", 0x00 ;const alphabets for number systems
+msg             db  0x0A, 0x0D, "> Нельзя просто так взять и обратится к неинициализированной переменной. Боромир", 0x0A, 0x0D, "> One does not simply refer to unassigned variable. Boromir",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+msg_len         equ $ - msg
+
+;#Errors
+error_list1 db "> Overflowing in signed 32byte integer number!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+error_list2 db "> Divizion by zero!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+
+
+;#Jump Table
+jmp_table_errors:
+        dq error_list1
+        dq error_list2
+
+
+;=======================================================
+;Buffers
+section .data
+buffer_out:     times SIZE_BUFFER db 0 ;buffer for write
+buffer_in:      times SIZE_BUFFER db 0 ;buffer for input
+
+
+;=======================================================================================
+;Functions
 
 section .text
 
@@ -114,6 +140,18 @@ print:
 ;End program without segfault
 ;Args: RDI - code of error
 error_end:
+        xor r11, r11            ;clean r11
+        xor r15, r15
+
+        mov rbx, [rdi*8 + jmp_table_errors] ;count address of buffer 
+        mov rdi, rbx
+        call print_str
+        cmp r11, 0              ;last check buffer and print it
+        je .if_buff_end 
+        call write_buff
+.if_buff_end:
+        ;write "\n"
+
         mov rax, 60
         syscall
 ;========================================================================================
@@ -231,7 +269,7 @@ print_char:
         mov buffer_out[r11], dil
         inc r11
         ret
-__processing_undefined_var__:
+__processing_unassigned_var__:
         mov rax, SYSCALL_WRITE  ; syscall 0x01: write(rdi, rsi, rdx) - (int, char*, size_t)
         mov rdi, 1              ; stdout
         mov rsi, msg     ; address of str - in stack last char
@@ -239,6 +277,32 @@ __processing_undefined_var__:
         syscall
         mov rbx, 0
         idiv rbx
+        ret
+;========================================================================================
+;print_str(const char* buff) - function of write string in stdout
+;Args: ABI - argument in rdi
+;Ret: void
+;Change: rdi, rbx
+print_str:
+        nop
+        push rdi        ;save regs
+        push rbx
+        ;while(*ch != '\0') {print_char(*ch)}
+        mov rbx, rdi   ;rbx - address on buffer
+.while_start:
+        cmp byte [rbx], 0    ; *ch != '\0'
+        je .while_end
+        xor rdi, rdi         ;set rdi = 0
+        mov dil, byte [rbx]  ;mov rdi(dil = 1 byte), [rbx] 
+
+        call print_char ;call print current char
+
+        ;set next symbol
+        inc rbx
+        jmp .while_start
+.while_end:
+        pop rbx         ;revive regs
+        pop rdi
         ret
 ;=========================================================================================
 ;print_dec_sign(int a) - function of write decimal number
@@ -292,12 +356,3 @@ print_dec_sign:
         pop rsi
 
         ret
-;#========================================================================================
-section .rodata
-dec_str         db "0123456789" ;const alphabets for number systems
-msg             db "Нельзя просто так взять и обратится к неинициализированной переменной", 0x0A, 0x0D, "You can't just turn to an uninitialized variable",0x0A, 0x0D 
-msg_len         equ $ - msg
-
-section .data
-buffer_out:     times SIZE_BUFFER db 0 ;buffer for write
-buffer_in:      times SIZE_BUFFER db 0 ;buffer for input

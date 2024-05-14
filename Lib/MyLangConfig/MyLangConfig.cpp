@@ -37,30 +37,47 @@ int     _MUL       (FILE* FileProc, int label_counter){
                         "pop rax\n"
                         "mov rdx, 0\n"
                         "imul rbx\n"
-                        "push rax\n"); //TODO: call func in asm ERROR, Check CF 
-    return 0;
+                        "push rax\n"
+                        
+                        "mov rbx, 0x80000000\n"
+                        "cmp rax, rbx\n"
+                        "jb .no_overflow_%d\n"
+                        "mov rdi, 0\n"
+                        "call error_end\n"
+                        ".no_overflow_%d:\n", label_counter, label_counter);
+    return 1;
 }
 int     _DIV       (FILE* FileProc, int label_counter){
     fprintf(FileProc,   "\npop rbx      ; idiv\n"
                         "pop rax\n"
                         "mov rdx, 0\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
+                        
                         "cmp rbx, 0     ; check for zero\n"
-                        "je error_end\n" 
+                        "jne .no_div_zero_%d\n" 
+                        "mov rdi, 1\n"
+                        "call error_end\n"
+                        ".no_div_zero_%d:\n"
+                        
                         "idiv rbx\n"
-                        "push rax\n"); //TODO: call func in asm ERROR, Check CF 
-    return 0;
+                        "push rax\n", label_counter, label_counter); 
+    return 1;
 }
 int     _MOD       (FILE* FileProc, int label_counter){
     fprintf(FileProc,   "\npop rbx      ; idiv\n"
                         "pop rax\n"
                         "mov rdx, 0\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
+                        
                         "cmp rbx, 0     ; check for zero\n"
-                        "je error_end\n" 
+                        "jne .no_div_zero_%d\n" 
+                        "mov rdi, 1\n"
+                        "call error_end\n"
+                        ".no_div_zero_%d:\n"
+                        
                         "idiv rbx\n"
-                        "push rdx\n"); //TODO: call func in asm ERROR, Check CF 
-    return 0;
+                        "push rdx\n", label_counter, label_counter);
+    return 1;
 }
 
 //=======================================================================================
