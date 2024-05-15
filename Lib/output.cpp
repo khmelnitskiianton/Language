@@ -89,7 +89,7 @@ static void PrintNodeValue(Node_t* CurrentNode, FILE* filestream)
 {
     fprintf(filestream, "%d", CurrentNode->Type);
 
-    if (C->Type == NUMBER)    {fprintf(filestream, " %g ", C->Value.Number); return;}
+    if (C->Type == NUMBER)    {fprintf(filestream, " %lf ", C->Value.Number); return;}
     if (C->Type == VARIABLE)  {fprintf(filestream, " %d ", C->Value.Index);  return;}
     if (C->Type == OPERATOR) 
     {

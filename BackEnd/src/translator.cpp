@@ -401,7 +401,7 @@ static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
         }
         if (ArrayOperators[C->Value.Index].Operation != NULL)
         {
-            counter_label_var += ArrayOperators[C->Value.Index].Operation(FileProc, counter_label_var);
+            counter_label_var += ArrayOperators[C->Value.Index].Operation(FileProc, C,counter_label_var);
             return;
         }
         USER_ERROR(0, ERR_UNKNOWN_OPERATOR, "",return)
@@ -518,8 +518,8 @@ static void WriteWhileCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_c
     fprintf(FileProc,   ";#========Condition========#\n");
     RecEvaluate(myTree, C);
     fprintf(FileProc,   "\npop rax\n"
-                        "cmp rax, 1\n"
-                        "je .while_start_%d\n", curr_counter);
+                        "cmp rax, 0\n"
+                        "jne .while_start_%d\n", curr_counter);
 }
 
 //done
@@ -573,8 +573,8 @@ static void WriteCondCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_co
     fprintf(FileProc,   ";#========Condition========#\n");
     RecEvaluate(myTree, C);
     fprintf(FileProc,   "\npop rax\n"
-                        "cmp rax, 1\n"
-                        "je .if_start_%d\n", curr_counter);
+                        "cmp rax, 0\n"
+                        "jne .if_start_%d\n", curr_counter);
 }
 
 //done

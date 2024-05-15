@@ -47,10 +47,16 @@ sqrt:
 ;========================================================================================
 ;pow(a, b) - a power b
 ;Args: 2 in stack
-;Return: a power b in stack
+;Return: rax a power b
 pow:
     mov rax, qword [rsp + 16]
     mov rdx,0
+
+    cmp rax, 0      ;check for < 0
+    jge .end_check0
+    mov rax, qword [rsp+8]
+    ret
+.end_check0:
 
     mov rbx, 10
     mov rcx, INACCURACY
@@ -61,7 +67,7 @@ pow:
     xor rax, rax
 
     cmp rbx, 0      ;check for 0
-    jne .end_check0
+    jne .end_check1
     mov rax, 1
     mov rbx, 10
     mov rcx, INACCURACY
@@ -69,14 +75,14 @@ pow:
     imul rbx
     loop .loop_2
     ret
-.end_check0:   
+.end_check1:   
 
     mov rax, qword [rsp+8]
 
     cmp rbx, 1      ;check for 1
-    jne .end_check1
+    jne .end_check2
     ret
-.end_check1:   
+.end_check2:   
 
     mov r8, rax
 .loop_3:
@@ -89,6 +95,7 @@ pow:
 
     push rbx
     mov rcx, INACCURACY
+    
 .loop_new2:
     cqo
     mov rbx, 10

@@ -124,7 +124,7 @@ static EnumOfErrors RecScanTree(size_t* position, const char* text_buffer, Node_
             //printf("Найден2: %c %d\n", *(text_buffer + *position), *position);
             if (shift == SIZE_OF_BUFFER){
                 USER_ERROR(0, ERR_OVERFLOW_BUFF, "",global_bool_verify = 1)
-                RecFree(NewNode);
+                if (NewNode) free(NewNode);
                 return ERR_OVERFLOW_BUFF;
             }
             *(object_buffer + shift) = *(text_buffer + *position);
@@ -135,7 +135,6 @@ static EnumOfErrors RecScanTree(size_t* position, const char* text_buffer, Node_
         result = ProcessObject(object_buffer, NewNode); //обработка значения прочитанного
         if(result != ERR_OK)
         {
-            RecFree(NewNode);
             return result;
         }
         CleanCharBuffer(object_buffer, SIZE_OF_BUFFER);
@@ -156,7 +155,6 @@ static EnumOfErrors RecScanTree(size_t* position, const char* text_buffer, Node_
         result = RecScanTree(position, text_buffer, &NewNode->Left, NewNode, myTree);
         if (global_bool_verify == 1)
         {
-            RecFree(NewNode);
             return result;
         }
         *position = SkipSpaces (*position, text_buffer);
@@ -164,7 +162,6 @@ static EnumOfErrors RecScanTree(size_t* position, const char* text_buffer, Node_
         result = RecScanTree(position, text_buffer, &NewNode->Right, NewNode, myTree);
         if (global_bool_verify == 1)
         {
-            RecFree(NewNode);
             return result;
         }
         *position = SkipSpaces (*position, text_buffer);
@@ -179,7 +176,6 @@ static EnumOfErrors RecScanTree(size_t* position, const char* text_buffer, Node_
         else
         {
             USER_ERROR(0, ERR_NO_CLOSE_BRACKET, "",global_bool_verify = 1)
-            RecFree(NewNode);
             return ERR_NO_CLOSE_BRACKET;
         }
     }
@@ -218,7 +214,7 @@ static EnumOfErrors ProcessObject (char* object_buffer, Node_t* NewNode)
     double number_arg = NAN;
     if (type_node == NUMBER)
     {
-        if (sscanf(ptr_arg, " %lf", &number_arg) != 1)  //если цифра 100% число
+        if (sscanf(ptr_arg, " %lf ", &number_arg) != 1)  //если цифра 100% число
         {
             USER_ERROR(0, ERR_BAD_VALUE_OF_DATA, "", global_bool_verify = 1)
             return ERR_BAD_VALUE_OF_DATA;

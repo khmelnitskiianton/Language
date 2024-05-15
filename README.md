@@ -2,6 +2,8 @@
 
 Project of translation system - from my language to NASM
 
+It support only Linux x86-64.
+
 It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
 + FrontEnd: parses code to tree based recursive descent
 + MiddleEnd: optimizes tree
@@ -60,20 +62,41 @@ sudo apt install graphviz               #graphviz
 void main(){
     var x;
     var x = 0;
-    var y = (2+x) - 4;
+    var y = (2+x) - 4.2;
     var a = summ(x, y);
     if (a) {
         print(x);
     }
     while (y != 5){
         print(y);
+        var y = y + 1;
     }
 }
 
-void summ(var a, var b){
+var summ(var a, var b){
     return a+b;
 }
 ``` 
+*Some examples of programs on my language*:
+
+1. [factorial.lang](https://github.com/khmelnitskiianton/MyLanguage/blob/main/examples/factorial.lang)
+
+Description of current functional:
+
+1. Language has pseudo double numbers, that has fixed point(In assembler: 3.14 &#8801; 314 with inaccuracy .00). It changes in settings in `Lib/MyLangConfig/` constants INACCURACY.
+2. Now language has no unary operations.
+3. Language has logic operations and if_else/while.
+4. Language initializes all variables with 0. It understand unassigned variables.
+
+*Standart functions*:
+
+- `input()`             - function reads one pseudo double number(0.0, -12.3, 100.2133) from stdin. Use only in assignment. Remember about accuracy, in case of .00: 13.2134 &#8594; 13.21. Return: rax - one pseudo double number
+- `print(var x)`        - function of writing one pseudo double number(0.0, -12.3, 100.2133) to stdout. Return: rax - 0 - code of ending function.
+  
+- `sqrt(var x)`         - function of calculating root from number. Use FPU. Return: rax - one pseudo double number. Accuracy depends on settings.
+- `pow(var x, var y)`   - function raises x to y. pow(-3, 3) = -27, pow(2, 3) = 8, pow(2, -1) = 2. If y < 0 it returns x, if y not integer, it convert it to integer. Return: rax - one pseudo double number.
+
+> Advise: don't use unassigned variables, language doesn't like them.
 
 ## Standard
 
@@ -92,6 +115,10 @@ Based on recursive descent create a file with tree and table of variables with `
 Optimizes tree
 
 Now optimizations: convolution of constants, neutral arithmetic operands and convolution of condition `if(0/num){}else{}` and loops `while(0)`
+
+## BackEnd
+
+Translates tree of code to NASM. Generates `.s` file that you need to link with libs with standart functions (`./linker.sh`)
 
 ## Logs
 

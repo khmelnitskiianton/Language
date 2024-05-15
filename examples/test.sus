@@ -1,6 +1,8 @@
-var main()
-{
-    var x = -100000/1000/1000;
+void main(){
+    var x = pow(3, 2.1);
     print(x);
-    return 0;
+}
+
+var summ(var a, var b){
+    return a+b;
 }

@@ -11,6 +11,7 @@
                         "\n"                                            \
                         "extern sqrt\n"                                 \
                         "extern pow\n"
+
 #define UNUSED(x) (void)(x)
 
 const int INACCURACY = 100;
@@ -64,7 +65,7 @@ enum EnumOperArgType{
 
 typedef struct Operator {
     const char*     Name;
-    int             (*Operation)(FILE* FileProc, int label_counter);
+    int             (*Operation)(FILE* FileProc, Node_t* CurrentNode, int label_counter);
     EnumOperArgType ArgType;
     EnumOperType    Type;  
     EnumOperNum     Comp;
@@ -72,23 +73,23 @@ typedef struct Operator {
     size_t          Id;     //FOR STANDART OF TREE
 } Operator_t;
  
-int     _ABO       (FILE* FileProc, int label_counter);
-int     _BEL       (FILE* FileProc, int label_counter);
-int     _ABOEQU    (FILE* FileProc, int label_counter);
-int     _BELEQU    (FILE* FileProc, int label_counter);
-int     _NEQU      (FILE* FileProc, int label_counter);
-int     _EQU       (FILE* FileProc, int label_counter);
-int     _ADD       (FILE* FileProc, int label_counter);
-int     _SUB       (FILE* FileProc, int label_counter);
-int     _OR        (FILE* FileProc, int label_counter);
-int     _AND       (FILE* FileProc, int label_counter);
-int     _MOD       (FILE* FileProc, int label_counter);
-int     _MUL       (FILE* FileProc, int label_counter);
-int     _DIV       (FILE* FileProc, int label_counter);
-int     _POW       (FILE* FileProc, int label_counter);
-int     _UADD      (FILE* FileProc, int label_counter);
-int     _USUB      (FILE* FileProc, int label_counter);
-int     _NOT       (FILE* FileProc, int label_counter);
+int     _ABO       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _BEL       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _ABOEQU    (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _BELEQU    (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _NEQU      (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _EQU       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _ADD       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _SUB       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _OR        (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _AND       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _MOD       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _MUL       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _DIV       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _POW       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _UADD      (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _USUB      (FILE* FileProc, Node_t* CurrentNode , int label_counter);
+int     _NOT       (FILE* FileProc, Node_t* CurrentNode , int label_counter);
 
 constexpr Operator_t ArrayOperators[] = {
     {"func_def",            NULL,       BINARY_ARG,         LETTER,         MULT,       FUNC_DEF,           10},
@@ -112,18 +113,19 @@ constexpr Operator_t ArrayOperators[] = {
     {"!=",                  _NEQU,      BINARY_ARG,         SYMBOL,         SOLO,       ZERO,               34},
     {"==",                  _EQU,       BINARY_ARG,         SYMBOL,         SOLO,       ZERO,               35},
     {"--",                  _USUB,      UNARY_ARG,          SYMBOL,         SOLO,       FOURTH,             71},
+    {"++",                  _UADD,      UNARY_ARG,          SYMBOL,         SOLO,       FOURTH,             71},
     {"||",                  _OR,        BINARY_ARG,         SYMBOL,         SOLO,       FIRST,              42},
     {"&&",                  _AND,       BINARY_ARG,         SYMBOL,         SOLO,       SECOND,             50},
 
-    {">",                   _ABO,       BINARY_ARG,         SYMBOL,         SOLO,       ZERO,               30},
-    {"<",                   _BEL,       BINARY_ARG,         SYMBOL,         SOLO,       ZERO,               31},
-    {"+",                   _ADD,       BINARY_ARG,         SYMBOL,         SOLO,       FIRST,              40},
-    {"-",                   _SUB,       BINARY_ARG,         SYMBOL,         SOLO,       FIRST,              41},
+    {">",                   _ABO,       BINARY_ARG,         SYMBOL,         MULT,       ZERO,               30},
+    {"<",                   _BEL,       BINARY_ARG,         SYMBOL,         MULT,       ZERO,               31},
+    {"+",                   _ADD,       BINARY_ARG,         SYMBOL,         MULT,       FIRST,              40},
+    {"-",                   _SUB,       BINARY_ARG,         SYMBOL,         MULT,       FIRST,              41},
+    {"=",                   NULL,       BINARY_ARG,         SYMBOL,         MULT,       EQUAL,              22},    
+    {"!",                   _NOT,       BINARY_ARG,         SYMBOL,         MULT,       FOURTH,             72},
     {"%",                   _MOD,       BINARY_ARG,         SYMBOL,         SOLO,       SECOND,             51},
     {"*",                   _MUL,       BINARY_ARG,         SYMBOL,         SOLO,       SECOND,             52},
     {"/",                   _DIV,       BINARY_ARG,         SYMBOL,         SOLO,       SECOND,             53},
-    {"!",                   _NOT,       BINARY_ARG,         SYMBOL,         SOLO,       FOURTH,             72},
-    {"=",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       EQUAL,              22},    
 
     {"(",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       OP_BR_ONE,          0},
     {")",                   NULL,       BINARY_ARG,         SYMBOL,         SOLO,       CL_BR_ONE,          0},

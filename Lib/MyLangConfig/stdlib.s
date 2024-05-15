@@ -115,7 +115,7 @@ print:
 
         push r10        ;put in stack address of return from Printf32
 
-        mov rax, 0
+        
 
         ret
 
@@ -388,12 +388,16 @@ print_pseudo_float:
         push rax
         push rdx
         push rbx
+        push r8
+        push r9
+        push r10
 
-        mov rbx, INACCURACY;rbx - number of digits before dot!
+        mov rbx, INACCURACY     ;rbx - number of digits before dot!
+        xor r10,r10             ; r10 - flag of printing dot
 
         mov rax, rdi     ;rax = number
         mov r8, 10
-        cmp rax, 0       ;Use eax, because its 32byte signed number
+        cmp rax, 0       ;check for negative
         jl .case_neg
         jmp .end_case
 .case_neg:              ;case of negative number
@@ -406,7 +410,8 @@ print_pseudo_float:
         xor rcx, rcx    ;rcx - counter of digits
 .while_start:           ;do{...}while(rax != 0)
         cqo             ;expand rax to rdx:rax for dividing
-        div r8       
+        idiv r8  
+
         xor r9, r9
         mov r9b, dec_str[rdx]
         push r9
@@ -416,6 +421,11 @@ print_pseudo_float:
         cmp rbx, rcx
         jne .end_dot_check
         push DOT
+        mov r10, 1
+        cmp rax, 0
+        jne .end_dot_check
+        push '0'
+        inc rcx
 .end_dot_check:
 
         cmp rax, 0
@@ -423,12 +433,18 @@ print_pseudo_float:
         jmp .while_start
 .while_end:
         xor rdi, rdi
+        cmp r10, 1
+        jne .no_dot 
         inc rcx         ;inc for place for dot in stack!
+.no_dot:
 .for_begin:             ;loop: print all digits from stack
         pop rdi         
         call print_char ;print char
         loop .for_begin
 
+        pop r10
+        pop r9
+        pop r8
         pop rbx
         pop rdx         ;revive regs
         pop rax
