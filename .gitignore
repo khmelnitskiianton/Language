@@ -33,6 +33,8 @@ BackEnd/backend.elf
 Lib/Stacks/*.txt
 Lib/Stacks/*.txth
 
+Lib/MyLangConfig/*.o
+
 test.s
 test.o
 test.elf

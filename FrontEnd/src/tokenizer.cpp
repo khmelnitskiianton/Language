@@ -152,7 +152,8 @@ static char* ProcessNumber(Tokens_t* TokensArr, char* current_ptr, bool* token_c
     char* new_ptr = current_ptr;
     if (new_ptr == NULL) return new_ptr;
     double number = strtod(current_ptr, &new_ptr);
-    if (isdigit(*current_ptr)) //creating token with number
+    
+    if (isdigit(*current_ptr) || ((*current_ptr == '-') && (isdigit(*(current_ptr+1))))) //creating token with number
     {
         if (TokensArr->Size == (int) TokensArr->Capacity) //expansion
         {

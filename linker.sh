@@ -9,8 +9,11 @@ name_file=""    #name of file without extension
 obj_file=""    #tree file created from source
 exec=""
 #=================================
-langfunc="./Lib/MyLangConfig/inout.s"
-langobj="./Lib/MyLangConfig/inout.o"
+langfunc="./Lib/MyLangConfig/stdlib.s"
+langobj="./Lib/MyLangConfig/stdlib.o"
+
+mathfunc="./Lib/MyLangConfig/math.s"
+mathobj="./Lib/MyLangConfig/math.o"
 #=================================
 color_grey="\033[1;30m"
 color_red="\033[1;31m"
@@ -65,7 +68,8 @@ then
     then
         nasm -f elf64 $code_file -o $obj_file
         nasm -f elf64 $langfunc -o $langobj
-        gcc $obj_file $langobj -o $exec -no-pie
+        nasm -f elf64 $mathfunc -o $mathobj
+        gcc $obj_file $langobj $mathobj -o $exec -no-pie
         $exec
     else
         echo -e $color_red"File not found or its not a file.$fail_run" $reset

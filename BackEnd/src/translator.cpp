@@ -47,7 +47,7 @@ static int      NotInitCheck    (BinaryTree_t* myTree, Node_t* CurrentNode);
 static char     buffer_file     [SIZE_OF_OUT_PATH]  = {};
 static Var_t    FuncArgVars     [SIZE_OF_VARIABLES] = {};
 static Var_t    FuncLocalVars   [SIZE_OF_VARIABLES] = {};
-static Var_t    FuncGlobalVars  [SIZE_OF_VARIABLES] = {};   //TODO:add global vars
+//TODO:add global vars
 static FILE*    FileProc = NULL;
 
 static const int DIMENSION      = 8;
@@ -108,13 +108,9 @@ static void WriteStart(void)
                         ";#=========================#\n"
                         ";#      Start module       #\n"
                         ";#=========================#\n"
+                        "_stack_offset equ 8\n"
                         "\n"
-                        "_stack_offset equ 8\n\n"
-                        "global main\n\n"
-                        "extern print\n"
-                        "extern input\n"
-                        "extern error_end\n"
-                        "extern __processing_unassigned_var__\n"
+                        INOUT_FUNCTIONS
                         "\n");
     fprintf(FileProc,   
                         ";#=========================#\n"
@@ -370,7 +366,7 @@ static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
     if (!C) return;
     if (C->Type == NUMBER)
     {
-        fprintf(FileProc, "\npush %g\n", C->Value.Number);
+        fprintf(FileProc, "\npush %d\n", int((C->Value.Number)*INACCURACY));
         return;
     }
     if (C->Type == VARIABLE)
@@ -584,6 +580,8 @@ static void WriteCondCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_co
 //done
 static void WriteBreak(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond)
 {
+    UNUSED(myTree);
+    UNUSED(CurrentNode);
     bool flag = true;
     for (int i = (StackWhileCond->size - 1); i >= 0; i--)
     {
@@ -604,6 +602,8 @@ static void WriteBreak(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* St
 //done
 static void WriteContinue(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond)
 {
+    UNUSED(myTree);
+    UNUSED(CurrentNode);
     bool flag = true; 
     for (int i = (StackWhileCond->size - 1); i >= 0; i--)
     {

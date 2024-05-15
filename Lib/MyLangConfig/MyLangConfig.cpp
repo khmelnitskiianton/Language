@@ -7,6 +7,7 @@
 //left in rdx:rax, right in rbx, result in stack
 
 int     _ADD       (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; add\n"
                         "pop rax\n"
                         "add rax, rbx\n"
@@ -14,6 +15,7 @@ int     _ADD       (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _SUB       (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; sub\n"
                         "pop rax\n"
                         "sub rax, rbx\n"
@@ -21,12 +23,14 @@ int     _SUB       (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _UADD      (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rax      ; inc\n"
                         "inc rax\n"
                         "push rax\n");
     return 0;
 }
 int     _USUB      (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rax      ; dec\n"
                         "dec rax\n"
                         "push rax\n");
@@ -35,22 +39,24 @@ int     _USUB      (FILE* FileProc, int label_counter){
 int     _MUL       (FILE* FileProc, int label_counter){
     fprintf(FileProc,   "\npop rbx      ; imul\n"
                         "pop rax\n"
-                        "mov rdx, 0\n"
+                        "cqo\n"
                         "imul rbx\n"
-                        "push rax\n"
                         
-                        "mov rbx, 0x80000000\n"
-                        "cmp rax, rbx\n"
-                        "jb .no_overflow_%d\n"
+                        "jno .no_overflow_%d\n"
                         "mov rdi, 0\n"
                         "call error_end\n"
-                        ".no_overflow_%d:\n", label_counter, label_counter);
+                        ".no_overflow_%d:\n"
+                        
+                        "cqo\n"
+                        "mov rbx, %d\n"
+                        "idiv rbx\n"
+
+                        "push rax\n", label_counter, label_counter, INACCURACY);
     return 1;
 }
 int     _DIV       (FILE* FileProc, int label_counter){
     fprintf(FileProc,   "\npop rbx      ; idiv\n"
                         "pop rax\n"
-                        "mov rdx, 0\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
                         
                         "cmp rbx, 0     ; check for zero\n"
@@ -60,7 +66,17 @@ int     _DIV       (FILE* FileProc, int label_counter){
                         ".no_div_zero_%d:\n"
                         
                         "idiv rbx\n"
-                        "push rax\n", label_counter, label_counter); 
+
+                        "cqo\n"
+                        "mov rbx, %d\n"
+                        "imul rbx\n"
+
+                        "jno .no_overflow_%d\n"
+                        "mov rdi, 0\n"
+                        "call error_end\n"
+                        ".no_overflow_%d:\n"
+
+                        "push rax\n", label_counter, label_counter, INACCURACY, label_counter, label_counter); 
     return 1;
 }
 int     _MOD       (FILE* FileProc, int label_counter){
@@ -83,6 +99,7 @@ int     _MOD       (FILE* FileProc, int label_counter){
 //=======================================================================================
 
 int     _NOT       (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rax      ; not\n"
                         "cmp rax, 0\n"
                         "sete al        ; set func 1 or 0\n"
@@ -127,6 +144,7 @@ int     _AND       (FILE* FileProc, int label_counter){
 //=======================================================================================
 
 int     _ABO       (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; above\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -136,6 +154,7 @@ int     _ABO       (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _BEL       (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; below\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -145,6 +164,7 @@ int     _BEL       (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _ABOEQU    (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; above or equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -154,6 +174,7 @@ int     _ABOEQU    (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _BELEQU    (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; below or equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -163,6 +184,7 @@ int     _BELEQU    (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _NEQU      (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; not equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -172,6 +194,7 @@ int     _NEQU      (FILE* FileProc, int label_counter){
     return 0;
 }
 int     _EQU       (FILE* FileProc, int label_counter){
+    UNUSED(label_counter);
     fprintf(FileProc,   "\npop rbx      ; equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"

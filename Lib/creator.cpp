@@ -218,7 +218,7 @@ static EnumOfErrors ProcessObject (char* object_buffer, Node_t* NewNode)
     double number_arg = NAN;
     if (type_node == NUMBER)
     {
-        if (sscanf(ptr_arg, " %lf ", &number_arg) != 1)  //если цифра 100% число
+        if (sscanf(ptr_arg, " %lf", &number_arg) != 1)  //если цифра 100% число
         {
             USER_ERROR(0, ERR_BAD_VALUE_OF_DATA, "", global_bool_verify = 1)
             return ERR_BAD_VALUE_OF_DATA;
@@ -228,7 +228,7 @@ static EnumOfErrors ProcessObject (char* object_buffer, Node_t* NewNode)
         return ERR_OK;
     }
     int index_arg = -1;
-    if (sscanf(ptr_arg, " %d ", &index_arg) != 1)
+    if (sscanf(ptr_arg, " %d", &index_arg) != 1)
     {
         USER_ERROR(0, ERR_BAD_VALUE_OF_DATA, "", global_bool_verify = 1)
         return ERR_BAD_VALUE_OF_DATA;

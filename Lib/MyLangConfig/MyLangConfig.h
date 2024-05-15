@@ -2,6 +2,18 @@
 #define MY_LANG_CONFIG_H
 
 //Config of my language 
+#define INOUT_FUNCTIONS "global main\n"                                 \
+                        "\n"                                            \
+                        "extern print\n"                                \
+                        "extern input\n"                                \
+                        "extern error_end\n"                            \
+                        "extern __processing_unassigned_var__\n"        \
+                        "\n"                                            \
+                        "extern sqrt\n"                                 \
+                        "extern pow\n"
+#define UNUSED(x) (void)(x)
+
+const int INACCURACY = 100;
 
 const char COMMENT_SYMBOL_UNO = '#';
 const char COMMENT_SYMBOL_DUO = '$';

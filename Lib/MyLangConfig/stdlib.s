@@ -2,41 +2,18 @@
 ;#  STANDART FUNCTIONS   #
 ;#=======================#
 
+global  input
+global  print
+global  error_end
+global  __processing_unassigned_var__
+
+INACCURACY      equ 2
+
 SYSCALL_WRITE   equ 0x01
 SYSCALL_READ    equ 0x0
 SIZE_BUFFER     equ 50
 _stack_offset   equ 8
-SUCCESS_RET     equ 1
-FAIL_RET        equ 0
-
-global  input
-global  print
-global  error_end
-
-global  __processing_unassigned_var__
-
-section .rodata
-dec_str         db "0123456789", 0x00 ;const alphabets for number systems
-msg             db  0x0A, 0x0D, "> Нельзя просто так взять и обратится к неинициализированной переменной. Боромир", 0x0A, 0x0D, "> One does not simply refer to unassigned variable. Boromir",0x0A, 0x0D, 0x0A, 0x0D, 0x00
-msg_len         equ $ - msg
-
-;#Errors
-error_list1 db "> Overflowing in signed 32byte integer number!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
-error_list2 db "> Divizion by zero!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
-
-
-;#Jump Table
-jmp_table_errors:
-        dq error_list1
-        dq error_list2
-
-
-;=======================================================
-;Buffers
-section .data
-buffer_out:     times SIZE_BUFFER db 0 ;buffer for write
-buffer_in:      times SIZE_BUFFER db 0 ;buffer for input
-
+DOT             equ '.'
 
 ;=======================================================================================
 ;Functions
@@ -44,7 +21,7 @@ buffer_in:      times SIZE_BUFFER db 0 ;buffer for input
 section .text
 
 ;========================================================================================
-;input(void) - function of input one siged number
+;input(void) - function of input one number float/integer
 ;Arg: void
 ;Ret: RAX-number
 input:
@@ -58,12 +35,18 @@ input:
         push rsi
         push rdi          
         push rbx 
+        push r8
+        push r9
+        push r10
 
         call read_buff 
         
         mov rsi, buffer_in
-        call string_to_int ;in rax number
+        call string_to_pseudo_float ;in rax number
 
+        pop r10
+        pop r9
+        pop r8
         pop rbx
         pop rdi         ;revive regs
         pop rsi
@@ -100,7 +83,7 @@ print:
         xor r11, r11            ;clean r11
         xor r15, r15
 
-        call print_dec_sign
+        call print_pseudo_float
 
         cmp r11, 0              ;last check buffer and print it
         je .if_buff_end 
@@ -212,11 +195,21 @@ read_buff:
 
         ret 
 ;========================================================================================
-; string_to_int():
-; RSI = pointer to the string to convert
+; string_to_int(): convert str to pseudo float
+; RSI = pointer to the string 
 ; Output:
-; RAX = integer value remember its 32 byte in eax
-string_to_int:
+; RAX = integer pseudo float number
+string_to_pseudo_float:
+
+        ;FORMULA:
+        ;Normal: 3.14 -> 3.14*100 = 314
+        ;In runtime: 3.14 = 3 + 0.14 -> 3*100 + 0.14*10!
+        ; part before dot in r9, part after in rax!
+
+        xor r8,r8        ; flag for have dot!
+        xor r9,r9  
+        xor r10, r10
+        mov rcx, INACCURACY 
         xor rbx,rbx     ; clear ebx
         movzx rdx, byte[rsi]
         cmp rdx, '-'    ; check for number < 0
@@ -226,6 +219,14 @@ string_to_int:
 .end_case:
 .next_digit:
         movzx rax, byte[rdx]
+        cmp rax, DOT
+        jne .continue_check
+        mov r8, 1
+        inc rdx
+        movzx rax, byte[rdx]
+        mov r9, rbx     ;in r9 part before dot
+        xor rbx,rbx
+.continue_check:
         cmp rax, '0'
         jb .end_convert
         cmp rax, '9'
@@ -233,11 +234,80 @@ string_to_int:
 .success_check:
         inc rdx
         sub al,'0'    ; convert from ASCII to number
-        imul rbx,10
+        
+        xor r10, r10
+
+        cmp r8, 1          ;if (find dot)
+        jne .calc_no_dot
+        ;pow(rbx, 10) + rax
+        mov r10, rcx
+        push rbx
+        push rdx
+        jmp .check_cond
+.imul_inaccurancy:      ;in r10 - times of mul 10
+        mov rbx, 10
+        imul rbx
+        
+        jno .check_overflow1
+        mov rdi, 0
+        call error_end
+.check_overflow1:
+
+.check_cond:
+        cmp r10, 0
+        dec r10
+        ja .imul_inaccurancy
+        pop rdx
+        pop rbx
+        add rbx, rax 
+        jmp .end_calc
+.calc_no_dot:
+        imul rbx, 10
+
+
+        jno .check_overflow0
+        mov rdi, 0
+        call error_end
+.check_overflow0:
+
         add rbx,rax   ; ebx = ebx*10 + eax
-        jmp .next_digit  ; while (--rcx)
+.end_calc:
+
+        cmp r8, 1          ;if (find dot)
+        jne .end_dot_while ;if find dot, we process next some digits, not all
+.dot_while:
+        dec rcx
+        jnz .next_digit
+        jmp .end_convert
+.end_dot_while:
+        jmp .next_digit  
 .end_convert:
+        cmp r8, 1 
+        jne .no_dot_found
         mov rax,rbx
+        jmp .end_end
+.no_dot_found:
+        mov r9, rbx
+        xor rbx,rbx
+        xor rax,rax
+.end_end:
+
+        mov rcx, INACCURACY
+.imul_inaccurancy_before:
+        cqo
+        mov rbx, 10     ; add pseudo accurancy
+        imul r9, rbx
+
+        jno .check_overflow2
+        mov rdi, 0
+        call error_end
+.check_overflow2:
+
+        loop .imul_inaccurancy_before
+
+        add rax, r9
+
+.check_minus:
         movzx rdx, byte[rsi]
         cmp rdx, '-'    ; check for number < 0
         jne .end_minus_check
@@ -305,11 +375,11 @@ print_str:
         pop rdi
         ret
 ;=========================================================================================
-;print_dec_sign(int a) - function of write decimal number
-;Args: ABI - argument in rdi
+;print_pseudo_float(int a) - function of write pseudo float with fix inaccuracy(3.141 -> 314 -> 3  .  14) printing dot
+;Args: ABI - rdi - number, 
 ;Ret: void
 ;Change: rsi, rcx, rdi, rax, rdx, r8, r9
-print_dec_sign:
+print_pseudo_float:
         nop
 
         push rsi        ;save regs
@@ -317,10 +387,13 @@ print_dec_sign:
         push rdi
         push rax
         push rdx
+        push rbx
+
+        mov rbx, INACCURACY;rbx - number of digits before dot!
 
         mov rax, rdi     ;rax = number
         mov r8, 10
-        cmp eax, 0       ;Use eax, because its 32byte signed number
+        cmp rax, 0       ;Use eax, because its 32byte signed number
         jl .case_neg
         jmp .end_case
 .case_neg:              ;case of negative number
@@ -331,7 +404,6 @@ print_dec_sign:
         ;printing digits
         ;div: rax - quotient, rdx - remains 
         xor rcx, rcx    ;rcx - counter of digits
-        xor rdx, rdx
 .while_start:           ;do{...}while(rax != 0)
         cqo             ;expand rax to rdx:rax for dividing
         div r8       
@@ -339,16 +411,25 @@ print_dec_sign:
         mov r9b, dec_str[rdx]
         push r9
         inc rcx         ;inc rcx
+
+.dot_check:             ; check for printing dot
+        cmp rbx, rcx
+        jne .end_dot_check
+        push DOT
+.end_dot_check:
+
         cmp rax, 0
         je .while_end
         jmp .while_start
 .while_end:
         xor rdi, rdi
+        inc rcx         ;inc for place for dot in stack!
 .for_begin:             ;loop: print all digits from stack
         pop rdi         
         call print_char ;print char
         loop .for_begin
 
+        pop rbx
         pop rdx         ;revive regs
         pop rax
         pop rdi
@@ -356,3 +437,65 @@ print_dec_sign:
         pop rsi
 
         ret
+;==================================================================
+;NEVER USED
+;num_length(int a)
+;Args: rdi - number
+;Return: rax - length of digits
+num_length:
+
+        push rdi
+        push r8
+        push rcx
+        push r9
+
+        mov rax, rdi    ;save number in rbx
+        mov r8, 10
+        cmp eax, 0      ;check for -
+        jl .case_neg
+        jmp .end_case
+.case_neg:              ;case of negative number
+        neg eax         ;Make signed 32byte number - unsigned
+.end_case:
+        xor rcx, rcx    ;counter of digits
+.while_start:           ;do{...}while(rbx != 0)
+        cqo             ;expand rax to rdx:rax for dividing
+        div r8       
+        xor r9, r9
+        mov r9b, dec_str[rdx]
+        inc rcx         ;inc rcx
+        cmp rax, 0
+        je .while_end
+        jmp .while_start
+.while_end:
+        mov rax, rcx
+
+        pop r9
+        pop rcx
+        pop r8
+        pop rdi
+
+        ret
+
+;========================================================================================
+section .rodata
+dec_str         db "0123456789", 0x00 ;const alphabets for number systems
+msg             db  0x0A, 0x0D, "> Нельзя просто так взять и обратится к неинициализированной переменной. Боромир", 0x0A, 0x0D, "> One does not simply refer to unassigned variable. Boromir",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+msg_len         equ $ - msg
+
+;#Errors
+error_list1 db "> Overflowing in pseudo double number! Fuck its so big!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+error_list2 db "> Divizion by zero! Bruh man...",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+error_list3 db "> Shit happens! Number is negative in sqrt()!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+
+;#Jump table of errors!
+jmp_table_errors:
+        dq error_list1
+        dq error_list2
+        dq error_list3
+
+;=======================================================
+;Buffers
+section .data
+buffer_out:     times SIZE_BUFFER db 0 ;buffer for write
+buffer_in:      times SIZE_BUFFER db 0 ;buffer for input
