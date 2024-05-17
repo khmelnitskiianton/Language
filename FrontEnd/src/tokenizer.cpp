@@ -148,13 +148,12 @@ static int InsertVariable (Tokens_t* TokensArr, char* current_ptr)
 }
 
 static char* ProcessNumber(Tokens_t* TokensArr, char* current_ptr, bool* token_continue)
-{
-    char* new_ptr = current_ptr;
-    if (new_ptr == NULL) return new_ptr;
-    double number = strtod(current_ptr, &new_ptr);
-    
-    if (isdigit(*current_ptr) || ((*current_ptr == '-') && (isdigit(*(current_ptr+1))))) //creating token with number
+{   
+    if (!current_ptr) return current_ptr;
+    if (isdigit(*current_ptr)) //creating token with number
     {
+        char* new_ptr = current_ptr;
+        double number = strtod(current_ptr, &new_ptr);
         if (TokensArr->Size == (int) TokensArr->Capacity) //expansion
         {
             TokensArr->Data = Expand(TokensArr);
@@ -163,12 +162,12 @@ static char* ProcessNumber(Tokens_t* TokensArr, char* current_ptr, bool* token_c
         (TokensArr->Data + TokensArr->Size)->Value.Number = number;
         (TokensArr->Size)++;
         *token_continue = 1;
+        return new_ptr;
     }
     else 
     {
         return current_ptr;
     }
-    return new_ptr;
 }
 
 static char* ProcessOperator(Tokens_t* TokensArr, char* current_ptr, bool* token_continue)
@@ -202,7 +201,7 @@ static Token_t* Expand (Tokens_t *TokensArr)
     new_place = realloc((TokensArr->Data), sizeof(Token_t)*(TokensArr->Capacity));
     MYASSERT(new_place, ERR_BAD_REALLOC, return NULL)
                                                  
-    MemPoison(new_place + sizeof(Token_t)*((size_t)(TokensArr->Size)), (TokensArr->Capacity)-((size_t)(TokensArr->Size)));                        
+    MemPoison( (Token_t*) new_place + (size_t)(TokensArr->Size), (TokensArr->Capacity)-((size_t)(TokensArr->Size)));                        
 
     return (Token_t*) new_place;
 }
