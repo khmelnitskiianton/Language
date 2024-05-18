@@ -284,7 +284,7 @@ void CleanCharBuffer(char* buffer, const size_t buffer_size)
     }
 }
 
-char* CreateDirtyBuffer (const char* file_database)
+char* CallocReadBuffer (const char* file_database)
 {
     MYASSERT(file_database, ERR_WHAT_FILE_OF_DATA, return NULL)
 
@@ -298,7 +298,7 @@ char* CreateDirtyBuffer (const char* file_database)
     size_t result_size = fread (text_buffer, 1, size_text, FileRead);
     MYASSERT(result_size == size_text, ERR_BAD_FREAD, return NULL)
 
-	*(text_buffer + size_text) = '\0';
+	text_buffer[size_text] = '\0';
     CloseFile (FileRead);
 
     return text_buffer;   

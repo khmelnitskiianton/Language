@@ -70,7 +70,6 @@ then
         nasm -f elf64 $langfunc -o $langobj
         nasm -f elf64 $mathfunc -o $mathobj
         gcc $obj_file $langobj $mathobj -o $exec -no-pie
-        $exec
     else
         echo -e $color_red"File not found or its not a file.$fail_run" $reset
     fi

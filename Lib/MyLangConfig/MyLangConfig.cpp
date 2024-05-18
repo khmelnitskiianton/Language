@@ -3,42 +3,66 @@
 
 #include "tree.h"
 #include "dsl.h"
+
 #include "MyLangConfig.h"
+
+//_ADD & _SUB in translator.cpp because they need access to arrays 
 
 //left in rdx:rax, right in rbx, result in stack
 
-int     _ADD        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _ADD(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    if ((R) && (!L)) 
+    {
+        RecEvaluate(myTree, R);
+        return 0;
+    }
     fprintf(FileProc,   "\npop rbx      ; add\n"
                         "pop rax\n"
                         "add rax, rbx\n"
                         "push rax\n");
     return 0;
 }
-int     _SUB        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _SUB(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    if ((R) && (!L)) //case: var x = -(x+y);
+    {
+        RecEvaluate(myTree, R);
+        fprintf(FileProc,   "\npop rax      ; unary minus\n"
+                            "mov rbx, -1\n"
+                            "imul rbx\n"
+                            "push rax\n");
+        return 0;
+    }
     fprintf(FileProc,   "\npop rbx      ; sub\n"
                         "pop rax\n"
                         "sub rax, rbx\n"
                         "push rax\n");
     return 0;
 }
-int     _UADD       (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+
+int _USUB(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(FileProc);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     return 0;
 }
-int     _USUB       (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _UADD(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(FileProc);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     return 0;
 }
-int     _MUL        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _MUL(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; imul\n"
                         "pop rax\n"
                         "cqo\n"
@@ -56,8 +80,10 @@ int     _MUL        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", label_counter, label_counter, INACCURACY);
     return 1;
 }
-int     _DIV        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _DIV(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; idiv\n"
                         "pop rax\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
@@ -80,8 +106,10 @@ int     _DIV        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", label_counter, label_counter, INACCURACY); 
     return 1;
 }
-int     _MOD        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _MOD(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; idiv\n"
                         "pop rax\n"
                         "cqo            ; expand bit of sign in rdx from rax\n"
@@ -107,9 +135,11 @@ int     _MOD        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
 
 //=======================================================================================
 
-int     _NOT        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _NOT(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rax      ; not\n"
                         "cmp rax, 0\n"
                         "sete al        ; set func 1 or 0\n"
@@ -119,8 +149,10 @@ int     _NOT        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", INACCURACY);
     return 0;
 }
-int     _OR         (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _OR(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; or\n"
                         "pop rax\n"
                         "cmp rax, 0\n"
@@ -137,8 +169,10 @@ int     _OR         (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", label_counter,label_counter,label_counter, INACCURACY,label_counter,label_counter,label_counter);    
     return 1;
 }
-int     _AND        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _AND(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; or\n"
                         "pop rax\n"
                         "cmp rax, 0\n"
@@ -157,9 +191,11 @@ int     _AND        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
 
 //=======================================================================================
 
-int     _ABO        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _ABO(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; above\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -170,9 +206,11 @@ int     _ABO        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", INACCURACY);
     return 0;
 }
-int     _BEL        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _BEL(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; below\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -183,9 +221,11 @@ int     _BEL        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", INACCURACY);
     return 0;
 }
-int     _ABOEQU     (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _ABOEQU(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; above or equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -196,9 +236,11 @@ int     _ABOEQU     (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", INACCURACY);
     return 0;
 }
-int     _BELEQU     (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _BELEQU(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; below or equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -209,9 +251,11 @@ int     _BELEQU     (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", INACCURACY);
     return 0;
 }
-int     _NEQU       (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _NEQU(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; not equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"
@@ -222,9 +266,11 @@ int     _NEQU       (FILE* FileProc, Node_t* CurrentNode , int label_counter){
                         "push rax\n", INACCURACY);
     return 0;
 }
-int     _EQU        (FILE* FileProc, Node_t* CurrentNode , int label_counter){
+int _EQU(BinaryTree_t* myTree, FILE* FileProc, Node_t* CurrentNode , int label_counter, void (*RecEvaluate) (BinaryTree_t* , Node_t*)){
+    UNUSED(myTree);
     UNUSED(CurrentNode);
     UNUSED(label_counter);
+    UNUSED(RecEvaluate);
     fprintf(FileProc,   "\npop rbx      ; equal\n"
                         "pop rax\n"
                         "cmp rax, rbx\n"

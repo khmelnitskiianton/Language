@@ -1,13 +1,11 @@
 #ifndef DSL_H
 #define DSL_H
-//DSL FOR WRITING ADDRESSING FOR NODES SIMPLIER
+//DSL FOR WRITING ADDRESSING FOR NODES SIMPLER
 
 #define L CurrentNode->Left
 #define R CurrentNode->Right
 #define P CurrentNode->Parent
 #define C CurrentNode
-#define T CurrentToken
-#define PT PtrCurrentToken
 
 #define DIF(Node) RecDiff(Node, myTree)
 #define CPY(Node) RecDiffCreateNode(Node->Type, Node->Value, (Node->Left), (Node->Right))

@@ -501,7 +501,7 @@ msg_len         equ $ - msg
 
 ;#Errors
 error_list1 db "> Overflowing in pseudo double number! Fuck its so big!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
-error_list2 db "> Divizion by zero! Bruh man...",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+error_list2 db "> Divizion by zero! Bruh man...\n",0x0A, 0x0D, 0x0A, 0x0D, 0x00
 error_list3 db "> Shit happens! Number is negative in sqrt()!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
 
 ;#Jump table of errors!

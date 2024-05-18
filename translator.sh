@@ -3,7 +3,7 @@
 #               Launcher for my Language            #
 #====================================================
 
-log_folder="./.tmp"
+log_folder="./build"
 ext_tree=".tree"
 
 frontend=./FrontEnd/frontend.elf
@@ -13,8 +13,6 @@ backend=./BackEnd/backend.elf
 code_file=""    #source file
 name_file=""    #name of file without extension
 tree_file=""    #tree file created from source
-
-
 
 #=================================
 color_grey="\033[1;30m"
@@ -27,6 +25,23 @@ color_cyan="\033[1;36m"
 color_white="\033[1;37m"
 color_reset="\033[1;0m"
 fail_run="\nRunning failed."
+#=================================
+if [[ -f "./bulid" ]]
+then
+    mkdir ./build
+fi
+if [[ -f "./bulid/log_frontend" ]]
+then
+    mkdir ./build/log_frontend
+fi
+if [[ -f "./build/log_middleend" ]]
+then
+    mkdir ./build/log_middleend
+fi
+if [[ -f "./build/log_backend" ]]
+then
+    mkdir ./build/log_backend
+fi
 #=================================
 
 #Check for zero args
@@ -81,7 +96,7 @@ then
         if [ -f $frontend ] && [ -f $middleend ] && [ -f $backend ]
         then
             $frontend   $log_folder     $code_file
-            #$middleend  $log_folder     $tree_file 
+            $middleend  $log_folder     $tree_file 
             $backend    $log_folder     $tree_file
         else
             echo -e $color_red"FrontEnd or MiddleEnd or BackEnd program not found.$fail_run" $reset

@@ -28,14 +28,14 @@ git clone https://github.com/khmelnitskiianton/MyLanguage.git
 cd ./MyLanguage
 cmake .
 make
-chmod ugo+x translator.sh
-chmod ugo+x linker.sh
+chmod +x translator.sh
+chmod +x linker.sh
 ./translator.sh {path to file begin with this repo}/{file with source code}
 ./linker.sh {path to file begin with this repo}/{file with NASM code}
 ```
 *Example:* `./translator.sh examples/test_code.sus`
 
-It will be create folder `.tmp`, there will be logs, and intermediate files
+It will be create folder `built`, there will be logs, and intermediate files
 
 ## Dependent Objects
 
@@ -67,7 +67,7 @@ void main(){
     if (a) {
         print(x);
     }
-    while (y != 5){
+    while (y < 5){
         print(y);
         var y = y + 1;
     }
@@ -83,8 +83,8 @@ var summ(var a, var b){
 
 *Description of current functional*:
 
-1. Language has pseudo double numbers, that has fixed point(In assembler: 3.14 &#8801; 314 with inaccuracy .00). It changes in settings in `Lib/MyLangConfig/` constants INACCURACY.
-2. Now language has no unary operations.
+1. Language has pseudo double numbers, that has fixed point(In assembler: 3.14 &#8801; 314 with inaccuracy .00). It changes in settings in `Lib/MyLangConfig/` constants INACCURACY in `.h` and `.s` files.
+2. Now language has unary minus and plus operations(-(x+y)).
 3. Language has logic operations and if_else/while.
 4. Language initializes all variables with 0. It understand unassigned variables.
 
@@ -122,7 +122,7 @@ Translates tree of code to NASM. Generates `.s` file that you need to link with 
 
 ## Logs
 
-When programs work, they create folder `.tmp` where will be all logs of translation
+When programs work, they create folder `build` where will be all logs of translation
 
 Logs use GraphViz to visualize graphs in pictures
 

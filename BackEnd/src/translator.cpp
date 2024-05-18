@@ -13,7 +13,7 @@
 #include "verificator.h"
 #include "dsl.h"
 
-static void     WriteStart      (void);
+static void     WriteAsmHeader      (void);
 static void     WriteRecTree    (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     WriteDefFunc    (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     CountArgs       (BinaryTree_t* myTree, int* counter_args, Node_t* CurrentNode);
@@ -28,7 +28,6 @@ static void     CleanFuncArgVars        (void);
 
 static void     WriteCall       (BinaryTree_t* myTree, Node_t* CurrentNode);
 static void     WriteVar        (BinaryTree_t* myTree, Node_t* CurrentNode);
-static void     RecEvaluate     (BinaryTree_t* myTree, Node_t* CurrentNode);
 static void     WriteWhile      (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     GetArgs         (BinaryTree_t* myTree, Node_t* CurrentNode);
 static void     WriteCond       (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
@@ -50,7 +49,7 @@ static Var_t    FuncLocalVars   [SIZE_OF_VARIABLES] = {};
 //TODO:add global vars
 static FILE*    FileProc = NULL;
 
-static const int DIMENSION      = 8;
+static const int STACK_VAR_SIZE      = 8;
 static const int ADDRESS_CALL   = 16;
 static const int ADDRESS_RBP    = 8;
 
@@ -60,11 +59,13 @@ static int      counter_label_var   = 0;
 static int      counter_move_vars   = 0;
 static int      counter_push_args   = 0;
 static bool     is_void             = false;   
+static BinaryTree_t* ptr_of_tree    = NULL;
 
 EnumOfErrors TranslateTree(BinaryTree_t* myTree, const char* in_file_path, StackInt_t* StackWhileCond)
 {
     MYASSERT(myTree, ERR_BAD_POINTER_PASSED_IN_FUNC, return ERR_BAD_POINTER_PASSED_IN_FUNC)
     //Create File
+    ptr_of_tree = myTree;
     size_t position = strlen(in_file_path)+1;
     char buffer_name_file[SIZE_OF_NAME_FILE] = {};
     while ((position > 0) && (in_file_path[position] != '.'))
@@ -90,14 +91,14 @@ EnumOfErrors TranslateTree(BinaryTree_t* myTree, const char* in_file_path, Stack
     FileProc = OpenFile (buffer_file, "w");
 
     //Start Writing
-    WriteStart();
+    WriteAsmHeader();
     //WriteGlobalVars(); for future
     WriteRecTree(myTree, myTree->Root, StackWhileCond);
 
     return ERR_OK;
 }
 
-static void WriteStart(void)
+static void WriteAsmHeader(void)
 {
     fprintf(FileProc,   ";#=========================#\n"
                         ";# THIS FILE WAS GENERATED #\n"
@@ -158,23 +159,23 @@ static void WriteRecTree(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* 
                 WriteContinue(myTree, CurrentNode, StackWhileCond);
             break;
             //all cases for remove [-Wswitch-enum]
-            case ZERO:
-            case FIRST:
-            case SECOND:
-            case THIRD:
-            case FOURTH:
-            case EQUAL:
-            case DIVIDER:
-            case DIVIDER_ARG:
-            case OP_BR_ONE:
-            case CL_BR_ONE:
-            case OP_BR_TWO:
-            case CL_BR_TWO:
-            case OP_BR_THREE:
-            case CL_BR_THREE:
-            case VOID:
-            case ELSE:
-            case FUNC_DEF_HELP:
+            case ZERO:          [[fallthrough]];
+            case FIRST:         [[fallthrough]];
+            case SECOND:        [[fallthrough]];
+            case THIRD:         [[fallthrough]];
+            case FOURTH:        [[fallthrough]];
+            case EQUAL:         [[fallthrough]];
+            case DIVIDER:       [[fallthrough]];
+            case DIVIDER_ARG:   [[fallthrough]];
+            case OP_BR_ONE:     [[fallthrough]];
+            case CL_BR_ONE:     [[fallthrough]];
+            case OP_BR_TWO:     [[fallthrough]];
+            case CL_BR_TWO:     [[fallthrough]];
+            case OP_BR_THREE:   [[fallthrough]];
+            case CL_BR_THREE:   [[fallthrough]];
+            case VOID:          [[fallthrough]];
+            case ELSE:          [[fallthrough]];
+            case FUNC_DEF_HELP: [[fallthrough]];
             default: break;
         }
     }
@@ -217,7 +218,7 @@ static void WriteDefFunc(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* 
                         "mov  rbp, rsp\n"
                         "sub  rsp, %d\n"
                         ";#=======End=Action========#\n"
-                        "\n;#========Init=Local=======#\n", myTree->Variables[L->Right->Value.Index].Name, counter_local_vars * DIMENSION);
+                        "\n;#========Init=Local=======#\n", myTree->Variables[L->Right->Value.Index].Name, counter_local_vars * STACK_VAR_SIZE);
     counter_move_vars = 0;
     WriteFuncArgVars(myTree, R->Left);
     counter_move_vars = 0;
@@ -361,7 +362,7 @@ static void WriteVar(BinaryTree_t* myTree, Node_t* CurrentNode)
     USER_ERROR(0, ERR_UNKNOWN_VAR, "", return)
 }
 
-static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
+void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
 {
     if (!C) return;
     if (C->Type == NUMBER)
@@ -393,6 +394,7 @@ static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
 
     if (C->Type == OPERATOR)
     { 
+        //Process unary operations
         if (ArrayOperators[C->Value.Index].Class == CALL)
         {
             WriteCall(myTree, C);
@@ -401,7 +403,7 @@ static void RecEvaluate(BinaryTree_t* myTree, Node_t* CurrentNode)
         }
         if (ArrayOperators[C->Value.Index].Operation != NULL)
         {
-            counter_label_var += ArrayOperators[C->Value.Index].Operation(FileProc, C,counter_label_var);
+            counter_label_var += ArrayOperators[C->Value.Index].Operation(myTree, FileProc, C, counter_label_var, RecEvaluate);
             return;
         }
         USER_ERROR(0, ERR_UNKNOWN_OPERATOR, "",return)
@@ -420,7 +422,7 @@ static void WriteCall(BinaryTree_t* myTree, Node_t* CurrentNode)
     
     fprintf(FileProc,   "\ncall %s\n"
                         "add rsp,%d\n"
-                        ";#=========End=Call========#\n", name_of_func, counter_push_args*DIMENSION);
+                        ";#=========End=Call========#\n", name_of_func, counter_push_args*STACK_VAR_SIZE);
 
 }
 
@@ -626,7 +628,7 @@ static int NotInitCheck(BinaryTree_t* myTree, Node_t* CurrentNode)
     if (C->Right->Type == VARIABLE)
     {
         fprintf(FileProc,   "\n;#=Undefined=Var=#\n"
-                            "call __processing_undefined_var__\n"
+                            "call __processing_unassigned_var__\n"
                             ";#=======End=====#\n");
         int index_var = C->Right->Value.Index;
         free(C->Right);
@@ -636,3 +638,5 @@ static int NotInitCheck(BinaryTree_t* myTree, Node_t* CurrentNode)
     }
     return 0;
 }
+
+//CALCULATION FUNCTIONS

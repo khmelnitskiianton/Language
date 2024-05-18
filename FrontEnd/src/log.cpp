@@ -47,7 +47,7 @@ EnumOfErrors _PrintLogStart (const char* log_file_path, const char* path_of_code
     snprintf(buffer_file, SIZE_OF_COMMAND, "%s" FILE_LOG, buffer_path);
     FileLog = OpenFile (buffer_file, "w");
 
-    char* code_buffer = CreateDirtyBuffer(path_of_code);
+    char* code_buffer = CallocReadBuffer(path_of_code);
     if (!code_buffer) return ERR_NO_FILE_TO_OPEN;
 
     fprintf(FileLog,    "<!DOCTYPE html>\n"

@@ -38,3 +38,5 @@ Lib/MyLangConfig/*.o
 test.s
 test.o
 test.elf
+
+*fuse*
