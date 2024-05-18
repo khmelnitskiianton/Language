@@ -24,14 +24,15 @@ It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to
 ## Installation
 
 ```bash
-git clone https://github.com/khmelnitskiianton/MyLanguage.git
+git clone https://github.com/khmelnitskiianton/MyLanguage.git               #clone repo
 cd ./MyLanguage
-cmake .
+cmake .                                                                     #compile language
 make
-chmod +x translator.sh
+chmod +x translator.sh                                                      #permission for bash scripts
 chmod +x linker.sh
-./translator.sh {path to file begin with this repo}/{file with source code}
-./linker.sh {path to file begin with this repo}/{file with NASM code}
+./translator.sh {path to file begin with this repo}/{file with source code} #translate lang code to nasm
+./linker.sh {path to file begin with this repo}/{file with NASM code}       #link nasm code with lang stdlib
+{path to file begin with this repo}/{file with source code}                 #run program
 ```
 *Example:* `./translator.sh examples/test_code.sus`
 
