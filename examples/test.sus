@@ -1,0 +1,16 @@
+void main(){
+    var x = 0;
+    var y = (2+x) - 4.2;
+    var a = summ(x, y);
+    if (a) {
+        print(x);
+    }
+    while (y < 5){
+        print(y);
+        var y = y + 1;
+    }
+}
+
+var summ(var a, var b){
+    return a+b;
+}

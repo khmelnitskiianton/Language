@@ -1,0 +1,16 @@
+var main()
+{
+    var x = input();
+    var x = factorial(x);
+    print(x);
+    return 0;
+}
+
+var factorial(var n)
+{
+    if (n < 1)                                                                                                                  
+    {
+        return 1;
+    }
+    return n * factorial(n - 1); 
+}
