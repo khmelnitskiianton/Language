@@ -28,15 +28,14 @@ git clone https://github.com/khmelnitskiianton/MyLanguage.git               #clo
 cd ./MyLanguage
 cmake .                                                                     #compile language
 make
-chmod +x translator.sh                                                      #permission for bash scripts
+chmod +x translator.sh                                                      #permission for scripts
 chmod +x linker.sh
 ./translator.sh {path to file begin with this repo}/{file with source code} #translate lang code to nasm
 ./linker.sh {path to file begin with this repo}/{file with NASM code}       #link nasm code with lang stdlib
 {path to file begin with this repo}/{file with source code}                 #run program
 ```
-*Example:* `./translator.sh examples/test_code.sus`
 
-It will be create folder `built`, there will be logs, and intermediate files
+It will be create folder `build`, there will be logs, and intermediate files
 
 ## Dependent Objects
 
