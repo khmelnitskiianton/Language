@@ -1,0 +1,70 @@
+$
+    Example program of solving quadratic equation
+$
+
+var main()
+{
+    var a = input();
+    var b = input();
+    var c = input();
+    
+    var check_linear_case = 0;
+    
+    #Check for linear cases
+    if (a == 0)
+    {
+        if (b == 0)
+        {
+            if (c == 0)
+            {
+                puts(73, 78, 70, 10, 13, 0); #"INF\n"
+            }
+            else
+            {
+                puts(110, 111, 32, 114, 111, 111, 116, 115, 10, 0); #"no roots\n"
+            }
+        }
+        else
+        {
+            var x1 = -c/b;
+            puts(111, 110, 101, 32, 114, 111, 111, 116, 10, 0); #"one root\n"
+            print(x1);
+            puts(10, 0); #"\n"
+        }
+        var check_linear_case = 1;
+    }
+    if (!check_linear_case)
+    {
+        QuadroSolver(a, b, c);
+    }
+    return 0;
+}
+
+void QuadroSolver(var a, var b, var c)
+{
+    #Process discriminant
+    var x1 = 0;
+    var x2 = 0;
+    var d = b*b - 4*a*c;
+    if (d < 0)
+    {
+        puts(110, 111, 32, 114, 111, 111, 116, 115, 10, 0); #"no roots\n"
+    }
+    if (d == 0)
+    {
+        var x1 = -b/2;
+        puts(111, 110, 101, 32, 114, 111, 111, 116, 10, 0); #"one root\n"
+        print(x1);
+        puts(10, 0); #"\n"
+    }
+    if (d > 0)
+    {
+        var x1 = (-b+sqrt(d))/2;
+        var x2 = (-b-sqrt(d))/2;
+        puts(116, 119, 111, 32, 114, 111, 111, 116, 115, 10, 0); #"two roots\n"
+        print(x1);
+        puts(10, 0); #"\n"
+        print(x2);
+        puts(10, 0); #"\n"
+    }
+}
