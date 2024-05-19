@@ -4,6 +4,7 @@
 
 global  input
 global  print
+global  puts
 global  error_end
 global  __processing_unassigned_var__
 
@@ -14,6 +15,7 @@ SYSCALL_READ    equ 0x0
 SIZE_BUFFER     equ 50
 _stack_offset   equ 8
 DOT             equ '.'
+ADDRESS_CALL    equ 16
 
 ;=======================================================================================
 ;Functions
@@ -44,6 +46,13 @@ input:
         mov rsi, buffer_in
         call string_to_pseudo_float ;in rax number
 
+        push rax
+        mov rdi, buffer_in     ;clear buffer 
+        mov rax, 0
+        mov rcx, SIZE_BUFFER
+        rep stosb
+        pop rax
+
         pop r10
         pop r9
         pop r8
@@ -59,12 +68,12 @@ input:
 ;========================================================================================
 ;print(var x) - function of output one signed number 
 ;Arg - in stack one number
-;Ret: number in rax
+;Ret: rax = 0
 ;WARNING: dont save rdi!
 print: 
         nop
+
         pop r10
-        
         pop rdi         ;for call
         
         push r9         ; save all regs in stack
@@ -89,14 +98,11 @@ print:
         je .if_buff_end 
         call write_buff
 .if_buff_end:
-        ;write "\n"
+
         mov rdi, buffer_out     ;clear buffer 
         mov rax, 0
         mov rcx, SIZE_BUFFER
         rep stosb
-        mov byte buffer_out[0], 0xA
-        mov byte buffer_out[1], 0xD
-        call write_buff
 
         pop r15         ;revive regs
         pop r14
@@ -111,14 +117,77 @@ print:
         pop r8
         pop r9
 
-        push rdi
+        mov rax, 0
 
+        push rdi
         push r10        ;put in stack address of return from Printf32
 
-        
-
         ret
+;========================================================================================
+;puts(askii code, ..., 0) - function of write string to stdout
+;Args: decimal askii codes of symbols, last - 0 - terminated symbol
+;Ret: rax = 0
+;Change: rdi, rbx, WARNING: R11- global counter
+puts:
+        nop
+        push rbp
+        mov  rbp, rsp
 
+        push r11
+        push r15
+        push rdi        ;save regs
+        push rdx
+        push rbx
+        push rcx
+
+        xor r11, r11    ;init regs
+        xor r15, r15
+
+        ;while(*ch != '\0') {print_char(*ch)} "print_char" means move to buffer
+        mov rbx, rbp     ; in rbx - address of first char
+        add rbx, ADDRESS_CALL
+.while_start:
+        mov rax, [rbx]          ;pseudo double number cast to char
+        
+        cmp rax, 0    ; *ch != '\0'
+        je .while_end
+        
+        mov rcx, INACCURACY
+        mov rdi, 10
+.dividing:
+        cqo
+        div rdi
+        loop .dividing  ;in ral - char
+        xor rdi, rdi         ;set rdi = 0
+        mov dil, al  ;mov rdi(dil = 1 byte), [rbx] 
+
+        call print_char ;call print current char
+
+        ;set next symbol
+        add rbx, _stack_offset
+        jmp .while_start
+.while_end:
+        cmp r11, 0              ;last check buffer and print it
+        je .if_buff_end 
+        call write_buff
+.if_buff_end:
+
+        mov rdi, buffer_out     ;clear buffer 
+        mov rax, 0
+        mov rcx, SIZE_BUFFER
+        rep stosb
+
+        pop rcx
+        pop rbx         ;revive regs
+        pop rdx
+        pop rdi
+        pop r11
+        
+        mov rax, 0
+
+        mov  rsp, rbp
+        pop  rbp
+        ret
 ;========================================================================================
 ;End program without segfault
 ;Args: RDI - code of error
@@ -339,6 +408,8 @@ print_char:
         mov buffer_out[r11], dil
         inc r11
         ret
+
+;========================================================================================        
 __processing_unassigned_var__:
         mov rax, SYSCALL_WRITE  ; syscall 0x01: write(rdi, rsi, rdx) - (int, char*, size_t)
         mov rdi, 1              ; stdout
@@ -376,8 +447,8 @@ print_str:
         ret
 ;=========================================================================================
 ;print_pseudo_float(int a) - function of write pseudo float with fix inaccuracy(3.141 -> 314 -> 3  .  14) printing dot
-;Args: ABI - rdi - number, 
-;Ret: void
+;Args: ABI - rdi - number
+;Ret: rax = 0
 ;Change: rsi, rcx, rdi, rax, rdx, r8, r9
 print_pseudo_float:
         nop
@@ -451,7 +522,7 @@ print_pseudo_float:
         pop rdi
         pop rcx
         pop rsi
-
+        mov rax, 0
         ret
 ;==================================================================
 ;NEVER USED
@@ -495,14 +566,14 @@ num_length:
 
 ;========================================================================================
 section .rodata
-dec_str         db "0123456789", 0x00 ;const alphabets for number systems
-msg             db  0x0A, 0x0D, "> Нельзя просто так взять и обратится к неинициализированной переменной. Боромир", 0x0A, 0x0D, "> One does not simply refer to unassigned variable. Boromir",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+dec_str         db "0123456789", '\0' ;const alphabets for number systems
+msg             db "\r\n\r\n> Нельзя просто так взять и обратится к неинициализированной переменной. Боромир\r\n\r\n> One does not simply refer to unassigned variable. Boromir\r\n\r\n", 0
 msg_len         equ $ - msg
 
 ;#Errors
-error_list1 db "> Overflowing in pseudo double number! Fuck its so big!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
-error_list2 db "> Divizion by zero! Bruh man...\n",0x0A, 0x0D, 0x0A, 0x0D, 0x00
-error_list3 db "> Shit happens! Number is negative in sqrt()!",0x0A, 0x0D, 0x0A, 0x0D, 0x00
+error_list1 db "> Overflowing in pseudo double number! Fuck its so big!\r\n\r\n", 0
+error_list2 db "> Divizion by zero! Bruh man...\r\n\r\n",'\0'
+error_list3 db "> Shit happens! Number is negative in sqrt()!\r\n\r\n",0
 
 ;#Jump table of errors!
 jmp_table_errors:

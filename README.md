@@ -91,9 +91,14 @@ var summ(var a, var b){
 *Standard functions*:
 
 - `input()`             - function reads one pseudo double number(0.0, -12.3, 100.2133) from stdin. Use only in assignment. Remember about accuracy, in case of .00: 13.2134 &#8594; 13.21. Return: rax - one pseudo double number
-- `print(var x)`        - function of writing one pseudo double number(0.0, -12.3, 100.2133) to stdout. Return: rax - 0 - code of ending function.
+- `print(var x)`        - function of writing one pseudo double number(0.0, -12.3, 100.2133) to stdout. Return: rax - 0 - code of ending function. Return: rax = 0
+- `puts(..., 0)`        - function of printing string to stdout. Args: ascii decimal codes of letters, last arg must be 0 - terminated symbol. Return: rax = 0. **WARNING**: if you forget 0 at the end it cause UB!!!. 
   
-- `sqrt(var x)`         - function of calculating root from not negative number. sqrt(2) = 1.41, sqrt(-1) = Error. Use FPU. Return: rax - one pseudo double number. Accuracy depends on settings.
+> Advice: you can use `man ascii` in terminal for looking to ascii codes.
+
+*Math functions*:
+
+- `sqrt(var x)`         - function of calculating root from not negative number. sqrt(2) = 1.41, sqrt(-1) = Error. Use FPU. Return: rax - one pseudo double number. Accuracy depends on settings. **WARNING**: if number is negative, it will be error with stopping program. 
 - `pow(var x, var y)`   - function raises x to y. pow(-3, 3) = -27, pow(2, 3) = 8, pow(2, -1) = 2. If y < 0 it returns x, if y not integer, it convert it to integer. Return: rax - one pseudo double number.
 
 > Advise: don't use unassigned variables, language doesn't like them.

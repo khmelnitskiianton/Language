@@ -37,7 +37,11 @@ EnumOfErrors UploadTree (BinaryTree_t* myTree, const char* file_database)
 
     MYASSERT(result_size == size_text, ERR_BAD_FREAD, return ERR_BAD_FREAD);
 
-    USER_ERROR(*text_buffer != '\0', ERR_EMPTY_FILE, "",return ERR_EMPTY_FILE)
+    if (*text_buffer == '\0')
+    {
+        free(text_buffer);
+        USER_ERROR(0, ERR_EMPTY_FILE, "", return ERR_EMPTY_FILE)
+    }
     
     *(text_buffer + size_text) = '\n';      //for scanning vars!
 	*(text_buffer + size_text + 1) = '\0';

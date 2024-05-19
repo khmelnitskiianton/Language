@@ -13,7 +13,7 @@
 #include "verificator.h"
 #include "dsl.h"
 
-static void     WriteAsmHeader      (void);
+static void     WriteAsmHeader  (void);
 static void     WriteRecTree    (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     WriteDefFunc    (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
 static void     CountArgs       (BinaryTree_t* myTree, int* counter_args, Node_t* CurrentNode);
@@ -26,14 +26,14 @@ static void     CleanCountArgs          (BinaryTree_t* myTree);
 static void     CleanFuncLocalVars      (void);
 static void     CleanFuncArgVars        (void);
 
-static void     WriteCall       (BinaryTree_t* myTree, Node_t* CurrentNode);
-static void     WriteVar        (BinaryTree_t* myTree, Node_t* CurrentNode);
-static void     WriteWhile      (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
-static void     GetArgs         (BinaryTree_t* myTree, Node_t* CurrentNode);
-static void     WriteCond       (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
-static void     WriteCondCond   (BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter);
-static void     WriteWhileCond  (BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter);
-static void     WriteReturn     (BinaryTree_t* myTree, Node_t* CurrentNode);
+static void     WriteCall               (BinaryTree_t* myTree, Node_t* CurrentNode);
+static void     WriteVar                (BinaryTree_t* myTree, Node_t* CurrentNode);
+static void     WriteWhile              (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
+static void     GetArgs                 (BinaryTree_t* myTree, Node_t* CurrentNode);
+static void     WriteIf                 (BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* StackWhileCond);
+static void     WriteIfCondition        (BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter);
+static void     WriteWhileCondition     (BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter);
+static void     WriteReturn             (BinaryTree_t* myTree, Node_t* CurrentNode);
 
 static int      FindIndexLocalVar   (BinaryTree_t* myTree, Node_t* CurrentNode);
 static int      FindIndexArgVar     (BinaryTree_t* myTree, Node_t* CurrentNode);
@@ -150,7 +150,7 @@ static void WriteRecTree(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* 
                 WriteWhile(myTree, CurrentNode, StackWhileCond);
             break;
             case IF: //done
-                WriteCond(myTree, CurrentNode, StackWhileCond);
+                WriteIf(myTree, CurrentNode, StackWhileCond);
             break;
             case BREAK: //done
                 WriteBreak(myTree, CurrentNode, StackWhileCond);
@@ -504,13 +504,13 @@ static void WriteWhile(BinaryTree_t* myTree, Node_t* CurrentNode, StackInt_t* St
     pop_int(StackWhileCond, &save_counter);     //pop index
     fprintf(FileProc, "\n.while_check_%d:\n", save_counter);
     //Condition
-    WriteWhileCond(myTree, L, save_counter);
+    WriteWhileCondition(myTree, L, save_counter);
     fprintf(FileProc, ".while_end_%d:\n\n", save_counter);
     fprintf(FileProc,   ";#=======End=While========#\n");
 }
 
 //done
-static void WriteWhileCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter)
+static void WriteWhileCondition(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter)
 {
     if (!C) 
     {
@@ -525,7 +525,7 @@ static void WriteWhileCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_c
 }
 
 //done
-static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* StackWhileCond)
+static void WriteIf(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* StackWhileCond)
 {
     fprintf(FileProc,   ";#=============If==========#\n"
                         "jmp .if_check_%d\n"
@@ -534,7 +534,7 @@ static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* Stac
     push_int(StackWhileCond, IF_TYPE);
     counter_if++;
     //body
-    if ((R) && (R->Type == OPERATOR)&&(ArrayOperators[R->Value.Index].Class == ELSE))
+    if ((R) && (R->Type == OPERATOR) &&(ArrayOperators[R->Value.Index].Class == ELSE))
     {
         WriteRecTree(myTree, (R)->Left, StackWhileCond);
         int save_counter  = 0;
@@ -544,7 +544,7 @@ static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* Stac
         fprintf(FileProc, "jmp .if_end_%d\n", save_counter);
         fprintf(FileProc, ".if_check_%d:\n",  save_counter);
         //Condition
-        WriteCondCond(myTree, L, save_counter);
+        WriteIfCondition(myTree, L, save_counter);
         WriteRecTree(myTree, (R)->Right, StackWhileCond);
         fprintf(FileProc, ".if_end_%d:\n\n", save_counter);
     }
@@ -558,14 +558,14 @@ static void WriteCond(BinaryTree_t* myTree, Node_t* CurrentNode,StackInt_t* Stac
         fprintf(FileProc, "jmp .if_end_%d\n", save_counter);
         fprintf(FileProc, ".if_check_%d:\n",  save_counter);
         //Condition
-        WriteCondCond(myTree, L, save_counter);
+        WriteIfCondition(myTree, L, save_counter);
         fprintf(FileProc, ".if_end_%d:\n", save_counter);
-        fprintf(FileProc, ";#=========End=IF=========#\n");
     }
+    fprintf(FileProc, ";#=========End=IF=========#\n");
 }
 
 //done
-static void WriteCondCond(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter)
+static void WriteIfCondition(BinaryTree_t* myTree, Node_t* CurrentNode, int curr_counter)
 {
     if (!C) 
     {

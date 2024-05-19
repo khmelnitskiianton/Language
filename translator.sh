@@ -96,7 +96,7 @@ then
         if [ -f $frontend ] && [ -f $middleend ] && [ -f $backend ]
         then
             $frontend   $log_folder     $code_file
-            $middleend  $log_folder     $tree_file 
+            #$middleend  $log_folder     $tree_file 
             $backend    $log_folder     $tree_file
         else
             echo -e $color_red"FrontEnd or MiddleEnd or BackEnd program not found.$fail_run" $reset

@@ -1,0 +1,183 @@
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 61) in function int push_int(StackInt_t*, int)
+{                  
+	size        = 1 
+	capacity    = 1 
+	data[0x602000000010]         
+	{                
+	 #[0] = 0
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 61) in function int push_int(StackInt_t*, int)
+{                  
+	size        = 2 
+	capacity    = 2 
+	data[0x602000000030]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 61) in function int push_int(StackInt_t*, int)
+{                  
+	size        = 3 
+	capacity    = 4 
+	data[0x602000000050]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 >[3] = 268435455<
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 61) in function int push_int(StackInt_t*, int)
+{                  
+	size        = 4 
+	capacity    = 4 
+	data[0x602000000050]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 #[3] = 1
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 61) in function int push_int(StackInt_t*, int)
+{                  
+	size        = 5 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 #[3] = 1
+	 #[4] = 2
+	 >[5] = 268435455<
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 61) in function int push_int(StackInt_t*, int)
+{                  
+	size        = 6 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 #[3] = 1
+	 #[4] = 2
+	 #[5] = 1
+	 >[6] = 268435455<
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 94) in function int pop_int(StackInt_t*, int*)
+{                  
+	size        = 5 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 #[3] = 1
+	 #[4] = 2
+	 >[5] = 268435455<
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 94) in function int pop_int(StackInt_t*, int*)
+{                  
+	size        = 4 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 #[3] = 1
+	 >[4] = 268435455<
+	 @[5] = 268435455(POISON)
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 94) in function int pop_int(StackInt_t*, int*)
+{                  
+	size        = 3 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 #[2] = 1
+	 >[3] = 268435455<
+	 @[4] = 268435455(POISON)
+	 @[5] = 268435455(POISON)
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 94) in function int pop_int(StackInt_t*, int*)
+{                  
+	size        = 2 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 #[1] = 1
+	 >[2] = 268435455<
+	 @[3] = 268435455(POISON)
+	 @[4] = 268435455(POISON)
+	 @[5] = 268435455(POISON)
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 94) in function int pop_int(StackInt_t*, int*)
+{                  
+	size        = 1 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 #[0] = 0
+	 >[1] = 268435455<
+	 @[2] = 268435455(POISON)
+	 @[3] = 268435455(POISON)
+	 @[4] = 268435455(POISON)
+	 @[5] = 268435455(POISON)
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   
+
+Stack[0x7ffe50cef2c0] called from /media/anton/Data/Study/Ded_1_sem/MyLanguage/Lib/Stacks/stack_int.cpp (string: 94) in function int pop_int(StackInt_t*, int*)
+{                  
+	size        = 0 
+	capacity    = 8 
+	data[0x603000000040]         
+	{                
+	 >[0] = 268435455<
+	 @[1] = 268435455(POISON)
+	 @[2] = 268435455(POISON)
+	 @[3] = 268435455(POISON)
+	 @[4] = 268435455(POISON)
+	 @[5] = 268435455(POISON)
+	 @[6] = 268435455(POISON)
+	 @[7] = 268435455(POISON)
+	} 
+}   

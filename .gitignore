@@ -32,9 +32,9 @@ Lib/Stacks/*.txt
 Lib/Stacks/*.txth
 Lib/MyLangConfig/*.o
 
-./examples/*.o
-./examples/*.s
-./examples/*.tree
+examples/*.o
+examples/*.s
+examples/*.tree
 
 *fuse*
 

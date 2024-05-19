@@ -6,6 +6,7 @@
                         "\n"                                            \
                         "extern print\n"                                \
                         "extern input\n"                                \
+                        "extern puts\n"                                 \
                         "extern error_end\n"                            \
                         "extern __processing_unassigned_var__\n"        \
                         "\n"                                            \

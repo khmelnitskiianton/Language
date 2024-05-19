@@ -457,8 +457,8 @@ static Node_t *GetCondition(Token_t **PtrToken) {
     //ELSE    
     Token_t *current_token = (*PtrToken);
     current_token++;
-    if ((CHECK_OPER_CLASS(*PtrToken, DIVIDER)) &&
-        (CHECK_OPER_CLASS(current_token, ELSE)))
+    if ((CHECK_OPER_CLASS(*PtrToken, CLOSE_BRACKET_FIGURE)) &&
+        (CHECK_OPER_CLASS(current_token, ELSE)))    //check for '}else'
     {
         INCREMENT_PTR_TOKEN(PtrToken);
         INCREMENT_PTR_TOKEN(PtrToken);
@@ -472,36 +472,41 @@ static Node_t *GetCondition(Token_t **PtrToken) {
         (CHECK_OPER_CLASS(*PtrToken, OPEN_BRACKET_FIGURE))) 
     {
         INCREMENT_PTR_TOKEN(PtrToken);
-
-        Node_t* middle_node = NULL;
-        while (((CHECK_TYPE_OPER(*PtrToken)) && !(CHECK_OPER_CLASS(*PtrToken, CLOSE_BRACKET_FIGURE))) ||
-               (CHECK_TYPE_NUM(*PtrToken)) ||
-               (CHECK_TYPE_VAR(*PtrToken))) 
-        {
-            copy_node = middle_node;
-            middle_node = GetCommon(PtrToken);
-                
-            if ((CHECK_TYPE_OPER(*PtrToken)) &&
-                ((CHECK_OPER_CLASS(*PtrToken, DIVIDER)) ||
-                 (CHECK_OPER_CLASS(*PtrToken, CLOSE_BRACKET_FIGURE)))) 
-            {
-                middle_node = OPR(ptr_of_tree, INDEX_SEP, middle_node, copy_node);
-            } 
-            else 
-            {
-                USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[(*PtrToken)->Value.Index].Name, syntax_error = 1)
-                if (syntax_error) {
-                    RecFree(left_node);
-                    RecFree(right_node);
-                    RecFree(middle_node);
-                    RecFree(copy_node);
-                    return NULL;
-                }
-            }
-            INCREMENT_PTR_TOKEN(PtrToken);
-        }
-        right_node = OPR(ptr_of_tree, INDEX_ELSE, right_node, middle_node);
     }
+    else 
+    {
+        USER_ERROR(0, ERR_NO_OPEN_BRACKET, ArrayOperators[(*PtrToken)->Value.Index].Name, syntax_error = 1)
+        return NULL;
+    }
+
+    Node_t* middle_node = NULL;
+    while (((CHECK_TYPE_OPER(*PtrToken)) && !(CHECK_OPER_CLASS(*PtrToken, CLOSE_BRACKET_FIGURE))) ||
+           (CHECK_TYPE_NUM(*PtrToken)) ||
+           (CHECK_TYPE_VAR(*PtrToken))) 
+    {
+        copy_node = middle_node;
+        middle_node = GetCommon(PtrToken);
+            
+        if ((CHECK_TYPE_OPER(*PtrToken)) &&
+            ((CHECK_OPER_CLASS(*PtrToken, DIVIDER)) ||
+             (CHECK_OPER_CLASS(*PtrToken, CLOSE_BRACKET_FIGURE)))) 
+        {
+            middle_node = OPR(ptr_of_tree, INDEX_SEP, copy_node, middle_node);
+        } 
+        else 
+        {
+            USER_ERROR(0, ERR_NO_DIVIDER, ArrayOperators[(*PtrToken)->Value.Index].Name, syntax_error = 1)
+            if (syntax_error) {
+                RecFree(left_node);
+                RecFree(right_node);
+                RecFree(middle_node);
+                RecFree(copy_node);
+                return NULL;
+            }
+        }
+        INCREMENT_PTR_TOKEN(PtrToken);
+    }
+    right_node = OPR(ptr_of_tree, INDEX_ELSE, right_node, middle_node);
     return OPR(ptr_of_tree, INDEX_IF, left_node, right_node);
 }
 
