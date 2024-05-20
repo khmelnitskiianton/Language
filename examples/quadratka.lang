@@ -28,6 +28,7 @@ var main()
         {
             var x1 = -c/b;
             puts(111, 110, 101, 32, 114, 111, 111, 116, 10, 0); #"one root\n"
+            puts(120, 32, 61, 32, 0);    #"x = "
             print(x1);
             puts(10, 0); #"\n"
         }
@@ -54,6 +55,7 @@ void QuadroSolver(var a, var b, var c)
     {
         var x1 = -b/2;
         puts(111, 110, 101, 32, 114, 111, 111, 116, 10, 0); #"one root\n"
+        puts(120, 32, 61, 32, 0);    #"x = "
         print(x1);
         puts(10, 0); #"\n"
     }
@@ -62,8 +64,10 @@ void QuadroSolver(var a, var b, var c)
         var x1 = (-b+sqrt(d))/2;
         var x2 = (-b-sqrt(d))/2;
         puts(116, 119, 111, 32, 114, 111, 111, 116, 115, 10, 0); #"two roots\n"
+        puts(120, 49, 32, 61, 32, 0);    #"x1 = "
         print(x1);
         puts(10, 0); #"\n"
+        puts(120, 50, 32, 61, 32, 0);    #"x2 = "
         print(x2);
         puts(10, 0); #"\n"
     }

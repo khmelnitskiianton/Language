@@ -24,15 +24,15 @@ It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to
 ## Installation
 
 ```bash
-git clone https://github.com/khmelnitskiianton/MyLanguage.git               #clone repo
+git clone https://github.com/khmelnitskiianton/MyLanguage.git   #clone repo
 cd ./MyLanguage
-cmake .                                                                     #compile language
+cmake .                                                         #compile language
 make
-chmod +x translator.sh                                                      #permissions for scripts
+chmod +x translator.sh                                          #permissions for scripts
 chmod +x linker.sh
-./translator.sh {path to file begin with this repo}/{file with source code} #translate lang code to nasm
-./linker.sh {path to file begin with this repo}/{file with NASM code}       #link nasm code with language's standart libs
-{path to file begin with this repo}/{file with source code}                 #run program
+./translator.sh {path, begin with this repo}/{source code}      #translate lang code to nasm
+./linker.sh {path, begin with this repo}/{NASM .s code}         #link nasm code with language's standart libs
+#run program
 ```
 
 It will be create folder `build`, there will be logs, and intermediate files
@@ -66,6 +66,10 @@ void main(){
     var a = summ(x, y);
     if (a) {
         print(x);
+    }
+    else
+    {
+        puts(10, 0);
     }
     while (y < 5){
         print(y);
