@@ -5,14 +5,17 @@ var main()
     var x = input();
     var x = factorial(x);
     print(x);
+    puts(10, 0);
     return 0;
 }
 
 var factorial(var n)
 {
+    var fn1 = 0;
     if (n < 1)                                                                                                                  
     {
         return 1;
     }
-    return n * factorial(n - 1); 
+    var fn1 = factorial(n-1);
+    return n * fn1; 
 }
