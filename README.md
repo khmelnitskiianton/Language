@@ -1,4 +1,4 @@
-# MyLanguage
+# Language
 
 Project of translation system - from my language to NASM
 
@@ -19,6 +19,7 @@ It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to
   - [Standard](#standard)
   - [FrontEnd](#frontend)
   - [MiddleEnd](#middleend)
+  - [BackEnd](#backend)
   - [Logs](#logs)
 
 ## Installation
