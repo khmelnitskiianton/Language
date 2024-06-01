@@ -29,14 +29,14 @@ It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to
 ## Installation
 
 ```bash
-git clone https://github.com/khmelnitskiianton/Language.git   #clone repo
+git clone https://github.com/khmelnitskiianton/Language.git #clone repo
 cd ./Language
-cmake .                                                         #compile language
+cmake .                                                     #compile language
 make
-chmod +x translator.sh                                          #permissions for scripts
+chmod +x translator.sh                                      #permissions for scripts
 chmod +x linker.sh
-./translator.sh {path, begin with this repo}/{source code}      #translate lang code to nasm
-./linker.sh {path, begin with this repo}/{NASM .s code}         #link nasm code with language's standart libs
+./translator.sh {path, begin with this repo}/{source code}  #translate lang code to nasm
+./linker.sh {path, begin with this repo}/{NASM .s code}     #link nasm code with language's standart libs
 #run program
 ```
 
@@ -128,44 +128,42 @@ Generated tree has a standard, with which you can translate Tree without FrontEn
 
 <img src="https://github.com/khmelnitskiianton/Language/assets/142332024/c1d3a3e1-1ea2-463f-815f-37548e94c7c0" width=100%>
 
-
-
 ## FrontEnd
 
-FrontEnd takes text code on my language and translates it to binary tree with agreement with my standard. Output of FrontEnd is text file `.tree` that contains printed pre-order tree and list of variables.
+FrontEnd takes text code in my language and translates it to AST according to my standard. The output of FrontEnd is a text file `.tree` containing the printed AST: tree in pre-order form, list of variables.
 
 *Stages:*
 
-1. **Tokenization**:        Move to buffer and use tokenizer that processes words and creates array of objects that contains info about word(type like operation,number or variable and value). With this array of processed objects I can simpler work at the next stages.
-2. **Recursive Descent**:   I use parser to make from array of objects binary tree, it based on recursive descent, where I use huge recursion and analyzing expressions. It saves names of variables and numbers in nodes.
-3. **Printing**:            After creating binary tree I print it to output file, information in file is enough to restore tree.
+1. **Tokenization**:        Go to buffer and use tokenizer which processes words and creates array of objects containing info about word (type like operation, number or variable and value). With this array of processed objects I can work easier in the next steps.
+2. **Recursive Descent**:   I use parser to make from array of objects AST, it based on recursive descent where I use huge recursion and analyzing expressions. It stores names of variables and numbers in nodes.
+3. **Printing**:            After creating binary tree, I print it to output file, information in file is enough to restore tree.
 
 ## MiddleEnd
 
-MiddleEnd takes tree and optimizes it. It is intermediary program, it helps to avoid complication in final NASM code and increase speed. Output: new file with tree `.tree` with changes.
+MiddleEnd takes AST and optimizes it. It is an intermediate program, it helps to avoid complications in final NASM code and increase speed. Output: new file with tree `.tree` with changes.
 
-1. **Scanning Tree**:   I take file `.tree` with standard, scan it and recover binary tree of code.
-2. **Optimization**:    After creating tree, I traversal tree and find for redundant branches, then destroy them. 
+1. **Scanning tree**:   I take file `.tree` with standard, scan it and rebuild binary tree of code.
+2. **Optimization**:    After creating tree, I traverse tree and look for redundant branches, then destroy them. 
 Now optimizations: convolution of constants, neutral arithmetic operands and convolution of condition `if(0/num) { } else { }` and loops `while(0)`.
 
 3. **Printing**:        After creating binary tree I print it to output file, information in file is enough to restore tree.
 
 ## BackEnd
 
-BackEnd takes tree and translates it to NASM file, that next you need to link. It add many standard functions from my asm library. Output: file `.s` with NASM code and comments.
+BackEnd takes AST and translates it to NASM file, which you need to link next. It adds many standard functions from my asm library. Output: `.s` file with NASM code and comments.
 
-1. **Scanning Tree**:   I take file `.tree` with standard, scan it and recover binary tree of code.
-2. **Translation**:     After creating tree, I traversal tree and translate each node to equivalent on asm with adding comments by printing it to `.s` file. 
+1. **Scanning Tree**:   I take file `.tree` with standard, scan it and rebuild binary tree of code.
+2. **Translation**:     After creating tree, I traverse tree and translate each node to equivalent on asm with adding comments by printing it to `.s` file.
 
 *Details*:
 
-NASM code work on one system stack.Functions has stack frames, before writing I count all unique local variables in it and initialize them. Calls support CDECL, but functions pretend to have all args in stack. Variables I save in global buffers, not ideal solution(doesn't have overengineering), but I always can rewrite it simpler. I use stack to support nested loops and if constructions to save counters of labels. When I translate expressions, I use system stack to push and pop results, for intermediate operations I use temporary registers `rax`, `rbx`, `rdx`, `rcx`. After expressions result will be in stack - one value. Assignment moves it to local var. I extern standard function. I have some checks for errors, but not all.
+NASM code works on a system stack. functions have stack frames, before writing I count all unique local variables in it and initialize them. Calls support CDECL, but functions pretend to have all args in stack. Variables I store in global buffers, not ideal solution (doesn't have overengineering), but I can always rewrite it simpler. I use stack to support nested loops and if constructs to store counters of labels. When translating expressions, I use system stack to push and pop results, for intermediate operations I use temporary registers `rax`, `rbx`, `rdx`, `rcx`. After expressions, result is on stack - a value. Assignment moves it to local var. I use external standard function. I have some checks for errors, but not all.
 
 ## Logs
 
-When programs work, they create folder `build` where will be all logs of translation
+When programs run, they create a folder called `build`, which contains all the logs of the translation.
 
-Logs use GraphViz to visualize graphs in pictures
+Logs use GraphViz to visualize graphs in images
 
 `log.html` - full generated log of changes while working with tree.
 
