@@ -4,6 +4,10 @@ Project of translation system - from my language to NASM
 
 It support only Linux x86-64.
 
+**Example of translation:**
+
+<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/fbcadc26-a7b1-4868-be9e-e4da545ed1de" width=100%>
+
 It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
 + FrontEnd: parses code to tree based recursive descent
 + MiddleEnd: optimizes tree
@@ -119,6 +123,13 @@ Generated tree has a standard, with which you can translate Tree without FrontEn
 
 [```Standard of Tree```](https://github.com/khmelnitskiianton/Language/blob/main/Standard.md)
 
+
+**Stages of translation:**
+
+<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/c1d3a3e1-1ea2-463f-815f-37548e94c7c0" width=100%>
+
+
+
 ## FrontEnd
 
 FrontEnd takes text code on my language and translates it to binary tree with agreement with my standard. Output of FrontEnd is text file `.tree` that contains printed pre-order tree and list of variables.
@@ -160,4 +171,4 @@ Logs use GraphViz to visualize graphs in pictures
 
 *Example:*
 
-<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100% >
+<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100%>
