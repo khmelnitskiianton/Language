@@ -4,14 +4,9 @@ Project of translation system - from my language to NASM
 
 It support only Linux x86-64.
 
-**Example of translation:**
+*Example of translation:*
 
 <img src="https://github.com/khmelnitskiianton/Language/assets/142332024/20f394fb-c3db-4ebf-a8c8-3879fc76ab92" width=100%>
-
-It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
-+ FrontEnd: parses code to tree based recursive descent
-+ MiddleEnd: optimizes tree
-+ BackEnd: translates tree to code on NASM
 
 ## Table of Contents
 
@@ -21,10 +16,11 @@ It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to
   - [Dependent Objects](#dependent-objects)
   - [Language](#language)
   - [Standard](#standard)
-  - [FrontEnd](#frontend)
-  - [MiddleEnd](#middleend)
-  - [BackEnd](#backend)
-  - [Logs](#logs)
+  - [Stages of translation](#stages-of-translation)
+    + [FrontEnd](#frontend)
+    + [MiddleEnd](#middleend)
+    + [BackEnd](#backend)
+    + [Logs](#logs)
 
 ## Installation
 
@@ -117,18 +113,26 @@ var summ(var a, var b){
 
 ## Standard
 
-Generated tree has a standard, with which you can translate Tree without FrontEnd on your asm(with your BackEnd)!
+Generated AST has a standard, with which you can translate tree without source code, only with your BackEnd!
 
 *Standard of generated tree:*
 
 [```Standard of Tree```](https://github.com/khmelnitskiianton/Language/blob/main/Standard.md)
 
+*Example AST:*
 
-**Stages of translation:**
+<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100%>
+
+## Stages of translation
 
 <img src="https://github.com/khmelnitskiianton/Language/assets/142332024/c1d3a3e1-1ea2-463f-815f-37548e94c7c0" width=100%>
 
-## FrontEnd
+It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
++ FrontEnd: parses code to tree based recursive descent
++ MiddleEnd: optimizes tree
++ BackEnd: translates tree to code on NASM
+
+### FrontEnd
 
 FrontEnd takes text code in my language and translates it to AST according to my standard. The output of FrontEnd is a text file `.tree` containing the printed AST: tree in pre-order form, list of variables.
 
@@ -138,7 +142,7 @@ FrontEnd takes text code in my language and translates it to AST according to my
 2. **Recursive Descent**:   I use parser to make from array of objects AST, it based on recursive descent where I use huge recursion and analyzing expressions. It stores names of variables and numbers in nodes.
 3. **Printing**:            After creating binary tree, I print it to output file, information in file is enough to restore tree.
 
-## MiddleEnd
+### MiddleEnd
 
 MiddleEnd takes AST and optimizes it. It is an intermediate program, it helps to avoid complications in final NASM code and increase speed. Output: new file with tree `.tree` with changes.
 
@@ -148,25 +152,26 @@ Now optimizations: convolution of constants, neutral arithmetic operands and con
 
 3. **Printing**:        After creating binary tree I print it to output file, information in file is enough to restore tree.
 
-## BackEnd
+### BackEnd
 
 BackEnd takes AST and translates it to NASM file, which you need to link next. It adds many standard functions from my asm library. Output: `.s` file with NASM code and comments.
 
 1. **Scanning Tree**:   I take file `.tree` with standard, scan it and rebuild binary tree of code.
 2. **Translation**:     After creating tree, I traverse tree and translate each node to equivalent on asm with adding comments by printing it to `.s` file.
 
-*Details*:
+*Details of translating*:
 
-NASM code works on a system stack. functions have stack frames, before writing I count all unique local variables in it and initialize them. Calls support CDECL, but functions pretend to have all args in stack. Variables I store in global buffers, not ideal solution (doesn't have overengineering), but I can always rewrite it simpler. I use stack to support nested loops and if constructs to store counters of labels. When translating expressions, I use system stack to push and pop results, for intermediate operations I use temporary registers `rax`, `rbx`, `rdx`, `rcx`. After expressions, result is on stack - a value. Assignment moves it to local var. I use external standard function. I have some checks for errors, but not all.
+NASM code works on a system stack. functions have stack frames, before writing I count all unique local variables in it and initialize them. Calls support CDECL, but functions pretend to have all args in stack. Variables I store in global buffers, not ideal solution (but doesn't have overengineering), but I can always rewrite it simpler. I use stack to support nested loops and if constructs to store counters of labels. When translating expressions, I use system stack to push and pop results, for intermediate operations I use temporary registers `rax`, `rbx`, `rdx`, `rcx`. After expressions, result is on stack - a value. Assignment moves it to local var. I use external standard function. I have some checks for errors, but not all.
 
-## Logs
+### Logs
 
-When programs run, they create a folder called `build`, which contains all the logs of the translation.
+When programs run, they create a folder called `build`, which contains all the logs of compilation.
 
-Logs use GraphViz to visualize graphs in images
+My stack has `.txt` content, the binary tree also has content logs.
 
-`log.html` - full generated log of changes while working with tree.
+Tree logs use GraphViz to visualize graphs in SVG. I merge all SVG text into one HTML file that you can view in a browser! `log.html` - full generated log of changes while working with the tree.
 
-*Example:*
+*Example of html log:*
 
-<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100%>
+![html_log_gif](https://github.com/khmelnitskiianton/Language/assets/142332024/b40d106a-c6ae-4c35-901b-e2e26849f651)
+
