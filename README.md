@@ -6,7 +6,7 @@ It support only Linux x86-64.
 
 **Example of translation:**
 
-<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/a7b65541-1ecb-4db8-8368-c49d6ed5aa25" width=100%>
+<img src="https://github.com/khmelnitskiianton/Language/assets/142332024/20f394fb-c3db-4ebf-a8c8-3879fc76ab92" width=100%>
 
 It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to code on NASM:
 + FrontEnd: parses code to tree based recursive descent
