@@ -60,9 +60,9 @@ chmod +x linker.sh
 Compiler - gcc. Uses - Cmake. Logs use GraphViz to visualize binary tree!
 
 ```bash
-sudo apt update && sudo apt upgrade           #update
-sudo apt install build-essential              #gcc
-sudo apt install nasm, make, cmake, graphviz  #nasm, make, cmake, graphviz
+sudo apt update && sudo apt upgrade        #update
+sudo apt install build-essential           #gcc
+sudo apt install nasm make cmake graphviz  #nasm, make, cmake, graphviz
 ```
 
 *****
