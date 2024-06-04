@@ -14,7 +14,7 @@ It support only Linux x86-64.
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Dependent Objects](#dependent-objects)
-  - [Language](#language)
+  - [Functionality and Grammar](#functionality-and-grammar)
   - [Standard](#standard)
   - [Stages of translation](#stages-of-translation)
     + [FrontEnd](#frontend)
@@ -51,7 +51,7 @@ sudo apt install cmake                  #cmake
 sudo apt install graphviz               #graphviz
 ```
 
-## Language
+## Functionality and Grammar
 
 *Rules and Grammar of my Language:*
 
