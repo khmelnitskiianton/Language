@@ -27,7 +27,6 @@ Project of translation system - from my language to NASM
 - [Language](#language)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-  - [Dependent Objects](#dependent-objects)
   - [Grammar and Functionality](#functionality-and-grammar)
     * [Grammar](#grammar)
     * [Functionality](#functionality)
@@ -53,22 +52,17 @@ chmod +x linker.sh
 ./linker.sh {path, begin with this repo}/{NASM .s code}     #link nasm code with language's standart libs
 #run program
 ```
+> [!Note]
+> It will be create folder `build`, there will be logs, and intermediate files.
 
-It will be create folder `build`, there will be logs, and intermediate files
-
-*****
-
-## Dependent Objects
+**Dependent Objects:**
 
 Compiler - gcc. Uses - Cmake. Logs using GraphViz to visualize binary tree!
 
 ```bash
-sudo apt update && sudo apt upgrade     #update
-sudo apt install build-essential        #gcc
-sudo apt install nasm                   #nasm
-sudo apt install make                   #makefile
-sudo apt install cmake                  #cmake
-sudo apt install graphviz               #graphviz
+sudo apt update && sudo apt upgrade           #update
+sudo apt install build-essential              #gcc
+sudo apt install nasm, make, cmake, graphviz  #nasm, make, cmake, graphviz
 ```
 
 *****
