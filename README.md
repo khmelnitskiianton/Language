@@ -15,7 +15,7 @@ It support only Linux x86-64.
   - [Installation](#installation)
   - [Dependent Objects](#dependent-objects)
   - [Functionality and Grammar](#functionality-and-grammar)
-  - [Standard](#standard)
+  - [AST Standard](#ast-standard)
   - [Stages of translation](#stages-of-translation)
     + [FrontEnd](#frontend)
     + [MiddleEnd](#middleend)
@@ -111,7 +111,7 @@ var summ(var a, var b){
 
 > Advise: don't use unassigned variables, language doesn't like them. It will be surprise for you
 
-## Standard
+## AST Standard
 
 Generated AST has a standard, with which you can translate tree without source code, only with your BackEnd!
 
