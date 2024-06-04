@@ -2,11 +2,25 @@
 
 Project of translation system - from my language to NASM
 
-It support only Linux x86-64.
+> [!Note]
+> It support only Linux x86-64.
 
 *Example of translation:*
 
 <img src="https://github.com/khmelnitskiianton/Language/assets/142332024/20f394fb-c3db-4ebf-a8c8-3879fc76ab92" width=100%>
+
+**Plans:**
+
+- [x] FrontEnd
+- [ ] Reverse FrontEnd
+- [x] MiddleEnd
+- [x] Backend
+- [ ] IR
+- [ ] Result perfomance
+  - [x] NASM
+  - [ ] Binary code
+
+*****
 
 ## Table of Contents
 
@@ -14,13 +28,17 @@ It support only Linux x86-64.
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Dependent Objects](#dependent-objects)
-  - [Functionality and Grammar](#functionality-and-grammar)
+  - [Grammar and Functionality](#functionality-and-grammar)
+    * [Grammar](#grammar)
+    * [Functionality](#functionality)
   - [AST Standard](#ast-standard)
   - [Stages of translation](#stages-of-translation)
     + [FrontEnd](#frontend)
     + [MiddleEnd](#middleend)
     + [BackEnd](#backend)
     + [Logs](#logs)
+
+*****
 
 ## Installation
 
@@ -38,6 +56,8 @@ chmod +x linker.sh
 
 It will be create folder `build`, there will be logs, and intermediate files
 
+*****
+
 ## Dependent Objects
 
 Compiler - gcc. Uses - Cmake. Logs using GraphViz to visualize binary tree!
@@ -51,17 +71,73 @@ sudo apt install cmake                  #cmake
 sudo apt install graphviz               #graphviz
 ```
 
+*****
+
 ## Functionality and Grammar
 
-*Rules and Grammar of my Language:*
+<details>
+  <summary>
+    <code><B> Grammar(Click) </B></code>
+  </summary>
 
-[```Grammar+Language```](https://github.com/khmelnitskiianton/Language/blob/main/Language.md)
+### Grammar
+
+#### Common rules
+
+```cpp
+- Initializing          var x;
+- Assignment            var y = (1+3^2)*a - sum(b,c)/4;
+- Inc_dec_oper          i++;
+- Condition             if (a && (b || c)) { ... } else { ... }
+- Loop                  while ((x >= y) == 1) {... break; ... continue;}
+- Define_function       void foo(var p, var m) { ... return;}
+- Call_function         hello(); foo(x,y) 
+- One line comments     #bla bla
+- Many lines comments   $bla bla bla$
+```
+
+#### Grammar of my language
+
+- `[]`        - group of elements
+- `[[]]`    - optional module 
+- `{}`        - sequence of commands
+- `+`          - repeat 1+ times
+- `*`          - repeat 0+ times
+- `<...>`  - symbol sequence
+
+```cpp
+Tokens
+    N  ::= <token-number>
+    V  ::= <token-variable>
+    Y  ::= <token-end>
+Main Rules
+    G  ::= { M [<;>, <}>] }* Y              //General call first
+    M  ::= D | I | W | FC | FD | R | E      //Main, Includes everything
+Analysis expressions
+    E  ::= H { [ <'!='>,<'>='>,<'<='>,<'=='>,<'<'>,<'>'>] H }*  //Calls first, then priorities
+    H  ::= X { [ <||>, <+>, <-> ] X }*
+    X  ::= P { [ <&&>, <*>, </>, <%> ] P }*
+    P  ::= L { [ <^> ] L }*
+    L  ::= B { [ <!>, <++>, <--> ] B }*
+    B  ::= <(> E <)> | N | V | FC
+Analysis actions
+    D  ::= T V [[ < = > E]]                                                                     //Initializing + Assignment
+    I  ::= <if> <(> E <)> <{> { M [ <;>, <}> ] }* <}> [[ <else> <{> { M [ <;>, <}> ] } * <}> ]] //Condition
+    W  ::= <while> <(> E <)> <{> { M [ <;>, <}> ]}* <}>                                         //Loop
+    FD ::= T V <(> [[ D* { <,>, D }* ]] <)> <{> { M [ <;>, <}> ] }* <}>                         //Define function
+    FC ::= V <(> [[ E* { <,>, E }* ]] <)>                                                       //Call function
+    R  ::= [ <break>, <continue>, <return> [[E]] ]                                              //End of function  
+    T  ::= [ 'var', 'void' ]                                                                    //Types of vars
+```
+  
+</details>
+
+*****
 
 *Example of code:*
 
 ```cpp
 void main(){
-    var x;
     var x = 0;
     var y = (2+x) - 4.2;
     var a = summ(x, y);
@@ -81,11 +157,14 @@ void main(){
 var summ(var a, var b){
     return a+b;
 }
-``` 
+```
+
 *Some examples of programs on my language*:
 
 1. [factorial.lang](https://github.com/khmelnitskiianton/Language/blob/main/examples/factorial.lang)
 2. [quadratka.lang](https://github.com/khmelnitskiianton/Language/tree/main/examples/quadratka.lang)
+
+### Functionality
 
 *Description of current functional*:
 
@@ -96,20 +175,33 @@ var summ(var a, var b){
 5. Language has function with many arguments and local variables. Now: no global vars, because I has exams(20.05.2024) and its bad practice in programming.
 6. Language has checks for most common problems like dividing by zero, overflowing signed number(not all cases, but some common like multiplication) or square of negative number. This errors will stop program with syscall.
 
+> [!Warning]
+> Don't use unassigned variables, language doesn't like them. It will be surprise for you 😙 ❤️
+
 *Standard functions*:
 
 - `input()`             - function reads one pseudo double number(0.0, -12.3, 100.2133) from stdin. Use only in assignment. Remember about accuracy, in case of .00: 13.2134 &#8594; 13.21. Return: rax - one pseudo double number
 - `print(var x)`        - function writes one pseudo double number(0.0, -12.3, 100.2133) to stdout. Return: rax - 0 - code of ending function. Return: rax = 0
-- `puts(..., 0)`        - function prints string to stdout. Args: ascii decimal codes of letters, last arg must be 0 - terminated symbol. Return: rax = 0. **WARNING**: if you forget 0 at the end it will be UB!!!. 
+- `puts(..., 0)`        - function prints string to stdout. Args: ascii decimal codes of letters, last arg must be 0 - terminated symbol. Return: rax = 0.
+
+> [!Caution]
+> if you forget 0 at the end it will be UB!!!. 
   
-> Advice: you can use `man ascii` in terminal for looking to ascii codes of letters.
+> [!Tip]
+> You can use `man ascii` in terminal for looking to ascii codes of letters.
+
+*****
 
 *Math functions*:
 
-- `sqrt(var x)`         - function calculates root from not negative number. sqrt(2) = 1.41, sqrt(-1) = Error.It uses FPU. Return: rax - one pseudo double number. Accuracy depends on settings. **WARNING**: if number is negative, it will be error with stopping program. 
+- `sqrt(var x)`         - function calculates root from not negative number. sqrt(2) = 1.41, sqrt(-1) = Error. It uses FPU. Return: rax - one pseudo double number. Accuracy depends on settings.
+
+> [!Important]
+> if number is negative, it will be error with stopping program. 
+
 - `pow(var x, var y)`   - function raises x to y. pow(-3, 3) = -27, pow(2, 3) = 8, pow(2, -1) = 2. If y < 0 it returns x, if y not integer, it convert it to integer. Return: rax - one pseudo double number.
 
-> Advise: don't use unassigned variables, language doesn't like them. It will be surprise for you
+*****
 
 ## AST Standard
 
@@ -122,6 +214,8 @@ Generated AST has a standard, with which you can translate tree without source c
 *Example AST:*
 
 <img src="https://github.com/khmelnitskiianton/Language/assets/142332024/39a89151-e734-4672-aeb3-3e96590c7d8f" width=100%>
+
+*****
 
 ## Stages of translation
 
@@ -136,7 +230,7 @@ It consists of FrontEnd, MiddleEnd, BackEnd. It translate code on my language to
 
 FrontEnd takes text code in my language and translates it to AST according to my standard. The output of FrontEnd is a text file `.tree` containing the printed AST: tree in pre-order form, list of variables.
 
-*Stages:*
+**Stages:**
 
 1. **Tokenization**:        Go to buffer and use tokenizer which processes words and creates array of objects containing info about word (type like operation, number or variable and value). With this array of processed objects I can work easier in the next steps.
 2. **Recursive Descent**:   I use parser to make from array of objects AST, it based on recursive descent where I use huge recursion and analyzing expressions. It stores names of variables and numbers in nodes.
