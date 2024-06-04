@@ -3,7 +3,7 @@
 Project of translation system - from my language to NASM
 
 > [!Note]
-> It support only Linux x86-64.
+> It supports only Linux x86-64.
 
 *Example of translation:*
 
@@ -53,11 +53,11 @@ chmod +x linker.sh
 #run program
 ```
 > [!Note]
-> It will be create folder `build`, there will be logs, and intermediate files.
+> Script will create a `build` folder, there will be logs and intermediate files.
 
 **Dependent Objects:**
 
-Compiler - gcc. Uses - Cmake. Logs using GraphViz to visualize binary tree!
+Compiler - gcc. Uses - Cmake. Logs use GraphViz to visualize binary tree!
 
 ```bash
 sudo apt update && sudo apt upgrade           #update
@@ -153,7 +153,7 @@ var summ(var a, var b){
 }
 ```
 
-*Some examples of programs on my language*:
+**Examples of programs on my language**:
 
 1. [factorial.lang](https://github.com/khmelnitskiianton/Language/blob/main/examples/factorial.lang)
 2. [quadratka.lang](https://github.com/khmelnitskiianton/Language/tree/main/examples/quadratka.lang)
@@ -162,44 +162,44 @@ var summ(var a, var b){
 
 *Description of current functional*:
 
-1. Language has pseudo double numbers, that have fixed point(In assembler: 3.14 &#8801; 314 with inaccuracy .00). It changes in settings in [Lib/MyLangConfig](https://github.com/khmelnitskiianton/Language/tree/main/Lib/MyLangConfig) constants INACCURACY in `.h` and `.s` files.
-2. Now language has unary minus and plus operations(-(x+y)).
-3. Language initializes all variables with 0. It understand unassigned variables. 
-4. Language has limits for length of variable names and amount of them. Now it set to 100, but you can change it in [Lib/tree.h](https://github.com/khmelnitskiianton/Language/blob/main/Lib/tree.h)
-5. Language has function with many arguments and local variables. Now: no global vars, because I has exams(20.05.2024) and its bad practice in programming.
-6. Language has checks for most common problems like dividing by zero, overflowing signed number(not all cases, but some common like multiplication) or square of negative number. This errors will stop program with syscall.
+1. Language has pseudo double numbers, which have fixed point (in assembler: 3.14 &#8801; 314 with inaccuracy .00). It changes in settings in [Lib/MyLangConfig](https://github.com/khmelnitskiianton/Language/tree/main/Lib/MyLangConfig) constants INACCURACY in `.h` and `.s` files.
+2. Language now has unary minus and plus operations (-(x+y)).
+3. Language initializes all variables with 0. It understands unassigned variables. 
+4. Language has limits for length of variable names and amount of them. Now it is set to 100, but you can change it in [Lib/tree.h](https://github.com/khmelnitskiianton/Language/blob/main/Lib/tree.h)
+5. Language has function with many arguments and local variables. Now: no global vars, because I have exams(20.05.2024) and its bad practice in programming.
+6. Language has checks for most common problems like division by zero, overflowing signed number (not all cases, but some common like multiplication) or square of negative number. These errors will stop program with syscall.
 
 > [!Warning]
 > Don't use unassigned variables, language doesn't like them. It will be surprise for you 😙 ❤️
 
 *Standard functions*:
 
-- `input()`             - function reads one pseudo double number(0.0, -12.3, 100.2133) from stdin. Use only in assignment. Remember about accuracy, in case of .00: 13.2134 &#8594; 13.21. Return: rax - one pseudo double number
-- `print(var x)`        - function writes one pseudo double number(0.0, -12.3, 100.2133) to stdout. Return: rax - 0 - code of ending function. Return: rax = 0
-- `puts(..., 0)`        - function prints string to stdout. Args: ascii decimal codes of letters, last arg must be 0 - terminated symbol. Return: rax = 0.
+- `input()`             - function reads one pseudo double number(0.0, -12.3, 100.2133) from stdin. Use only in assignment. Note the precision, in case of .00: 13.2134 &#8594; 13.21. Returns: rax - one pseudo double number
+- `print(var x)`        - function writes one pseudo double number(0.0, -12.3, 100.2133) to stdout. Return: rax - 0 - code of exit function. Returns: rax = 0
+- `puts(..., 0)`        - function prints string to stdout. Args: ascii decimal codes of letters, last arg must be 0 - terminated symbol. Returns: rax = 0.
 
 > [!Caution]
-> if you forget 0 at the end it will be UB!!!. 
+> if you forget 0 at the end it will be UB! 
   
 > [!Tip]
-> You can use `man ascii` in terminal for looking to ascii codes of letters.
+> You can use `man ascii` in terminal to search for ascii codes of letters.
 
 *****
 
 *Math functions*:
 
-- `sqrt(var x)`         - function calculates root from not negative number. sqrt(2) = 1.41, sqrt(-1) = Error. It uses FPU. Return: rax - one pseudo double number. Accuracy depends on settings.
+- `sqrt(var x)`         - function calculates root from non-negative number. sqrt(2) = 1.41, sqrt(-1) = error. It uses FPU. Returns: rax - one pseudo double number. Accuracy depends on settings.
 
 > [!Important]
-> if number is negative, it will be error with stopping program. 
+> if number is negative, it will cause a program stop error. 
 
-- `pow(var x, var y)`   - function raises x to y. pow(-3, 3) = -27, pow(2, 3) = 8, pow(2, -1) = 2. If y < 0 it returns x, if y not integer, it convert it to integer. Return: rax - one pseudo double number.
+- `pow(var x, var y)`   - function raises x to y. pow(-3, 3) = -27, pow(2, 3) = 8, pow(2, -1) = 2. If y < 0 it returns x, if y is not an integer, it will convert it to integer. Return: rax - one pseudo-double number.
 
 *****
 
 ## AST Standard
 
-Generated AST has a standard, with which you can translate tree without source code, only with your BackEnd!
+Generated AST has a standard, with which you can translate tree without source code, just with your BackEnd!
 
 *Standard of generated tree:*
 
